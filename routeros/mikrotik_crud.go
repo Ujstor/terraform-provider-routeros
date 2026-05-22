@@ -40,6 +40,13 @@ func CreateItem(ctx context.Context, item MikrotikItem, resourcePath string, c C
 }
 
 func ReadItems(id *ItemId, resourcePath string, c Client) (*[]MikrotikItem, error) {
+	if store, ok := clientBulkReadStore(c); ok && store.enabled(resourcePath) {
+		return store.readItems(id, resourcePath, c)
+	}
+	return readItemsUncached(id, resourcePath, c)
+}
+
+func readItemsUncached(id *ItemId, resourcePath string, c Client) (*[]MikrotikItem, error) {
 	// id can be empty.
 
 	if resourcePath == "" {
@@ -102,6 +109,9 @@ func UpdateItem(id *ItemId, resourcePath string, item MikrotikItem, c Client) (M
 
 	res := MikrotikItem{}
 	err := c.SendRequest(crudUpdate, &URL{Path: resourcePath}, item, &res)
+	if err == nil {
+		invalidateBulkReadCache(c, resourcePath, id.Value)
+	}
 
 	return res, err
 }
@@ -127,5 +137,9 @@ func DeleteItem(id *ItemId, resourcePath string, c Client) error {
 		url.Query = []string{"=.id=" + id.Value}
 	}
 
-	return c.SendRequest(crudDelete, url, nil, &MikrotikItem{})
+	err := c.SendRequest(crudDelete, url, nil, &MikrotikItem{})
+	if err == nil {
+		invalidateBulkReadCache(c, resourcePath, id.Value)
+	}
+	return err
 }

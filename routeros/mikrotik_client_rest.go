@@ -18,6 +18,7 @@ type RestClient struct {
 	Password  string
 	Transport TransportType
 	extra     *ExtraParams
+	bulkRead  *bulkReadStore
 	*http.Client
 }
 

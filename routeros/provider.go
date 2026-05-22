@@ -108,6 +108,24 @@ func Provider() *schema.Provider {
 				Description:  "HTTP Client Timeout",
 				ValidateFunc: validation.IntAtLeast(5),
 			},
+			"bulk_read": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				DefaultFunc: schema.MultiEnvDefaultFunc(
+					[]string{"ROS_BULK_READ"},
+					false,
+				),
+				Description: "When enabled, allowlisted MikroTik menus are read with a per-path cache: one full " +
+					"list load warms an index, then reads resolve by .id or name. Misses after warm use a filtered " +
+					"read. Partial cache invalidation runs on update and delete (env: ROS_BULK_READ).",
+			},
+			"bulk_read_paths": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Description: "MikroTik resource paths that use bulk read when bulk_read is true. When empty, defaults " +
+					"to /ip/route, /ipv6/route, and /interface/bridge/vlan.",
+			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
 

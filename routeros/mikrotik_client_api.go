@@ -16,6 +16,7 @@ type ApiClient struct {
 	Password  string
 	Transport TransportType
 	extra     *ExtraParams
+	bulkRead  *bulkReadStore
 	*routeros.Client
 }
 

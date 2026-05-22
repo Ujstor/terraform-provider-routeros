@@ -119,6 +119,11 @@ func NewClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.D
 		ColorizedMessage(ctx, INFO, "RouterOS from env: "+RouterOSVersion)
 	}
 
+	bulkRead := newBulkReadStore(parseBulkReadConfig(d))
+	if bulkRead != nil {
+		ColorizedMessage(ctx, INFO, bulkRead.cachedPathsString())
+	}
+
 	if transport == TransportAPI {
 		api := &ApiClient{
 			ctx:       ctx,
@@ -129,6 +134,7 @@ func NewClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.D
 			extra: &ExtraParams{
 				SuppressSysODelWarn: d.Get("suppress_syso_del_warn").(bool),
 			},
+			bulkRead: bulkRead,
 		}
 
 		if useTLS {
@@ -166,6 +172,7 @@ func NewClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.D
 		extra: &ExtraParams{
 			SuppressSysODelWarn: d.Get("suppress_syso_del_warn").(bool),
 		},
+		bulkRead: bulkRead,
 	}
 
 	rest.Client = &http.Client{

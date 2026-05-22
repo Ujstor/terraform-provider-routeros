@@ -58,10 +58,14 @@ func ResourceInterfaceEthernet() *schema.Resource {
 			"tx_64", "tx_65_127", "tx_128_255", "tx_256_511", "tx_512_1023", "tx_1024_1518", "tx_1519_max",
 			"tx_rx_64", "tx_rx_65_127", "tx_rx_128_255", "tx_rx_256_511", "tx_rx_512_1023", "tx_rx_1024_1518", "tx_rx_1024_max", "tx_rx_1519_max",
 			"rx_broadcast", "rx_bytes", "rx_control", "rx_drop", "rx_fcs_error", "rx_fragment", "rx_jabber", "rx_multicast", "rx_packet", "rx_pause", "rx_too_short", "rx_too_long",
-			"tx_broadcast", "tx_bytes", "tx_control", "tx_drop", "tx_fcs_error", "tx_fragment", "tx_jabber", "tx_multicast", "tx_packet", "tx_pause", "tx_too_short", "tx_too_long",
+			"tx_broadcast", "tx_bytes", "tx_control", "tx_drop", "tx_drop_byte", "tx_drop_packet",
+			"tx_drop_queue0_byte", "tx_drop_queue0_packet", "tx_drop_queue1_byte", "tx_drop_queue1_packet", "tx_drop_queue2_byte", "tx_drop_queue2_packet", "tx_drop_queue3_byte", "tx_drop_queue3_packet",
+			"tx_drop_queue4_byte", "tx_drop_queue4_packet", "tx_drop_queue5_byte", "tx_drop_queue5_packet", "tx_drop_queue6_byte", "tx_drop_queue6_packet", "tx_drop_queue7_byte", "tx_drop_queue7_packet",
+			"tx_fcs_error", "tx_fragment", "tx_jabber", "tx_multicast", "tx_packet", "tx_pause", "tx_too_short", "tx_too_long",
 			"rx_align_error", "rx_carrier_error", "rx_code_error", "rx_error_events", "rx_length_error", "rx_overflow", "rx_unicast", "rx_unknown_op",
 			"tx_collision", "tx_excessive_collision", "tx_late_collision", "tx_multiple_collision", "tx_single_collision", "tx_total_collision",
-			"tx_deferred", "tx_excessive_deferred", "tx_unicast", "tx_underrun",
+			"tx_deferred", "tx_excessive_deferred", "tx_unicast", "tx_underrun", "rx_tcp_checksum_error", "rx_udp_checksum_error", "rx_ip_header_checksum_error",
+			"tx_carrier_sense_error",
 		),
 
 		"advertise": {
@@ -71,10 +75,10 @@ func ResourceInterfaceEthernet() *schema.Resource {
 				Advertised speed and duplex modes for Ethernet interfaces over twisted pair, 
 				only applies when auto-negotiation is enabled. Advertising higher speeds than 
 				the actual interface supported speed will have no effect, multiple options are allowed.`,
-			ValidateFunc: validation.StringMatch(
-				regexp.MustCompile(`^[0-9\.]+(M|G)-(full|half|base\w+(-\w+)?)$`),
-				"Since RouterOS v7.12 the values of this property have changed. Please check the documentation.",
-			),
+			// ValidateFunc: validation.StringMatch(
+			// 	regexp.MustCompile(`^[0-9\.]+(M|G)-(full|half|base\w+(-\w+)?)$`),
+			// 	"Since RouterOS v7.12 the values of this property have changed. Please check the documentation.",
+			// ),
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		KeyArp:        PropArpRw,
@@ -221,7 +225,7 @@ func ResourceInterfaceEthernet() *schema.Resource {
 			Optional:    true,
 			Description: "If the host does not respond over the specified period, the PoE-Out port is switched off for 5s.",
 			DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-				return AlwaysPresentNotUserProvided(k, old, new, d) || TimeEquall(k, old, new, d)
+				return AlwaysPresentNotUserProvided(k, old, new, d) || TimeEqual(k, old, new, d)
 			},
 		},
 		"running": {
@@ -252,9 +256,9 @@ func ResourceInterfaceEthernet() *schema.Resource {
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"sfp_ignore_rx_los": {
-			Type:     schema.TypeBool,
-			Optional: true,
-			Description: "An option to ignore RX LOS (Loss of Signal) status of the SFP module.",
+			Type:             schema.TypeBool,
+			Optional:         true,
+			Description:      "An option to ignore RX LOS (Loss of Signal) status of the SFP module.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"slave": {
@@ -295,7 +299,7 @@ func ResourceInterfaceEthernet() *schema.Resource {
 		DeleteContext: DefaultSystemDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

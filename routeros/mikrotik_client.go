@@ -8,16 +8,17 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
-	"github.com/go-routeros/routeros"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"github.com/go-routeros/routeros/v3"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 type Client interface {
+	GetExtraParams() *ExtraParams
 	GetTransport() TransportType
 	SendRequest(method crudMethod, url *URL, item MikrotikItem, result interface{}) error
 }
@@ -25,7 +26,8 @@ type Client interface {
 type crudMethod int
 
 const (
-	crudCreate crudMethod = iota
+	crudUnknown crudMethod = iota
+	crudCreate
 	crudRead
 	crudUpdate
 	crudDelete
@@ -38,7 +40,12 @@ const (
 	crudMove
 	crudStart
 	crudStop
+	crudGenerateKey
 )
+
+type ExtraParams struct {
+	SuppressSysODelWarn bool
+}
 
 func NewClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 
@@ -54,14 +61,14 @@ func NewClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.D
 
 	if caCertificate != "" {
 		if _, err := os.Stat(caCertificate); err != nil {
-			tflog.Debug(ctx, "Failed to read CA file '"+caCertificate+"', error: "+err.Error())
+			ColorizedDebug(ctx, "Failed to read CA file '"+caCertificate+"', error: "+err.Error())
 			return nil, diag.FromErr(err)
 		}
 
 		certPool := x509.NewCertPool()
 		file, err := os.ReadFile(caCertificate)
 		if err != nil {
-			tflog.Debug(ctx, "Failed to read CA file '"+caCertificate+"', error: "+err.Error())
+			ColorizedDebug(ctx, "Failed to read CA file '"+caCertificate+"', error: "+err.Error())
 			return nil, diag.Errorf("Failed to read CA file '%s', %v", caCertificate, err)
 		}
 		certPool.AppendCertsFromPEM(file)
@@ -107,6 +114,11 @@ func NewClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.D
 		panic("[NewClient] wrong transport type: " + routerUrl.Scheme)
 	}
 
+	RouterOSVersion = d.Get("routeros_version").(string)
+	if RouterOSVersion != "" {
+		ColorizedMessage(ctx, INFO, "RouterOS from env: "+RouterOSVersion)
+	}
+
 	if transport == TransportAPI {
 		api := &ApiClient{
 			ctx:       ctx,
@@ -114,6 +126,9 @@ func NewClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.D
 			Username:  d.Get("username").(string),
 			Password:  d.Get("password").(string),
 			Transport: TransportAPI,
+			extra: &ExtraParams{
+				SuppressSysODelWarn: d.Get("suppress_syso_del_warn").(bool),
+			},
 		}
 
 		if useTLS {
@@ -129,6 +144,16 @@ func NewClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.D
 		// when an error occurs while creating multiple resources.
 		api.Async()
 
+		if RouterOSVersion == "" {
+			ros, diags := GetRouterOSVersion(api)
+			if diags != nil {
+				return nil, diags
+			}
+
+			RouterOSVersion = ros
+			ColorizedMessage(ctx, INFO, "RouterOS: "+RouterOSVersion)
+		}
+
 		return api, nil
 	}
 
@@ -138,13 +163,29 @@ func NewClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.D
 		Username:  d.Get("username").(string),
 		Password:  d.Get("password").(string),
 		Transport: TransportREST,
+		extra: &ExtraParams{
+			SuppressSysODelWarn: d.Get("suppress_syso_del_warn").(bool),
+		},
 	}
 
 	rest.Client = &http.Client{
-		Timeout: time.Minute,
+		// ... By default, CreateContext has a 20 minute timeout ...
+		// but MT REST API timeout is in 60 seconds for any operation.
+		// Make the timeout smaller so that the lifetime of the context is less than the lifetime of the session.
+		Timeout: time.Duration(d.Get("rest_timeout").(int)) * time.Second,
 		Transport: &http.Transport{
 			TLSClientConfig: &tlsConf,
 		},
+	}
+
+	if RouterOSVersion == "" {
+		ros, diags := GetRouterOSVersion(rest)
+		if diags != nil {
+			return nil, diags
+		}
+
+		RouterOSVersion = ros
+		ColorizedMessage(ctx, INFO, "RouterOS: "+RouterOSVersion)
 	}
 
 	return rest, nil
@@ -188,4 +229,31 @@ func EscapeChars(data []byte) []byte {
 		res = append(res, ch)
 	}
 	return res
+}
+
+// Obtain a version of RouterOS to automatically customize resource schemas.
+func GetRouterOSVersion(m interface{}) (string, diag.Diagnostics) {
+	res, err := ReadItems(nil, "/system/resource", m.(Client))
+	if err != nil {
+		return "", diag.FromErr(err)
+	}
+
+	// Resource not found.
+	if len(*res) == 0 {
+		return "", diag.Errorf("RouterOS version not found")
+	}
+
+	version, ok := (*res)[0]["version"]
+	if !ok {
+		return "", diag.Errorf("RouterOS version not found")
+	}
+
+	// d.d | d.d.d
+	re := regexp.MustCompile(`^(\d+\.){1,2}\d+`)
+
+	if !re.MatchString(version) {
+		return "", diag.Errorf("RouterOS version not found")
+	}
+
+	return re.FindString(version), nil
 }

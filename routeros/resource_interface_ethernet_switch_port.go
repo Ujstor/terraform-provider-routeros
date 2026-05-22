@@ -86,6 +86,12 @@ func ResourceInterfaceEthernetSwitchPort() *schema.Resource {
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		KeyInvalid: PropInvalidRo,
+		"l3_hw_offloading": {
+			Type:             schema.TypeBool,
+			Optional:         true,
+			Description:      "Level 3 hardware offloading",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"mirror_egress": {
 			Type:     schema.TypeBool,
 			Optional: true,
@@ -168,7 +174,7 @@ func ResourceInterfaceEthernetSwitchPort() *schema.Resource {
 		DeleteContext: DefaultSystemDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

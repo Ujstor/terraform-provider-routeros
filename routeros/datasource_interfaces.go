@@ -36,11 +36,19 @@ func DatasourceInterfaces() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+						"dynamic": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
 						"comment": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
 						"disabled": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+						"inactive": {
 							Type:     schema.TypeBool,
 							Computed: true,
 						},

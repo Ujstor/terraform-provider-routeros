@@ -77,6 +77,12 @@ func ResourceInterfacePPPoEClient() *schema.Resource {
 				"established.",
 		},
 		KeyDisabled: PropDisabledRw,
+		"host_uniq": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "",
+			DiffSuppressFunc: HexEqual,
+		},
 		"interface": {
 			Type:        schema.TypeString,
 			Required:    true,
@@ -152,7 +158,7 @@ func ResourceInterfacePPPoEClient() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

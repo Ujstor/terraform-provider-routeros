@@ -34,10 +34,10 @@ func ResourceWifiAccessList() *schema.Resource {
 		MetaId:           PropId(Id),
 
 		"action": {
-			Type:        schema.TypeString,
-			Optional:    true,
-			Default:     "accept",
-			Description: "An action to take when a client matches.",
+			Type:         schema.TypeString,
+			Optional:     true,
+			Default:      "accept",
+			Description:  "An action to take when a client matches.",
 			ValidateFunc: validation.StringInSlice([]string{"accept", "reject", "query-radius"}, false),
 		},
 		"allow_signal_out_of_range": {
@@ -50,12 +50,22 @@ func ResourceWifiAccessList() *schema.Resource {
 			Optional:    true,
 			Description: "An option that specifies whether to deny forwarding data between clients connected to the same interface.",
 		},
-		KeyComment: PropCommentRw,
+		KeyComment:  PropCommentRw,
 		KeyDisabled: PropDisabledRw,
 		"interface": {
-			Type:     schema.TypeString,
-			Optional: true,
+			Type:        schema.TypeString,
+			Optional:    true,
 			Description: "Interface name to compare with an interface to which the client actually connects to.",
+		},
+		"last_logged_in": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Last time this client logged in.",
+		},
+		"last_logged_out": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Last time this client logged out.",
 		},
 		"mac_address": {
 			Type:         schema.TypeString,
@@ -67,6 +77,11 @@ func ResourceWifiAccessList() *schema.Resource {
 			Type:        schema.TypeString,
 			Optional:    true,
 			Description: "MAC address mask to apply when comparing clients' addresses.",
+		},
+		"match_count": {
+			Type:        schema.TypeInt,
+			Computed:    true,
+			Description: "Number of times this entry was matched.",
 		},
 		KeyPlaceBefore: PropPlaceBefore,
 		"passphrase": {
@@ -85,8 +100,8 @@ func ResourceWifiAccessList() *schema.Resource {
 			Description: "The range in which the client signal must fall.",
 		},
 		"ssid_regexp": {
-			Type:     schema.TypeString,
-			Optional: true,
+			Type:        schema.TypeString,
+			Optional:    true,
 			Description: "The regular expression to compare the actual SSID the client connects to.",
 		},
 		"time": {
@@ -94,12 +109,7 @@ func ResourceWifiAccessList() *schema.Resource {
 			Optional:    true,
 			Description: "Time of the day and days of the week when the rule is applicable.",
 		},
-		"vlan_id": {
-			Type:         schema.TypeString,
-			Optional:     true,
-			Description:  "VLAN ID to use for VLAN tagging or `none`.",
-			ValidateFunc: validation.IntBetween(1, 4094),
-		},
+		KeyVlanId: PropVlanIdRw("VLAN ID to use for VLAN tagging or `none`.", false),
 	}
 
 	return &schema.Resource{
@@ -117,7 +127,7 @@ func ResourceWifiAccessList() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

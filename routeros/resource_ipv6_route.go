@@ -26,6 +26,12 @@ func ResourceIPv6Route() *schema.Resource {
 				"parameter from the configuration of the TF. The value of the parameter (true or false) has no " +
 				"effect on the MT processing logic.",
 		},
+		"check_gateway": {
+			Type:         schema.TypeString,
+			Optional:     true,
+			Description:  "Currently used check-gateway option.",
+			ValidateFunc: validation.StringInSlice([]string{"arp", "bfd", "ping"}, false),
+		},
 		KeyComment:  PropCommentRw,
 		KeyDisabled: PropDisabledRw,
 		"distance": {
@@ -53,11 +59,7 @@ func ResourceIPv6Route() *schema.Resource {
 			Description: "Array of IP addresses or interface names. Specifies which host or interface packets should " +
 				"be sent to (IP | interface | IP%interface | IP@table[, IP | string, [..]]).",
 		},
-		"hw_offloaded": {
-			Type:        schema.TypeBool,
-			Computed:    true,
-			Description: "Indicates whether the route is eligible to be hardware offloaded on supported hardware.",
-		},
+		KeyHwOffloaded: PropHwOffloadedRo,
 		"immediate_gw": {
 			Type:        schema.TypeString,
 			Computed:    true,
@@ -92,7 +94,7 @@ func ResourceIPv6Route() *schema.Resource {
 		},
 		"suppress_hw_offload": {
 			Type:     schema.TypeBool,
-			Computed: true,
+			Optional: true,
 		},
 		"target_scope": {
 			Type:     schema.TypeInt,
@@ -115,7 +117,7 @@ func ResourceIPv6Route() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

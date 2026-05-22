@@ -24,12 +24,12 @@ resource "routeros_interface_bridge" "bridge" {
 - `admin_mac` (String) Static MAC address of the bridge. This property only has effect when auto-mac is set to no.
 - `ageing_time` (String) How long a host's information will be kept in the bridge database.
 - `arp` (String) Address Resolution Protocol mode:
-		* disabled - the interface will not use ARP
-		* enabled - the interface will use ARP
-		* local-proxy-arp - the router performs proxy ARP on the interface and sends replies to the same interface
-		* proxy-arp - the router performs proxy ARP on the interface and sends replies to other interfaces
-		* reply-only - the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the ARP table. No dynamic entries will be automatically stored in the ARP table. Therefore for communications to be successful, a valid static entry must already exist.
-- `arp_timeout` (String) ARP timeout is time how long ARP record is kept in ARP table after no packets are received from IP. Value auto equals to the value of arp-timeout in IP/Settings, default is 30s. Can use postfix ms, s, M, h, d for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.
+  * disabled - the interface will not use ARP
+  * enabled - the interface will use ARP
+  * local-proxy-arp - the router performs proxy ARP on the interface and sends replies to the same interface
+  * proxy-arp - the router performs proxy ARP on the interface and sends replies to other interfaces
+  * reply-only - the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the ARP table. No dynamic entries will be automatically stored in the ARP table. Therefore for communications to be successful, a valid static entry must already exist.
+- `arp_timeout` (String) ARP timeout is time how long ARP record is kept in ARP table after no packets are received from IP. Value auto equals to the value of arp-timeout in IP/Settings, default is 30s. Can use postfix `ms`, `s`, `m`, `h`, `d` for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.
 - `auto_mac` (Boolean) Automatically select one MAC address of bridge ports as a bridge MAC address, bridge MAC will be chosen from the first added bridge port. After a device reboot, the bridge MAC can change depending on the port-number.
 - `comment` (String)
 - `dhcp_snooping` (Boolean)
@@ -37,6 +37,7 @@ resource "routeros_interface_bridge" "bridge" {
 - `ether_type` (String) This property only has effect when vlan-filtering is set to yes.
 - `fast_forward` (Boolean)
 - `forward_delay` (String) Time which is spent during the initialization phase of the bridge interface (i.e., after router startup or enabling the interface) in listening/learning state before the bridge will start functioning normally.
+- `forward_reserved_addresses` (Boolean) An option whether to forward IEEE reserved multicast MAC addresses that are in the `01:80:C2:00:00:0x` range. This option is available in RouterOS starting from version 7.16.
 - `frame_types` (String) Specifies allowed frame types on a bridge port. This property only has effect when vlan-filtering is set to yes.
 - `igmp_snooping` (Boolean) Enables multicast group and port learning to prevent multicast traffic from flooding all interfaces in a bridge.
 - `igmp_version` (Number) Selects the IGMP version in which IGMP general membership queries will be generated. This property only has effect when igmp-snooping is set to yes.
@@ -44,6 +45,7 @@ resource "routeros_interface_bridge" "bridge" {
 - `last_member_interval` (String) If a port has fast-leave set to no and a bridge port receives a IGMP Leave message, then a IGMP Snooping enabled bridge will send a IGMP query to make sure that no devices has subscribed to a certain multicast stream on a bridge port.
 - `last_member_query_count` (Number) How many times should last-member-interval pass until a IGMP Snooping bridge will stop forwarding a certain multicast stream. This property only has effect when igmp-snooping is set to yes.
 - `max_hops` (Number) Bridge count which BPDU can pass in a MSTP enabled network in the same region before BPDU is being ignored. This property only has effect when protocol-mode is set to mstp.
+- `max_learned_entries` (String) An option to set the maximum number of learned hosts for the bridge interface. This option is available in RouterOS starting from version 7.16.
 - `max_message_age` (String) Changes the Max Age value in BPDU packets, which is transmitted by the root bridge. This property only has effect when protocol-mode is set to stp or rstp. Value: 6s..40s
 - `membership_interval` (String) Amount of time after an entry in the Multicast Database (MDB) is removed if a IGMP membership report is not received on a certain port. This property only has effect when igmp-snooping is set to yes.
 - `mld_version` (Number) Selects the MLD version. Version 2 adds support for source-specific multicast. This property only has effect when RouterOS IPv6 package is enabled and igmp-snooping is set to yes.
@@ -68,6 +70,7 @@ resource "routeros_interface_bridge" "bridge" {
 ### Read-Only
 
 - `actual_mtu` (Number)
+- `dynamic` (Boolean) Configuration item created by software, not by management interface. It is not exported, and cannot be directly modified.
 - `id` (String) The ID of this resource.
 - `l2mtu` (Number) Layer2 Maximum transmission unit. [See](https://wiki.mikrotik.com/wiki/Maximum_Transmission_Unit_on_RouterBoards).
 - `mac_address` (String) Current mac address.

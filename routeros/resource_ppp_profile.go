@@ -30,6 +30,7 @@ import (
 */
 
 // https://help.mikrotik.com/docs/display/ROS/PPP+AAA#PPPAAA-UserProfiles
+// https://help.mikrotik.com/docs/spaces/ROS/pages/132350049/PPP+AAA
 func ResourcePPPProfile() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
 		MetaResourcePath: PropResourcePath("/ppp/profile"),
@@ -91,16 +92,23 @@ func ResourcePPPProfile() *schema.Resource {
 			ValidateFunc: validation.StringInSlice([]string{"yes", "no", "default"}, false),
 		},
 		KeyComment: PropCommentRw,
-		"default": {
-			Type:        schema.TypeString,
-			Computed:    true,
-			Description: "Default profile sign.",
+		KeyDefault: PropDefaultRo,
+		"dhcpv6_lease_time": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Lease time can be set starting from 7.20ab202, by default time is set to 1d.",
+			DiffSuppressFunc: TimeEqual,
 		},
 		"dhcpv6_pd_pool": {
 			Type:     schema.TypeString,
 			Optional: true,
 			Description: "Name of the IPv6 pool which will be used by dynamically created DHCPv6-PD server when " +
 				"client connects. [Read more >>](https://wiki.mikrotik.com/wiki/Manual:IPv6_PD_over_PPP)",
+		},
+		"dhcpv6_use_radius": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Description: "pecifies value for `use-radius` option selected for dynamically generated DHCPv6 PD servers.",
 		},
 		"dns_server": {
 			Type:        schema.TypeSet,
@@ -117,7 +125,7 @@ func ResourcePPPProfile() *schema.Resource {
 			Optional: true,
 			Description: "Specifies  the amount of time after which the link will be terminated if there are  no " +
 				"activity present. Timeout is not set by default.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"incoming_filter": {
 			Type:     schema.TypeString,
@@ -148,7 +156,7 @@ func ResourcePPPProfile() *schema.Resource {
 			Type:     schema.TypeString,
 			Optional: true,
 			Description: "Execute script on user login-event. These are available variables that are accessible " +
-				"for the event script: *user *local-address *remote-address *caller-id *called-id *interface.",
+				"for the event script:\n  * user\n  * local-address\n  * remote-address\n  * caller-id\n  * called-id\n  * interface.",
 		},
 		"on_down": {
 			Type:        schema.TypeString,
@@ -210,11 +218,18 @@ func ResourcePPPProfile() *schema.Resource {
 			Optional:    true,
 			Description: "Assign prefix from IPv6 pool to the client and install corresponding IPv6 route.",
 		},
+		"remote_ipv6_prefix_reuse": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "If `remote-ipv6-prefix-pool` is specified and includes single `/64`prefix, then prefix can " +
+				"be used only for a single PPP client for RADVD configuration. When this option is set to value `yes`, the " +
+				"same prefix can be reused between all the clients using this PPP profile.",
+		},
 		"session_timeout": {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "Maximum time the connection can stay up. By default no time limit is set.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"use_compression": {
 			Type:     schema.TypeString,
@@ -281,7 +296,7 @@ func ResourcePPPProfile() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

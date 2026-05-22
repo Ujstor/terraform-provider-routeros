@@ -19,11 +19,11 @@ resource "routeros_tool_netwatch" "test" {
 ### Required
 
 - `host` (String) The IP address of the server to be probed. Formats:
-			- ipv4
-			- ipv4@vrf
-			- ipv6 
-			- ipv6@vrf
-			- ipv6-linklocal%interface
+  * ipv4
+  * ipv4@vrf
+  * ipv6 
+  * ipv6@vrf
+  * ipv6-linklocal%interface
 - `name` (String) Task name.
 
 ### Optional
@@ -33,6 +33,8 @@ resource "routeros_tool_netwatch" "test" {
 - `disabled` (Boolean)
 - `dns_server` (String) The DNS server that the probe should send its requests to, if not specified it will use the value from `/ip dns`.
 - `down_script` (String) Script to execute on the event of probe state change `OK` --> `fail`.
+- `early_failure_detection` (Boolean) Netwatch will not wait to finish all the packets to be processed to change probe status if it is already known that host will be considered as `down`.
+- `early_success_detection` (Boolean) Netwatch will not wait to finish all the packets to be processed to change probe status if it is already known that host will be considered as `up`.
 - `http_code_max` (Number) Response in the range [http-code-min , http-code-max] is a probe pass/OK; outside - a probe fail. See [mozilla-http-status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status) or [rfc7231](https://datatracker.ietf.org/doc/html/rfc7231#section-6).
 - `http_code_min` (Number) OK/fail criteria for HTTP response code.
 - `interval` (String) The time interval between probe tests.
@@ -56,10 +58,10 @@ resource "routeros_tool_netwatch" "test" {
 - `timeout` (String) Max time limit to wait for a response.
 - `ttl` (Number) Manually set time to live value for ICMP packet.
 - `type` (String) Type of the probe:
-			- icmp - (ping-style) series of ICMP request-response with statistics
-			- tcp-conn - test TCP connection (3-way handshake) to a server specified by IP and port
-			- http-get - do an HTTP Get request and test for a range of correct replies
-			- simple - simplified ICMP probe, with fewer options than **ICMP** type, used for backward compatibility with the older Netwatch version
+  *  icmp - (ping-style) series of ICMP request-response with statistics
+  *  tcp-conn - test TCP connection (3-way handshake) to a server specified by IP and port
+  *  http-get - do an HTTP Get request and test for a range of correct replies
+  *  simple - simplified ICMP probe, with fewer options than **ICMP** type, used for backward compatibility with the older Netwatch version
 - `up_script` (String) Script to execute on the event of probe state change `fail` --> `OK`.
 
 ### Read-Only
@@ -72,4 +74,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/tool/netwatch get [print show-ids]]
 terraform import routeros_tool_netwatch.test *3
+#Or you can import a resource using one of its attributes
+terraform import routeros_tool_netwatch.test "name=xxx"
 ```

@@ -38,7 +38,7 @@ func ResourceDns() *schema.Resource {
 			Description:  "",
 			ValidateFunc: ValidationTime,
 			DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-				return AlwaysPresentNotUserProvided(k, old, new, d) || TimeEquall(k, old, new, d)
+				return AlwaysPresentNotUserProvided(k, old, new, d) || TimeEqual(k, old, new, d)
 			},
 		},
 		"allow_remote_requests": {
@@ -54,7 +54,7 @@ func ResourceDns() *schema.Resource {
 				"unconditionally after cache-max-ttl time. Shorter TTL received from DNS servers are respected. " +
 				"*Default: 1w*",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"cache_size": {
 			Type:        schema.TypeInt,
@@ -84,7 +84,7 @@ func ResourceDns() *schema.Resource {
 			Optional:         true,
 			Computed:         true,
 			Description:      "Specifies how long to wait for query response from the DoH server.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"dynamic_servers": {
 			Type:        schema.TypeString,
@@ -110,6 +110,15 @@ func ResourceDns() *schema.Resource {
 			Description:  "Maximum size of allowed UDP packet. *Default: 4096*",
 			ValidateFunc: validation.IntBetween(50, 65507),
 		},
+		"mdns_repeat_ifaces": {
+			Type:        schema.TypeSet,
+			Optional:    true,
+			Description: "An option to enable mDNS repeater on specified interfaces. This option is available in RouterOS starting from version 7.16.",
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"query_server_timeout": {
 			Type:     schema.TypeString,
 			Optional: true,
@@ -117,7 +126,7 @@ func ResourceDns() *schema.Resource {
 			Description: "Specifies how long to wait for query response from one server. " +
 				"Time can be specified in milliseconds. *Default: 2s*",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"query_total_timeout": {
 			Type:     schema.TypeString,
@@ -127,7 +136,7 @@ func ResourceDns() *schema.Resource {
 				"configured taking into account query_server_timeout and number of used DNS server. " +
 				"Time can be specified in milliseconds. *Default: 10s*",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"servers": {
 			Type:        schema.TypeList,
@@ -186,15 +195,12 @@ func ResourceDns() *schema.Resource {
 			d.SetId("")
 			return nil
 		},
-		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
-		},
 
-		Schema: resSchema,
+		Schema:        resSchema,
 		SchemaVersion: 1,
 		StateUpgraders: []schema.StateUpgrader{
 			{
-				Type: ResourceDnsV0().CoreConfigSchema().ImpliedType(),
+				Type:    ResourceDnsV0().CoreConfigSchema().ImpliedType(),
 				Upgrade: stateMigrationScalarToList("servers"),
 				Version: 0,
 			},

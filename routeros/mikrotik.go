@@ -62,7 +62,16 @@ func (m MikrotikItem) GetID(t IdType) string {
 	return ""
 }
 
-// KebabToSnake Convert Mikrotik JSON names to TF schema names: some-filed to some_field.
+func (m *MikrotikItem) replace(swap any) {
+	switch t := swap.(type) {
+	case *MikrotikItem:
+		*m = *t
+	default:
+		panic("not the same type")
+	}
+}
+
+// KebabToSnake Convert Mikrotik JSON names to TF schema names: some-field to some_field.
 func KebabToSnake(name string) string {
 	res := []byte(name)
 	for i := range res {
@@ -73,7 +82,7 @@ func KebabToSnake(name string) string {
 	return string(res)
 }
 
-// SnakeToKebab Convert IF schema names to Mikrotik JSON names: some_filed to some-field.
+// SnakeToKebab Convert IF schema names to Mikrotik JSON names: some_field to some-field.
 func SnakeToKebab(name string) string {
 	res := []byte(name)
 	for i := range res {

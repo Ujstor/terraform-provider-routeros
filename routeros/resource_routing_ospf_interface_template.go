@@ -1,6 +1,9 @@
 package routeros
 
 import (
+	"context"
+	"reflect"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
@@ -83,7 +86,7 @@ func ResourceRoutingOspfInterfaceTemplate() *schema.Resource {
 			Default:          "40s",
 			Description:      "Specifies the interval after which a neighbor is declared dead.",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		KeyDisabled: PropDisabledRw,
 		"hello_interval": {
@@ -92,7 +95,7 @@ func ResourceRoutingOspfInterfaceTemplate() *schema.Resource {
 			Default:          "10s",
 			Description:      "The interval between HELLO packets that the router sends out this interface.",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		KeyInactive: PropInactiveRo,
 		"interfaces": {
@@ -110,10 +113,14 @@ func ResourceRoutingOspfInterfaceTemplate() *schema.Resource {
 			Default:      0,
 			ValidateFunc: validation.IntBetween(0, 255),
 		},
-		"network": {
-			Type:        schema.TypeString,
-			Optional:    true,
-			Description: "The network prefix associated with the area.",
+		"networks": {
+			Type:     schema.TypeSet,
+			Optional: true,
+			Elem: &schema.Schema{
+				Type:         schema.TypeString,
+				ValidateFunc: validation.IsCIDR,
+			},
+			Description: "The network prefixes associated with the area.",
 		},
 		"passive": {
 			Type:     schema.TypeBool,
@@ -141,7 +148,7 @@ func ResourceRoutingOspfInterfaceTemplate() *schema.Resource {
 			Default:          "5s",
 			Description:      "Time interval the lost link state advertisement will be resent.",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"transmit_delay": {
 			Type:     schema.TypeString,
@@ -150,7 +157,7 @@ func ResourceRoutingOspfInterfaceTemplate() *schema.Resource {
 			Description: "Link-state transmit delay is the estimated time it takes to transmit a link-state " +
 				"update packet on the interface.",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"type": {
 			Type:        schema.TypeString,
@@ -171,6 +178,12 @@ func ResourceRoutingOspfInterfaceTemplate() *schema.Resource {
 			Description: "A non-backbone area the two routers have in common over which the virtual link will " +
 				"be established.",
 		},
+		"use_bfd": {
+			Type:             schema.TypeBool,
+			Optional:         true,
+			Description:      "Whether to use the BFD protocol for faster connection state detection.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 	}
 
 	return &schema.Resource{
@@ -179,9 +192,35 @@ func ResourceRoutingOspfInterfaceTemplate() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
-		Schema: resSchema,
+		Schema:        resSchema,
+		SchemaVersion: 1,
+		StateUpgraders: []schema.StateUpgrader{
+			{
+				Type: ResourceRoutingOspfInterfaceTemplateV0().CoreConfigSchema().ImpliedType(),
+				Upgrade: func(ctx context.Context, rawState map[string]interface{}, meta interface{}) (map[string]interface{}, error) {
+					defer delete(rawState, "network")
+
+					if rawState["network"] == nil {
+						return rawState, nil
+					}
+
+					value := reflect.ValueOf(rawState["network"])
+					if value.IsZero() {
+						rawState["networks"] = []interface{}{}
+						return rawState, nil
+					}
+
+					slice := reflect.MakeSlice(reflect.SliceOf(value.Type()), 0, 1)
+					reflect.Append(slice, value)
+					rawState["networks"] = slice.Interface()
+
+					return rawState, nil
+				},
+				Version: 0,
+			},
+		},
 	}
 }

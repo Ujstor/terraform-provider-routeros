@@ -33,15 +33,21 @@ func ResourceIpSSHServer() *schema.Resource {
 			Description: "Whether to allow password login at the same time when public key authorization is " +
 				"configured for a user.",
 		},
+		"ciphers": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Allow to configure SSH ciphers.",
+			ValidateFunc:     validation.StringInSlice([]string{"3des-cbc", "aes-cbc", "aes-ctr", "aes-gcm", "auto"}, false),
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"forwarding_enabled": {
 			Type:     schema.TypeString,
 			Optional: true,
-			Description: `Allows to control which SSH forwarding method to allow:
-
-			* no - SSH forwarding is disabled;
-			* local - Allow SSH clients to originate connections from the server(router), this setting controls also dynamic forwarding;
-			* remote - Allow SSH clients to listen on the server(router) and forward incoming connections;
-			* both - Allow both local and remote forwarding methods.`,
+			Description: "Allows to control which SSH forwarding method to allow:" +
+				"\n  * no - SSH forwarding is disabled;" +
+				"\n  * local - Allow SSH clients to originate connections from the server(router), this setting controls also dynamic forwarding;" +
+				"\n  * remote - Allow SSH clients to listen on the server(router) and forward incoming connections;" +
+				"\n  * both - Allow both local and remote forwarding methods.",
 			ValidateFunc:     validation.StringInSlice([]string{"both", "local", "no", "remote"}, false),
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
@@ -57,6 +63,17 @@ func ResourceIpSSHServer() *schema.Resource {
 			Optional:         true,
 			Description:      "Select host key type.",
 			ValidateFunc:     validation.StringInSlice([]string{"rsa", "ed25519"}, false),
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"publickey_authentication_options": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "Sets public key authentication options." +
+				"\nThe touch-required option causes public key authentication using a FIDO authenticator " +
+				"algorithm to always require the signature to attest that a physically present user explicitly" +
+				"confirmed the authentication (usually by touching the authenticator)." +
+				"\nThe verify-required option requires a FIDO key signature attest that the user was verified, e.g. via a PIN.",
+			ValidateFunc:     validation.StringInSlice([]string{"none", "touch-required", "verify-required"}, false),
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"strong_crypto": {

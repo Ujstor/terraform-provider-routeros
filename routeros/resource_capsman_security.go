@@ -81,7 +81,7 @@ func ResourceCapsManSecurity() *schema.Resource {
 			Optional: true,
 			Description: "Controls how often Access Point updates the group key. This key is used to encrypt all " +
 				"broadcast and multicast frames. property only has effect for Access Points. (30s..1h)",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		KeyName: PropNameForceNewRw,
 		// 802.11i specification:
@@ -116,7 +116,7 @@ func ResourceCapsManSecurity() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		SchemaVersion: 1,

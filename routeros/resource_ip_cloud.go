@@ -22,6 +22,11 @@ func ResourceIpCloud() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
 		MetaResourcePath: PropResourcePath("/ip/cloud"),
 		MetaId:           PropId(Id),
+		// https://help.mikrotik.com/docs/spaces/ROS/pages/197984280/Back+To+Home
+		MetaSkipFields: PropSkipFields("vpn_dns_name", "vpn_interface", "vpn_peer_private_key", "vpn_peer_public_key",
+			"vpn_port", "vpn_private_key", "vpn_public_key", "vpn_relay_addressess", "vpn_relay_addressess_ipv6",
+			"vpn_relay_codes", "vpn_relay_ipv4_status", "vpn_relay_ipv6_status", "vpn_relay_regions", "vpn_relay_rtts",
+			"vpn_status", "vpn_wireguard_client_config", "vpn_wireguard_client_config_qrcode"),
 
 		// https://help.mikrotik.com/docs/display/ROS/Back+To+Home
 		"back_to_home_vpn": {
@@ -32,7 +37,7 @@ func ResourceIpCloud() *schema.Resource {
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"ddns_enabled": {
-			Type:     schema.TypeBool,
+			Type:     schema.TypeString,
 			Optional: true,
 			Description: "If set to yes, then the device will send an encrypted message to the MikroTik's Cloud " +
 				"server. The server will then decrypt the message and verify that the sender is an " +
@@ -58,7 +63,7 @@ func ResourceIpCloud() *schema.Resource {
 					return false
 				}
 
-				return TimeEquall(k, old, new, d)
+				return TimeEqual(k, old, new, d)
 			},
 		},
 		"dns_name": {
@@ -89,13 +94,20 @@ func ResourceIpCloud() *schema.Resource {
 				"possible cause is if router runs out of memory.",
 		},
 		"update_time": {
-			Type:     schema.TypeBool,
+			Type:     schema.TypeString,
 			Optional: true,
-			Default:  true,
 			Description: "If set to yes then router clock will be set to time, provided by cloud server IF there " +
 				"is no NTP or SNTP client enabled. If set to no, then IP/Cloud service will never update " +
 				"the device's clock. If update-time is set to yes, Clock will be updated even when " +
 				"ddns-enabled is set to no.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"vpn_prefer_relay_code": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "You can enter relay code that will be preferred for BTH connection, if not set, relay with " +
+				"smallest RTT will be chosen.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"warning": {
 			Type:     schema.TypeString,

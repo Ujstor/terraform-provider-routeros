@@ -1,10 +1,7 @@
 package routeros
 
 import (
-	"regexp"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 // ResourceInterfaceWireguardPeer https://help.mikrotik.com/docs/display/ROS/WireGuard#WireGuard-Peers
@@ -48,7 +45,7 @@ func ResourceInterfaceWireguardPeer() *schema.Resource {
 			Optional:         true,
 			Description:      "Same as persistent-keepalive but from peer side.",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"client_listen_port": {
 			Type:     schema.TypeInt,
@@ -107,10 +104,8 @@ func ResourceInterfaceWireguardPeer() *schema.Resource {
 				"persistently. For example, if the interface very rarely sends traffic, but it might at anytime " +
 				"receive traffic from a peer, and it is behind NAT, the interface might benefit from having a " +
 				"persistent keepalive interval of 25 seconds.",
-			ValidateFunc: validation.StringMatch(
-				regexp.MustCompile(`^\d+s$`),
-				"value should be an integer between 1 and 65535 inclusive: 5s, 25s, ...",
-			),
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+			ValidateFunc:     ValidationDurationBetween(1, 65535),
 		},
 		"preshared_key": {
 			Type:      schema.TypeString,
@@ -148,7 +143,7 @@ func ResourceInterfaceWireguardPeer() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

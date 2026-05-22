@@ -23,26 +23,29 @@ resource "routeros_interface_macvlan" "test" {
 ### Optional
 
 - `arp` (String) Address Resolution Protocol mode:
-		* disabled - the interface will not use ARP
-		* enabled - the interface will use ARP
-		* local-proxy-arp - the router performs proxy ARP on the interface and sends replies to the same interface
-		* proxy-arp - the router performs proxy ARP on the interface and sends replies to other interfaces
-		* reply-only - the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the ARP table. No dynamic entries will be automatically stored in the ARP table. Therefore for communications to be successful, a valid static entry must already exist.
-- `arp_timeout` (String) ARP timeout is time how long ARP record is kept in ARP table after no packets are received from IP. Value auto equals to the value of arp-timeout in IP/Settings, default is 30s. Can use postfix ms, s, M, h, d for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.
+  * disabled - the interface will not use ARP
+  * enabled - the interface will use ARP
+  * local-proxy-arp - the router performs proxy ARP on the interface and sends replies to the same interface
+  * proxy-arp - the router performs proxy ARP on the interface and sends replies to other interfaces
+  * reply-only - the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the ARP table. No dynamic entries will be automatically stored in the ARP table. Therefore for communications to be successful, a valid static entry must already exist.
+- `arp_timeout` (String) ARP timeout is time how long ARP record is kept in ARP table after no packets are received from IP. Value auto equals to the value of arp-timeout in IP/Settings, default is 30s. Can use postfix `ms`, `s`, `m`, `h`, `d` for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.
 - `comment` (String)
 - `disabled` (Boolean)
 - `loop_protect` (String)
 - `loop_protect_disable_time` (String)
 - `loop_protect_send_interval` (String)
+- `loop_protect_status` (Boolean) Loop protect status
 - `mac_address` (String) Static MAC address of the interface. A randomly generated MAC address will be assigned when not specified.
 - `mode` (String) Sets MACVLAN interface mode:
-	private - does not allow communication between MACVLAN instances on the same parent interface.
-	bridge - allows communication between MACVLAN instances on the same parent interface.
+  *	private - does not allow communication between MACVLAN instances on the same parent interface.
+  * bridge - allows communication between MACVLAN instances on the same parent interface.
+- `mtu` (String) Layer3 Maximum transmission unit ('auto', 0 .. 65535). Look for the exact minimum value in the MikroTik documentation
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 - `l2mtu` (Number) Layer2 Maximum transmission unit. [See](https://wiki.mikrotik.com/wiki/Maximum_Transmission_Unit_on_RouterBoards).
+- `running` (Boolean)
 
 ## Import
 Import is supported using the following syntax:
@@ -50,4 +53,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/interface/macvlan get [print show-ids]]
 terraform import routeros_interface_macvlan.test "*0"
+#Or you can import a resource using one of its attributes
+terraform import routeros_interface_macvlan.test "name=xxx"
 ```

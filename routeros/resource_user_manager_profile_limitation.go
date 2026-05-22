@@ -27,7 +27,7 @@ func ResourceUserManagerProfileLimitation() *schema.Resource {
 			Optional:         true,
 			Default:          "0s",
 			Description:      "Time of the day when the limitation should take place.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"limitation": {
 			Type:        schema.TypeString,
@@ -44,7 +44,7 @@ func ResourceUserManagerProfileLimitation() *schema.Resource {
 			Optional:         true,
 			Default:          "23h59m59s",
 			Description:      "Time of the day when the limitation should end.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"weekdays": {
 			Type:     schema.TypeSet,
@@ -65,7 +65,7 @@ func ResourceUserManagerProfileLimitation() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

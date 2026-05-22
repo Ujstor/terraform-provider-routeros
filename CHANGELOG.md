@@ -1,3 +1,682 @@
+## [1.100.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.99.1...v1.100.0) (2026-03-13)
+
+### Features
+
+* **routing-id:** Add new resource `routeros_routing_id`
+
+## [1.99.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.99.0...v1.99.1) (2026-03-08)
+
+### Bug Fixes
+
+* **ipsec:** add IPSec missing algorithms ([3600b74](https://github.com/terraform-routeros/terraform-provider-routeros/commit/3600b744274239c8a19434f3538a04130bf79a38))
+
+## [1.99.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.98.0...v1.99.0) (2026-01-21)
+
+### Features
+
+* **helpers:** Add a helper to compare values specified in bytes ([5f711f4](https://github.com/terraform-routeros/terraform-provider-routeros/commit/5f711f48173f8fef9f9709462ff76af881778681))
+
+### Bug Fixes
+
+* **container-config:** Add drift to the `ram_high` attribute ([f5cd755](https://github.com/terraform-routeros/terraform-provider-routeros/commit/f5cd7555fa11165f317172725d1cafe530c7fb10))
+* **timeEqual:** Correct verification parameters ([e2f9696](https://github.com/terraform-routeros/terraform-provider-routeros/commit/e2f969686e89ac4e8fdb51c99d07d9c78341d5f9))
+
+## [1.98.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.97.0...v1.98.0) (2025-12-08)
+
+### Features
+
+* **traffic-flow:** Add new resources around traffic flow ([07b839e](https://github.com/terraform-routeros/terraform-provider-routeros/commit/07b839e95b72f6d6c47206688ab9e882488d6ecd)), closes [#890](https://github.com/terraform-routeros/terraform-provider-routeros/issues/890)
+
+## [1.97.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.96.0...v1.97.0) (2025-12-03)
+
+### Features
+
+* **import:** Add import by resource identity ([bb91838](https://github.com/terraform-routeros/terraform-provider-routeros/commit/bb9183896be818adf467e29cdf839173a39a590f)), closes [#751](https://github.com/terraform-routeros/terraform-provider-routeros/issues/751) [#887](https://github.com/terraform-routeros/terraform-provider-routeros/issues/887)
+
+## [1.96.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.95.0...v1.96.0) (2025-12-02)
+
+### Features
+
+* **bgp-vpn:** Add new resource `routeros_routing_bgp_vpn` ([97a8755](https://github.com/terraform-routeros/terraform-provider-routeros/commit/97a8755cd4b7a70e440c12f07d80ff973370d2da)), closes [#884](https://github.com/terraform-routeros/terraform-provider-routeros/issues/884)
+
+### Bug Fixes
+
+* **CRS:** Add lost attributes ([ce50482](https://github.com/terraform-routeros/terraform-provider-routeros/commit/ce50482e0ddeb8d7ff62215bf77cfd7ee7b66b60))
+
+## [1.95.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.94.0...v1.95.0) (2025-12-01)
+
+### Features
+
+* **CRS:** Add new resource `routeros_interface_ethernet_switch_crs_vlan` ([83672bb](https://github.com/terraform-routeros/terraform-provider-routeros/commit/83672bba634efb90e74f4cac7cf643b2dfa7aded)), closes [#873](https://github.com/terraform-routeros/terraform-provider-routeros/issues/873)
+
+### Bug Fixes
+
+* **ip-cloud:** Fix the names of skipped attributes ([863f474](https://github.com/terraform-routeros/terraform-provider-routeros/commit/863f4746052be622e360ec6a20ee8cbd65dbf1bd)), closes [#879](https://github.com/terraform-routeros/terraform-provider-routeros/issues/879)
+
+## [1.94.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.93.0...v1.94.0) (2025-11-28)
+
+### Features
+
+* **CRS:** Add resources to support the switch in CRS1xx and CRS2xx series devices ([5b1cd8e](https://github.com/terraform-routeros/terraform-provider-routeros/commit/5b1cd8e57741f802b8685924846b6948539c6c1c))
+
+### Bug Fixes
+
+* **CRS:** Add missing attribute ([c5ebaf5](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c5ebaf5b6a84a6a46b2aeb2fc22c1b8b13c02705))
+
+## [1.93.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.92.1...v1.93.0) (2025-11-27)
+
+### Features
+
+* **tools:** Add a router configuration importer ([5c10e4a](https://github.com/terraform-routeros/terraform-provider-routeros/commit/5c10e4a2b4db62af848db4ee8e19784c503a84db))
+
+### Bug Fixes
+
+* **file:** Permission denied for existing files ([f08077c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/f08077cc31dfdbed6d16f3d621a0cb69caf26944)), closes [#812](https://github.com/terraform-routeros/terraform-provider-routeros/issues/812)
+* Missing attribute from various places ([badf405](https://github.com/terraform-routeros/terraform-provider-routeros/commit/badf405f161305006a62a2684ac4899e2fdee646)), closes [#860](https://github.com/terraform-routeros/terraform-provider-routeros/issues/860)
+
+## [1.92.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.92.0...v1.92.1) (2025-11-18)
+
+### Bug Fixes
+
+* routeros_interface_macvlan add missing attributes ([#865](https://github.com/terraform-routeros/terraform-provider-routeros/issues/865)) ([5b21944](https://github.com/terraform-routeros/terraform-provider-routeros/commit/5b21944a2ff183e8029b63ef468493bbcf1fa0ad))
+
+## [1.92.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.91.0...v1.92.0) (2025-11-18)
+
+### Features
+
+* Add attributes to resouce ip_dhcp_server,interface_vlan … ([#861](https://github.com/terraform-routeros/terraform-provider-routeros/issues/861)) ([a88d0e1](https://github.com/terraform-routeros/terraform-provider-routeros/commit/a88d0e1ce67ca8ca3594fdacb1b710f5f01a64ed))
+
+## [1.91.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.90.0...v1.91.0) (2025-11-10)
+
+### Features
+
+* **devcontainer:** add initial setup ([b4f9922](https://github.com/terraform-routeros/terraform-provider-routeros/commit/b4f992205736fee359f057b357f9c66cee3aa23f))
+
+## [1.90.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.89.0...v1.90.0) (2025-11-01)
+
+### Features
+
+* **ip nat-pmp:** add examples ([174f0d1](https://github.com/terraform-routeros/terraform-provider-routeros/commit/174f0d158ec28ade47069ffe4fefad5198f5ba8f))
+* **ip nat-pmp:** add resources ([3eaf59b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/3eaf59b41dd56a20e2c09c0fa27d3083b95a4fff))
+* **ospf area range:** Add new resource `routeros_routing_ospf_area_range` ([a336bd3](https://github.com/terraform-routeros/terraform-provider-routeros/commit/a336bd373908ac9f977a5462245470660f085cfa)), closes [#841](https://github.com/terraform-routeros/terraform-provider-routeros/issues/841)
+* update routeros_interface_ethernet to ROS 7.20 ([87dcd1f](https://github.com/terraform-routeros/terraform-provider-routeros/commit/87dcd1fb7b079f42908fe5d84320fce3aa538263))
+* update routeros_ip_firewall_connection_tracking to ROS 7.20 ([d2bc43c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/d2bc43c74b8bf6b5375cceedd8fb4b53e8a86e1c))
+* update routeros_system_user_sshkeys to ROS 7.20 ([2f28d7b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/2f28d7b5f94aa6b634db1d717e6c38ea4cb4dc27))
+
+### Bug Fixes
+
+* **container:** Add missing attributes ([9b78f48](https://github.com/terraform-routeros/terraform-provider-routeros/commit/9b78f48e12a4d681b3e114568a873742caa31aed)), closes [#839](https://github.com/terraform-routeros/terraform-provider-routeros/issues/839)
+* **contaner envs:** Change attribute `name` to `list` ([e004f90](https://github.com/terraform-routeros/terraform-provider-routeros/commit/e004f90339deeeb691b7c5cdbf41f64689652cdb)), closes [#856](https://github.com/terraform-routeros/terraform-provider-routeros/issues/856)
+* **interface l2tp client:** Add a new attribute `random_source_port` ([fc1c511](https://github.com/terraform-routeros/terraform-provider-routeros/commit/fc1c5119dcbb3335b5b329ef273d2b84b240367f)), closes [#836](https://github.com/terraform-routeros/terraform-provider-routeros/issues/836)
+* **ip nat-pmp interfaces:** fix property name ([46f95cf](https://github.com/terraform-routeros/terraform-provider-routeros/commit/46f95cf80d07679b5193d4dcc83b61a9cd0a1e19))
+* **ip nat-pmp:** set min version for tests ([fa74e8a](https://github.com/terraform-routeros/terraform-provider-routeros/commit/fa74e8a5dbb3a4560f2e0f2b3d76d8bbba0e5dcf))
+* **ip upnp:** typos ([fca8ff7](https://github.com/terraform-routeros/terraform-provider-routeros/commit/fca8ff7c8687513df7cf35db37df1121a1204348))
+* **ospf interface template:** Add a new attribute `use-bfd` ([5a9b850](https://github.com/terraform-routeros/terraform-provider-routeros/commit/5a9b850b3dba817603356691d84e0af4972e9b0c)), closes [#837](https://github.com/terraform-routeros/terraform-provider-routeros/issues/837)
+* **pppoe client:** Add a new attribute `host-uniq` ([01379db](https://github.com/terraform-routeros/terraform-provider-routeros/commit/01379dbb56740dfcfd4a16b13e418008bc72b00f)), closes [#846](https://github.com/terraform-routeros/terraform-provider-routeros/issues/846)
+
+## [1.89.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.88.1...v1.89.0) (2025-10-15)
+
+### Features
+
+* Add support for EVPN-related resources ([bc250cb](https://github.com/terraform-routeros/terraform-provider-routeros/commit/bc250cbcc50eb1bcfcf49e587dbf0ccf7054a55c)), closes [#825](https://github.com/terraform-routeros/terraform-provider-routeros/issues/825)
+* **bfd:** Add new resource `routeros_routing_bfd_configuration` ([2d88357](https://github.com/terraform-routeros/terraform-provider-routeros/commit/2d88357667e8898cd2d5bba45b4d4abd4e77e061)), closes [#829](https://github.com/terraform-routeros/terraform-provider-routeros/issues/829)
+* Update `routeros_container` to ROS 7.20 ([8f10b7e](https://github.com/terraform-routeros/terraform-provider-routeros/commit/8f10b7ec13a01538bb85ac8549cd6d5dcebf41fa))
+* Update `routeros_dhcp_server_network` to ROS 7.20 ([489e7e0](https://github.com/terraform-routeros/terraform-provider-routeros/commit/489e7e04f35681ab748e48b75fee21bd9514ec0d))
+* Update `routeros_interface_veth` to ROS 7.20 ([d90e281](https://github.com/terraform-routeros/terraform-provider-routeros/commit/d90e28154a9518b2f6ce6752be531b0cd7e20de9)), closes [#826](https://github.com/terraform-routeros/terraform-provider-routeros/issues/826)
+* Update `routeros_interface_vrrp` to ROS 7.20 ([0065b69](https://github.com/terraform-routeros/terraform-provider-routeros/commit/0065b69ef3b141abcd7b0766971621f141da30b5))
+* Update `routeros_interface_vxlan` to ROS 7.20 ([638e781](https://github.com/terraform-routeros/terraform-provider-routeros/commit/638e781630ed41e977e931e309e04253c28f8903))
+* Update `routeros_ip_dhcp_client` to ROS 7.20 ([8e2f838](https://github.com/terraform-routeros/terraform-provider-routeros/commit/8e2f8381837934961a9646b67ca51bed56f407f8))
+* Update `routeros_ip_firewall_connection_tracking` to ROS 7.20 ([1b3c77d](https://github.com/terraform-routeros/terraform-provider-routeros/commit/1b3c77d8181ad5746af1202b51a04a849c150194))
+* Update `routeros_ip_firewall_nat` to ROS 7.20 ([ce43460](https://github.com/terraform-routeros/terraform-provider-routeros/commit/ce43460b5e13aeb0b2ae3709e4c5fbeffcf03bdf))
+* Update `routeros_ipv6_dhcp_client` to ROS 7.20 ([f91acba](https://github.com/terraform-routeros/terraform-provider-routeros/commit/f91acba91e82e3ef57fd2eaf23f4cc1936405d0e))
+* Update `routeros_ipv6_dhcp_server` to ROS 7.20 ([f11a08b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/f11a08b2258043877db8c0c4bfd3291e1272a57a))
+* Update `routeros_ppp_profile` to ROS 7.20 ([bacdbfe](https://github.com/terraform-routeros/terraform-provider-routeros/commit/bacdbfe4eb44f96bde84ef24d318137dc85f5e4c))
+* Update `routeros_radius` to ROS 7.20 ([42a8c7e](https://github.com/terraform-routeros/terraform-provider-routeros/commit/42a8c7e1b523e6dbea404bff38b8255785c9ce38))
+* Update `routeros_system_logging_action` to ROS 7.20 ([8d4543f](https://github.com/terraform-routeros/terraform-provider-routeros/commit/8d4543fd78edf4fae2cf411d91ad384f885171dc))
+* Update `routeros_tool_netwatch` to ROS 7.20 ([837ebab](https://github.com/terraform-routeros/terraform-provider-routeros/commit/837ebab5a5ae206a3c46b920423b0b17a389cf40))
+* Update `routeros_wifi_channel` to ROS 7.20 ([11ef93c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/11ef93c8587aaf65bdb59296e7fd081f6d6a88e9))
+* Update `routeros_wifi_configuration` to ROS 7.20 ([0a1614f](https://github.com/terraform-routeros/terraform-provider-routeros/commit/0a1614ff664f209cb882fd6507b783f544014770))
+* Update `routeros_wifi` to ROS 7.20 ([61e821f](https://github.com/terraform-routeros/terraform-provider-routeros/commit/61e821f87dea7e4d5d3b403825551f1a30028b6e))
+
+### Bug Fixes
+
+* **capsman_interface:** Added processing of the `configuration.config` parameter and an extended resource import function ([e18ca7a](https://github.com/terraform-routeros/terraform-provider-routeros/commit/e18ca7a6bf25e8808897b54f8b801792da484c4b)), closes [#828](https://github.com/terraform-routeros/terraform-provider-routeros/issues/828)
+
+## [1.88.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.88.0...v1.88.1) (2025-10-14)
+
+### Bug Fixes
+
+* **cloud:** Missing fields at the `routeros_ip_cloud resource` ([ada8ea0](https://github.com/terraform-routeros/terraform-provider-routeros/commit/ada8ea0a750366dbfc2f0a98a8ffcef9dcb476c4)), closes [#820](https://github.com/terraform-routeros/terraform-provider-routeros/issues/820)
+
+## [1.88.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.87.0...v1.88.0) (2025-09-26)
+
+### Features
+
+* **firewall:** Add new resource `routeros_ip_firewall_layer7_protocol` ([6e49323](https://github.com/terraform-routeros/terraform-provider-routeros/commit/6e49323b5c9fe12f164e7d8e45873a6e4aab6cc0)), closes [#817](https://github.com/terraform-routeros/terraform-provider-routeros/issues/817)
+
+## [1.87.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.86.3...v1.87.0) (2025-09-25)
+
+### Features
+
+* **detect-internet:** Add new resource `routeros_interface_detect_internet` ([92aaa08](https://github.com/terraform-routeros/terraform-provider-routeros/commit/92aaa0832a95a55cc4d3b9fb9dfcc410d09d4b95)), closes [#808](https://github.com/terraform-routeros/terraform-provider-routeros/issues/808)
+
+### Bug Fixes
+
+* **ipv6-firewall:** Wrong allowed values for `reject_with` field ([392ea04](https://github.com/terraform-routeros/terraform-provider-routeros/commit/392ea04e6e4894d105e043c54d9e8e4272c306ba)), closes [#810](https://github.com/terraform-routeros/terraform-provider-routeros/issues/810)
+
+## [1.87.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.86.3...v1.87.0) (2025-09-25)
+
+### Features
+
+* **detect-internet:** Add new resource `routeros_interface_detect_internet` ([92aaa08](https://github.com/terraform-routeros/terraform-provider-routeros/commit/92aaa0832a95a55cc4d3b9fb9dfcc410d09d4b95)), closes [#808](https://github.com/terraform-routeros/terraform-provider-routeros/issues/808)
+
+### Bug Fixes
+
+* **ipv6-firewall:** Wrong allowed values for `reject_with` field ([392ea04](https://github.com/terraform-routeros/terraform-provider-routeros/commit/392ea04e6e4894d105e043c54d9e8e4272c306ba)), closes [#810](https://github.com/terraform-routeros/terraform-provider-routeros/issues/810)
+
+## [1.86.3](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.86.2...v1.86.3) (2025-08-26)
+
+### Bug Fixes
+
+* **interface_veth:** Add support for multiple addresses on the interface ([c6a656f](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c6a656facc05a34f4cbbbb2fbba320e465cdfdd0)), closes [#804](https://github.com/terraform-routeros/terraform-provider-routeros/issues/804)
+* **wireless:** Support 2ghz-g/n band specification ([1647d25](https://github.com/terraform-routeros/terraform-provider-routeros/commit/1647d2574b8bfaf02598dde26ab470233409c8f0))
+
+## [1.86.2](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.86.1...v1.86.2) (2025-08-04)
+
+### Bug Fixes
+
+* **container:** Remove mutually exclusive attributes ([d879a0c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/d879a0c69b415a2e0ecc01071224f57555dba0de)), closes [#793](https://github.com/terraform-routeros/terraform-provider-routeros/issues/793)
+
+## [1.86.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.86.0...v1.86.1) (2025-08-01)
+
+### Bug Fixes
+
+* **container:** Add a reaction to the start/stop of a container from outside TF ([c46d5e6](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c46d5e61a40234a72e57f16e992078cd33ed10d5)), closes [#793](https://github.com/terraform-routeros/terraform-provider-routeros/issues/793)
+
+## [1.86.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.85.4...v1.86.0) (2025-07-27)
+
+### Features
+
+* implement RouterOS DHCP server option matcher resource ([d459e68](https://github.com/terraform-routeros/terraform-provider-routeros/commit/d459e6891e325f320975213af72ae4971ec1f765))
+* implement RouterOS TFTP resource ([2b98b84](https://github.com/terraform-routeros/terraform-provider-routeros/commit/2b98b8451f7fd5ebe3e03b4fcf338138182c52a5))
+* implement RouterOS TFTP settings resource ([4533151](https://github.com/terraform-routeros/terraform-provider-routeros/commit/4533151c59044db366f8afe4bbc2d17da4fdb5c2))
+* **ip_dns_forwarders:** Add new resource `routeros_ip_dns_forwarders` ([48be482](https://github.com/terraform-routeros/terraform-provider-routeros/commit/48be482cb6f562ae156404f8755c3f8aa4fb3778)), closes [#778](https://github.com/terraform-routeros/terraform-provider-routeros/issues/778)
+* **routing_igmp_proxy_interface:** Add support for IGMP Proxy ([4db8ffa](https://github.com/terraform-routeros/terraform-provider-routeros/commit/4db8ffad0d8233241cfad4b9321838c811b6e3a7)), closes [#773](https://github.com/terraform-routeros/terraform-provider-routeros/issues/773)
+
+### Bug Fixes
+
+* `last_modified` missing on `routeros_files` datasource ([ffa72d3](https://github.com/terraform-routeros/terraform-provider-routeros/commit/ffa72d354291d50baef5ea5cf1ba0a0b70a6773e)), closes [#790](https://github.com/terraform-routeros/terraform-provider-routeros/issues/790)
+* **system:** Add missing default_mount_point_template attribute ([5e5bc6e](https://github.com/terraform-routeros/terraform-provider-routeros/commit/5e5bc6ee37efb8e0fedfa25a5940841cd0a4fdeb))
+* **tool_email:** Add new fields ([c15047a](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c15047a3d57d60a3de891d8ad7fdaeb9f1164ee0)), closes [#779](https://github.com/terraform-routeros/terraform-provider-routeros/issues/779)
+
+## [1.85.4](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.85.3...v1.85.4) (2025-07-25)
+
+### Bug Fixes
+
+* **address-list:** "context deadline exceeded" when working with firewall address-lists ([b450160](https://github.com/terraform-routeros/terraform-provider-routeros/commit/b450160ba65275aaad91815e71a5030ca29b61f6)), closes [#772](https://github.com/terraform-routeros/terraform-provider-routeros/issues/772)
+* routeros_ipv6_nd_prefix data source schema is missing "invalid" field ([e76a987](https://github.com/terraform-routeros/terraform-provider-routeros/commit/e76a98774da428aa27bb968c674b0de41983264f))
+
+## [1.85.3](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.85.2...v1.85.3) (2025-06-06)
+
+### Bug Fixes
+
+* **bgp:** Add new filtering attributes ([bb8878d](https://github.com/terraform-routeros/terraform-provider-routeros/commit/bb8878d02ed043ebd1980bff125782ca2bd4999b))
+* **interface-bonding:** Add a `lacp_mode` attribute ([684e81b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/684e81ba2e2f1e44b04d49297a6edcd5b5aeb5f7))
+* **interface-gre6:** Correct local IPv6 address validation ([30da790](https://github.com/terraform-routeros/terraform-provider-routeros/commit/30da790bfc372dc5258853ecd3c281e68a08e13e)), closes [#764](https://github.com/terraform-routeros/terraform-provider-routeros/issues/764)
+* **ip-dhcp-client:** Correct the `default_route_tables` attribute type to TypeSet ([93fe11c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/93fe11c04a4ba27e0b50c45aec42c721aa293ff3))
+* **ip-dhcp-server:** Add an `use_reconfigure` attribute ([db9bc30](https://github.com/terraform-routeros/terraform-provider-routeros/commit/db9bc308886e7cba71dbd037bda2bcf9c3c0db25)), closes [#749](https://github.com/terraform-routeros/terraform-provider-routeros/issues/749)
+* **ipv6-dhcp-client:** Add new attributes ([b8a1ff8](https://github.com/terraform-routeros/terraform-provider-routeros/commit/b8a1ff8b097b99cd0e5ed1ee738bde42563862fd))
+* **tool-sniffer:** Add a `max_packet_size` attribute ([c0d06e0](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c0d06e07c518342724ebfc668862e974e90d868f))
+* **wifi-channel:** Add a `reselect-time` attribute ([28184c9](https://github.com/terraform-routeros/terraform-provider-routeros/commit/28184c91be5c50c9f9256d34f0c6858145c6c507))
+* **wifi-datapath:** Add a `traffic_processing` attribute ([1de9d37](https://github.com/terraform-routeros/terraform-provider-routeros/commit/1de9d378b20bcd25adfcb3a32921a4407aa496f4))
+
+## [1.85.2](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.85.1...v1.85.2) (2025-06-04)
+
+### Bug Fixes
+
+* **bridge_port:** Add new attributes (ROS 7.19) ([98c0dbf](https://github.com/terraform-routeros/terraform-provider-routeros/commit/98c0dbf479398a6f94c56530ddc05953d1123ba1))
+* **bridge_port:** Skip counters ([3839756](https://github.com/terraform-routeros/terraform-provider-routeros/commit/38397561413974fc5616053ba8bc3de31fc50201))
+* **bridge-mlag:** Add missing attributes to routeros_bridge_mlag ([47e1d26](https://github.com/terraform-routeros/terraform-provider-routeros/commit/47e1d267227a45bbda5ff666da30944e40737a85)), closes [#755](https://github.com/terraform-routeros/terraform-provider-routeros/issues/755)
+* **ip-service:** routeros_ip_service lead to Warning: Field 'proto' not found in the schema, Warning: Field 'dynamic' not found in the schema ([85dff9b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/85dff9b58859a518d556ec2e015c613e5d2593c1)), closes [#756](https://github.com/terraform-routeros/terraform-provider-routeros/issues/756)
+
+## [1.85.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.85.0...v1.85.1) (2025-05-27)
+
+### Bug Fixes
+
+* **dhcp-client:** Add new attributes ([#753](https://github.com/terraform-routeros/terraform-provider-routeros/issues/753)) ([b2b8db0](https://github.com/terraform-routeros/terraform-provider-routeros/commit/b2b8db0b74fc1bc42a241fc7a6bc05137048bdb4)), closes [#749](https://github.com/terraform-routeros/terraform-provider-routeros/issues/749)
+* **firewall-v4:** Add Set/Unset attributes ([9886d39](https://github.com/terraform-routeros/terraform-provider-routeros/commit/9886d39b400b83521244f976b20fd2eb2da1844d)), closes [#748](https://github.com/terraform-routeros/terraform-provider-routeros/issues/748)
+* **wg-peers:** Fix drift attributes ([ba95824](https://github.com/terraform-routeros/terraform-provider-routeros/commit/ba95824334b192768be33c5337be9e8ff104f04c)), closes [#750](https://github.com/terraform-routeros/terraform-provider-routeros/issues/750)
+
+## [1.85.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.84.0...v1.85.0) (2025-05-15)
+
+### Features
+
+* **GRE v6:** Add new resource `routeros_interface_gre6` ([034cd10](https://github.com/terraform-routeros/terraform-provider-routeros/commit/034cd10e11cc6bb2f7ac5b2ff1158b8dfec55e60)), closes [#737](https://github.com/terraform-routeros/terraform-provider-routeros/issues/737)
+
+### Bug Fixes
+
+* Fix IPSec resource input validation ([72063f5](https://github.com/terraform-routeros/terraform-provider-routeros/commit/72063f53af6a8108719d8137ab3284439d6e3beb))
+* **logging_action changed:**  Update for ROS 7.18 ([129f5fe](https://github.com/terraform-routeros/terraform-provider-routeros/commit/129f5feef2c349938cc09da5c952dca354aaf923)), closes [#735](https://github.com/terraform-routeros/terraform-provider-routeros/issues/735)
+
+## [1.84.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.83.1...v1.84.0) (2025-05-06)
+
+### Features
+
+* Implement duration check ([bf1a21d](https://github.com/terraform-routeros/terraform-provider-routeros/commit/bf1a21d89a98389a040bf296a3f261bfc365aae4))
+* **ipv6:** Add new resource `routeros_ipv6_nd_prefix` ([476a70b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/476a70bf59079c5c79582704ed648f40b9c10c9e)), closes [#730](https://github.com/terraform-routeros/terraform-provider-routeros/issues/730)
+
+## [1.83.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.83.0...v1.83.1) (2025-04-28)
+
+### Bug Fixes
+
+* **radius:** Remove server IP address validator ([6c486dd](https://github.com/terraform-routeros/terraform-provider-routeros/commit/6c486ddfaf71ee36271445d3b90adf3a6c8acafa)), closes [#726](https://github.com/terraform-routeros/terraform-provider-routeros/issues/726)
+* **sshkey:** Add `ForceNew` for the `key` attribute ([23f7c82](https://github.com/terraform-routeros/terraform-provider-routeros/commit/23f7c824b8069ce7fe13844aa0dab48fe7b1bb3c)), closes [#725](https://github.com/terraform-routeros/terraform-provider-routeros/issues/725)
+
+## [1.83.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.82.0...v1.83.0) (2025-04-16)
+
+### Features
+
+* **script:** Add a script start attribute ([e379996](https://github.com/terraform-routeros/terraform-provider-routeros/commit/e3799964205e4fd1623f7576604b7232ec454708))
+
+## [1.82.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.81.2...v1.82.0) (2025-04-15)
+
+### Features
+
+* **queue:** Add new resource `routeros_queue_tree` ([54fe8a2](https://github.com/terraform-routeros/terraform-provider-routeros/commit/54fe8a274be5ea3ab89d28c6d1dbd624af85650a))
+
+## [1.81.2](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.81.1...v1.81.2) (2025-04-12)
+
+### Bug Fixes
+
+* **ospf_area:** NSSA Translator/Translate Schema Error ([1348d32](https://github.com/terraform-routeros/terraform-provider-routeros/commit/1348d32589d3b508faa8e433ad3d925bb11cc012)), closes [#718](https://github.com/terraform-routeros/terraform-provider-routeros/issues/718)
+* routeros_interfaces data source schema is missing "inactive" field ([aeb11b4](https://github.com/terraform-routeros/terraform-provider-routeros/commit/aeb11b4d599a78c2837016bca943fd92a126e93a))
+
+## [1.81.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.81.0...v1.81.1) (2025-04-07)
+
+### Bug Fixes
+
+* Resource `routeros_ip_route` schema is missing 2 fields ([c01edad](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c01edad8a49130f154b1c9d5431bbe53415378f8)), closes [#712](https://github.com/terraform-routeros/terraform-provider-routeros/issues/712)
+
+## [1.81.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.80.0...v1.81.0) (2025-03-30)
+
+### Features
+
+* **ipv6_firewall_filter:** add action fasttrack-connection ([e0ca80c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/e0ca80c93cedf8475f3816b3c52496d4ac3293f5))
+
+## [1.80.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.79.0...v1.80.0) (2025-03-21)
+
+### Features
+
+* **ip-settings:** Add new resource `routeros_ip_settings` ([390f577](https://github.com/terraform-routeros/terraform-provider-routeros/commit/390f5775059a77eb7eea3e9b778251cffcf68275)), closes [#704](https://github.com/terraform-routeros/terraform-provider-routeros/issues/704)
+
+### Bug Fixes
+
+* routeros_ip_hotspot_walled_garden_ip action validation may be incorrect ([3529224](https://github.com/terraform-routeros/terraform-provider-routeros/commit/3529224f637dcdaf713fa55529df2b84d7467a8d)), closes [#708](https://github.com/terraform-routeros/terraform-provider-routeros/issues/708)
+
+## [1.79.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.78.0...v1.79.0) (2025-03-18)
+
+### Features
+
+* **ip:** Add /ip/smb resource ([d05f4c0](https://github.com/terraform-routeros/terraform-provider-routeros/commit/d05f4c0a2c0b35e17ccca041047d5f0ce10d0b28))
+* **system:** Add `/disk/settings` resource ([#697](https://github.com/terraform-routeros/terraform-provider-routeros/issues/697)) ([4193991](https://github.com/terraform-routeros/terraform-provider-routeros/commit/4193991203e54079d1dd8e0d1874965313163cc5))
+* **tool:** Add /tool/graphing resources ([722108d](https://github.com/terraform-routeros/terraform-provider-routeros/commit/722108d2e16cab7e0cbcef7898899310c15f4113))
+* **tool:** Add /tool/mac-server/ping resource ([31f9c50](https://github.com/terraform-routeros/terraform-provider-routeros/commit/31f9c509cfea8bf18dd852521c7f8f1297ef3c46))
+
+### Bug Fixes
+
+* **hotspot:** Add "radius_location_id" attribute to routeros_ip_hotspot_profile resource ([6d2dcbc](https://github.com/terraform-routeros/terraform-provider-routeros/commit/6d2dcbc768b09d68f0deb858cb39eba38cbdbcc4)), closes [#701](https://github.com/terraform-routeros/terraform-provider-routeros/issues/701)
+
+## [1.78.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.77.3...v1.78.0) (2025-03-17)
+
+### Features
+
+* **system:** Add /system/note resource ([6e588b3](https://github.com/terraform-routeros/terraform-provider-routeros/commit/6e588b319ecea978178cfc3fdc10af2dd74f7b1f))
+
+## [1.77.3](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.77.2...v1.77.3) (2025-03-12)
+
+### Bug Fixes
+
+* **ethernet:** Ethernet `advertise` do not allow multiple values ([73823e5](https://github.com/terraform-routeros/terraform-provider-routeros/commit/73823e50db10cab5570d5dfac7d7fe1da7bee5d5)), closes [#692](https://github.com/terraform-routeros/terraform-provider-routeros/issues/692)
+* **ipv6-settings:** Add new attributes (ROS 7.18) ([32c8820](https://github.com/terraform-routeros/terraform-provider-routeros/commit/32c882048e875745e7f2c7105618933ce0d1b7f0))
+* **ipv6-settings:** Skip metrics ([a8b3b33](https://github.com/terraform-routeros/terraform-provider-routeros/commit/a8b3b3388176de5189206a681516d96be28d1a3c))
+
+## [1.77.2](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.77.1...v1.77.2) (2025-03-05)
+
+### Bug Fixes
+
+* **ip-cloud:** IP Cloud ddns_enabled 7.17 and newer ([d341c29](https://github.com/terraform-routeros/terraform-provider-routeros/commit/d341c29a2f400319b5dfc6891e8acbd46a0d312f)), closes [#686](https://github.com/terraform-routeros/terraform-provider-routeros/issues/686)
+* **ipv6-dhcp-client:** Add a new attribute (ROS 7.18) ([bcbd262](https://github.com/terraform-routeros/terraform-provider-routeros/commit/bcbd26240fbaf461d51e33bd57d8f889c23fe2e5))
+* **ipv6-dhcp-client:** replace Default parameter with DiffSuppressFunc: AlwaysPresentNotUserProvided ([d5aad3b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/d5aad3b66b03c01340295b151ca76ce927e5b26d))
+
+## [1.77.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.77.0...v1.77.1) (2025-03-04)
+
+### Bug Fixes
+
+* **bandwidth-server:** Add new attributes (ROS 7.18) ([83d4bda](https://github.com/terraform-routeros/terraform-provider-routeros/commit/83d4bda0f738d404af67d92ee565e7826a08b77e)), closes [#683](https://github.com/terraform-routeros/terraform-provider-routeros/issues/683)
+* **dhcp-client:** Add a new attribute (ROS 7.18) ([253483c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/253483cadea0cb9f7781e3c5727777d46792aa3a)), closes [#684](https://github.com/terraform-routeros/terraform-provider-routeros/issues/684)
+
+## [1.77.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.76.7...v1.77.0) (2025-03-02)
+
+### Features
+
+* **system:** Add user ssh-keys resource ([7c15569](https://github.com/terraform-routeros/terraform-provider-routeros/commit/7c15569b364162a1b1f37a7212ae29aa73a5c3d3))
+
+### Bug Fixes
+
+* **container:** Importing containers and container mounts (inconsistency and force recreate) ([af2585a](https://github.com/terraform-routeros/terraform-provider-routeros/commit/af2585a427479967aaf183980667f656455149ef)), closes [#652](https://github.com/terraform-routeros/terraform-provider-routeros/issues/652)
+* **dhcp-server:** 'Bad Request', details: 'unknown parameter src-address' ([3eb7c44](https://github.com/terraform-routeros/terraform-provider-routeros/commit/3eb7c44b07576a09bf4a164b7c46909c237c8dc1)), closes [#679](https://github.com/terraform-routeros/terraform-provider-routeros/issues/679)
+* minutes short name is lower m ([0379a1a](https://github.com/terraform-routeros/terraform-provider-routeros/commit/0379a1ac2c491683d0401ef1ac8d4241807c178f))
+
+## [1.76.7](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.76.6...v1.76.7) (2025-02-28)
+
+### Bug Fixes
+
+* **bridge:** Add a `dynamic` attribute (ROS 7.18) ([cccee12](https://github.com/terraform-routeros/terraform-provider-routeros/commit/cccee12d85df6dae22e5d671d7a13c14acbb3025)), closes [#671](https://github.com/terraform-routeros/terraform-provider-routeros/issues/671)
+* **ip-pool:** Ignore new computed attributes (ROS 7.18) ([060d96e](https://github.com/terraform-routeros/terraform-provider-routeros/commit/060d96ecb71344797a8b0ee05a37f325bcfb7c99)), closes [#673](https://github.com/terraform-routeros/terraform-provider-routeros/issues/673)
+* **ipv6:** Add a `auto_link_local` attribute (ROS 7.18) ([c162cb0](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c162cb0627f4d8487d33eb9169d85b489336e8a2)), closes [#672](https://github.com/terraform-routeros/terraform-provider-routeros/issues/672)
+* **logging:** Add new attributes (ROS 7.18) ([337bd74](https://github.com/terraform-routeros/terraform-provider-routeros/commit/337bd741f22d3494289471d9d4c6b1e4cd5f0224)), closes [#674](https://github.com/terraform-routeros/terraform-provider-routeros/issues/674)
+* **neighbor-discovery:** Add a `lldp_dcbx` attribute. ([0f3ea69](https://github.com/terraform-routeros/terraform-provider-routeros/commit/0f3ea6902e4e27882bf590a21e00b94b35023a7a)), closes [#670](https://github.com/terraform-routeros/terraform-provider-routeros/issues/670)
+
+## [1.76.6](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.76.5...v1.76.6) (2025-02-19)
+
+### Bug Fixes
+
+* Importing certificate and key without `routeros_file` resource ([8d3374e](https://github.com/terraform-routeros/terraform-provider-routeros/commit/8d3374e74fb2e25983fa58d4ef80dedda823396b)), closes [#660](https://github.com/terraform-routeros/terraform-provider-routeros/issues/660)
+
+## [1.76.5](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.76.4...v1.76.5) (2025-02-17)
+
+### Bug Fixes
+
+* **API:** Error: unknown RouterOS reply word: `!empty` (ROS 7.18) ([e1660aa](https://github.com/terraform-routeros/terraform-provider-routeros/commit/e1660aa3efdaebef3b1526b2af084adc8c75f515)), closes [#661](https://github.com/terraform-routeros/terraform-provider-routeros/issues/661)
+
+## [1.76.4](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.76.3...v1.76.4) (2025-02-16)
+
+### Bug Fixes
+
+* **wifi_security:** ft_mobility_domain is a (hex) string, not an integer ([497e430](https://github.com/terraform-routeros/terraform-provider-routeros/commit/497e4304192979d5f6d25b7220457e16dc3e1344)), closes [#662](https://github.com/terraform-routeros/terraform-provider-routeros/issues/662)
+
+## [1.76.3](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.76.2...v1.76.3) (2025-02-13)
+
+### Bug Fixes
+
+* Modify regex for RouterOS version ([b61d1db](https://github.com/terraform-routeros/terraform-provider-routeros/commit/b61d1db79433895027ae63002311ba062099c251))
+* **routeros_version:** Rename the attribute ([51a4c7c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/51a4c7cbb6b198c53742b382741f74547d67866d)), closes [#658](https://github.com/terraform-routeros/terraform-provider-routeros/issues/658)
+
+## [1.76.2](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.76.1...v1.76.2) (2025-02-12)
+
+### Bug Fixes
+
+* Fix the typo ([fa85c7b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/fa85c7b624735dc618333bb251249d34e8bc5404))
+* **queue:** Fix byte attribute comparison error ([9437e77](https://github.com/terraform-routeros/terraform-provider-routeros/commit/9437e77e8ada48393357a60ddcce4c7f064e6826)), closes [#643](https://github.com/terraform-routeros/terraform-provider-routeros/issues/643)
+
+## [1.76.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.76.0...v1.76.1) (2025-02-11)
+
+### Bug Fixes
+
+* **provider:** Add attribute drift handling between ROS versions ([32141a6](https://github.com/terraform-routeros/terraform-provider-routeros/commit/32141a622f24e903fa3e8601a16498714ac9573d)), closes [#654](https://github.com/terraform-routeros/terraform-provider-routeros/issues/654)
+
+## [1.76.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.75.0...v1.76.0) (2025-02-04)
+
+### Features
+
+* **queue:** Add new resource `routeros_queue_simple` ([b63640c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/b63640ca0dea66e8d7863652508d6fa065f1ef64)), closes [#643](https://github.com/terraform-routeros/terraform-provider-routeros/issues/643)
+* **queue:** Add new resource `routeros_queue_type` ([45aadfb](https://github.com/terraform-routeros/terraform-provider-routeros/commit/45aadfbf6ab6cffc6c960399c9bf584e975e9466)), closes [#643](https://github.com/terraform-routeros/terraform-provider-routeros/issues/643)
+
+### Bug Fixes
+
+* **dhcp:** Update for ROS 7.17 ([9b6a238](https://github.com/terraform-routeros/terraform-provider-routeros/commit/9b6a238b5bb9ceae1dbaeb45215a1fe804f005b8)), closes [#644](https://github.com/terraform-routeros/terraform-provider-routeros/issues/644)
+* Missing fields in the schema with version 7.17.1 ([8199e43](https://github.com/terraform-routeros/terraform-provider-routeros/commit/8199e4339f7e5917c25d28c7028f940a16d52df8)), closes [#650](https://github.com/terraform-routeros/terraform-provider-routeros/issues/650)
+* **w60:** Fix bugs after the first testing ([b1264e7](https://github.com/terraform-routeros/terraform-provider-routeros/commit/b1264e73cdd48d75d4a98e755fe38817eac4d6c9)), closes [#618](https://github.com/terraform-routeros/terraform-provider-routeros/issues/618)
+
+## [1.75.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.74.0...v1.75.0) (2025-01-17)
+
+### Features
+
+* add `resource_interface_sstp_*` resources ([219153c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/219153c1b36a268af396d122c66cde75096ce8ff))
+
+### Bug Fixes
+
+* datasource routeros_interface_bridge_filter ([00c3ad3](https://github.com/terraform-routeros/terraform-provider-routeros/commit/00c3ad3fc59a6e25917d59a958db01e1d83d822d))
+* **ip_dhcp_server_lease:** class_id should be computed ([c11c3c4](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c11c3c462f10ad308f27afb020c49a7f616e68b8))
+* **ipv6_firewall_net:** ipv6_firewall_nat has to_address not to_addresses ([c77d027](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c77d027ff196a8a72e0fee26a8b9b14ebd0089b0))
+* Remove DiffSuppress for `multi_passphrase_group` ([367d5e4](https://github.com/terraform-routeros/terraform-provider-routeros/commit/367d5e47e3e9b1aedfa63b6e5fafc0eb440734ba)), closes [#630](https://github.com/terraform-routeros/terraform-provider-routeros/issues/630)
+
+## [1.74.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.73.0...v1.74.0) (2025-01-03)
+
+### Features
+
+* **l2tp:** Add new resource `routeros_interface_l2tp_client` ([f2d3f9c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/f2d3f9c372774c69f6edb9e55df5699a3117390f)), closes [#629](https://github.com/terraform-routeros/terraform-provider-routeros/issues/629)
+
+### Bug Fixes
+
+* use DiffSuppressFunc: AlwaysPresentNotUserProvided ([931752c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/931752c20b9b5caaec92391457150dbc001786c0))
+
+## [1.73.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.72.0...v1.73.0) (2024-12-30)
+
+### Features
+
+* **wifi:** Add new resource `routeros_wifi_security_multi_passphrase` ([4ef710a](https://github.com/terraform-routeros/terraform-provider-routeros/commit/4ef710a25713aa9b5b6faa15eb164f8f9e152205)), closes [#621](https://github.com/terraform-routeros/terraform-provider-routeros/issues/621)
+* **wifi:** Add new resources `routeros_interface_w60g`, `routeros_interface_w60g_station` ([746a223](https://github.com/terraform-routeros/terraform-provider-routeros/commit/746a2235ed90b76eab38f0a8f8ef375d96cde5c9)), closes [#618](https://github.com/terraform-routeros/terraform-provider-routeros/issues/618)
+
+### Bug Fixes
+
+* **bridge_filter:** Missing field in interface_bridge_filter ([63474c8](https://github.com/terraform-routeros/terraform-provider-routeros/commit/63474c834b520591602299e13ae0f7c783367dc8)), closes [#620](https://github.com/terraform-routeros/terraform-provider-routeros/issues/620)
+* **ip_dhcp_relay:** Field 'dhcp_server_vrf' not found in the schema ([f2f12b0](https://github.com/terraform-routeros/terraform-provider-routeros/commit/f2f12b0603685795097b32aa9c4bb4344e44f200)), closes [#622](https://github.com/terraform-routeros/terraform-provider-routeros/issues/622)
+* **wifi:** Using `5ghz-an` for `routeros_wifi_channel` returns status code `400` ([d603682](https://github.com/terraform-routeros/terraform-provider-routeros/commit/d603682702b60e56f079092b0cb98c1f008f38ea)), closes [#619](https://github.com/terraform-routeros/terraform-provider-routeros/issues/619)
+
+## [1.72.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.71.0...v1.72.0) (2024-12-22)
+
+### Features
+
+* **ipv6:** new resource routeros_ipv6_firewall_mangle ([e6a0c1e](https://github.com/terraform-routeros/terraform-provider-routeros/commit/e6a0c1e663f6a6e0ed447e6d2d46167562afe9a0))
+* **ipv6:** new resource routeros_ipv6_firewall_nat ([03c2587](https://github.com/terraform-routeros/terraform-provider-routeros/commit/03c2587c8be7583ff122fafeb96edfe6be489d35))
+* **pppoe:** Add new resource `routeros_interface_pppoe_server` ([f04afd1](https://github.com/terraform-routeros/terraform-provider-routeros/commit/f04afd1993c22a0010f60d2cd1dbd7150d854f84)), closes [#617](https://github.com/terraform-routeros/terraform-provider-routeros/issues/617)
+
+### Bug Fixes
+
+* **ipv6_dhcp_server_option:** Add Hotspot 2.0 fields ([1d64d8c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/1d64d8c04adf9204bb554da2ec8bec9521203db0)), closes [#605](https://github.com/terraform-routeros/terraform-provider-routeros/issues/605)
+
+## [1.71.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.70.0...v1.71.0) (2024-12-02)
+
+### Features
+
+* Add interface bridge filter ([#608](https://github.com/terraform-routeros/terraform-provider-routeros/issues/608)) ([441f11c](https://github.com/terraform-routeros/terraform-provider-routeros/commit/441f11cc21f0637096f68bc1c22c90afb01dfb08))
+
+### Bug Fixes
+
+* routeros_ipv6_dhcp_client prefix_hint validation issue ([#611](https://github.com/terraform-routeros/terraform-provider-routeros/issues/611)) ([fb51382](https://github.com/terraform-routeros/terraform-provider-routeros/commit/fb51382092de81ad6846c980403a314cc479fbf7)), closes [#609](https://github.com/terraform-routeros/terraform-provider-routeros/issues/609)
+
+## [1.70.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.69.2...v1.70.0) (2024-11-24)
+
+### Features
+
+* **wave2:** Add new resource `routeros_interface_wireless_connect_list` ([10078df](https://github.com/terraform-routeros/terraform-provider-routeros/commit/10078df6c341d20e2d7e94344bafbff224312828)), closes [#605](https://github.com/terraform-routeros/terraform-provider-routeros/issues/605)
+
+## [1.69.2](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.69.1...v1.69.2) (2024-11-21)
+
+### Bug Fixes
+
+* **ds:** warning  Field 'revision' not found in the schema in routeros_system_routerboard datasource ([1b6f86b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/1b6f86b28b5d566dbda32e6f0ed3cf95cacd251c)), closes [#602](https://github.com/terraform-routeros/terraform-provider-routeros/issues/602)
+
+## [1.69.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.69.0...v1.69.1) (2024-11-18)
+
+### Bug Fixes
+
+* **ospf:** Change the “network” attribute ([f057f18](https://github.com/terraform-routeros/terraform-provider-routeros/commit/f057f184608e9de9c08e2f5b773e0ed4f4f740af)), closes [#598](https://github.com/terraform-routeros/terraform-provider-routeros/issues/598)
+
+## [1.69.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.68.0...v1.69.0) (2024-11-14)
+
+### Features
+
+* **ipv6:** Add new resource `routeros_ipv6_settings` ([4410ddc](https://github.com/terraform-routeros/terraform-provider-routeros/commit/4410ddc9941257e9ff58b40d434d7b59b6ea886b)), closes [#596](https://github.com/terraform-routeros/terraform-provider-routeros/issues/596)
+
+## [1.68.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.67.0...v1.68.0) (2024-11-13)
+
+### Features
+
+* **ipv6:** Add new resource `routeros_interface_6to4` ([742e6bd](https://github.com/terraform-routeros/terraform-provider-routeros/commit/742e6bd55fd4682e952bd35a7acece9968951978)), closes [#593](https://github.com/terraform-routeros/terraform-provider-routeros/issues/593)
+
+### Bug Fixes
+
+* **helpers:** Fix PropKeepaliveRw ([32ee5bc](https://github.com/terraform-routeros/terraform-provider-routeros/commit/32ee5bceffdd4c4ed66461ddfc7e469b95068de8))
+* **helpers:** Fix the plan was not empty ([31d420f](https://github.com/terraform-routeros/terraform-provider-routeros/commit/31d420f4f60998830bc860ba1e0f38025cd241d1))
+* **mangle-connection-state:** typo in `established` value ([#595](https://github.com/terraform-routeros/terraform-provider-routeros/issues/595)) ([19c6c97](https://github.com/terraform-routeros/terraform-provider-routeros/commit/19c6c974a9f03f3848e5662ccb73401a72d0f4cf))
+
+## [1.67.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.66.0...v1.67.0) (2024-11-10)
+
+### Features
+
+* **ds:** Add new datasource `routeros_system_routerboard` ([2f78e94](https://github.com/terraform-routeros/terraform-provider-routeros/commit/2f78e94ceaf4c484376a5909159675371f3da90b)), closes [#588](https://github.com/terraform-routeros/terraform-provider-routeros/issues/588)
+* **vxlan:** Add new resource `routeros_interface_vxlan_vteps` ([1e72222](https://github.com/terraform-routeros/terraform-provider-routeros/commit/1e72222b890de8ef8a72d2adad7d46138835a0c8)), closes [#590](https://github.com/terraform-routeros/terraform-provider-routeros/issues/590)
+* **vxlan:** Add new resource `routeros_interface_vxlan` ([7ccb49f](https://github.com/terraform-routeros/terraform-provider-routeros/commit/7ccb49f5418b545afda724f933993e94f134324b))
+
+## [1.66.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.65.1...v1.66.0) (2024-10-11)
+
+### Features
+
+* **ipv6:** Add new resource `routeros_ipv6_dhcp_server_option` ([c224bb1](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c224bb192b090ac553cf67aade61e81aab9db93a))
+* **ipv6:** Add new resource `routeros_ipv6_dhcp_server` ([23ec941](https://github.com/terraform-routeros/terraform-provider-routeros/commit/23ec9414b9c17a6acf483a602ad741135104b012))
+* **ipv6:** Add new resource `routeros_ipv6_pool` ([96d1c48](https://github.com/terraform-routeros/terraform-provider-routeros/commit/96d1c48ed30efe0ff0d36e716bbac84282431e33))
+* **ipv6:** New resource `routeros_ipv6_dhcp_server_option_sets` ([b92458b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/b92458bf79cc9e987beb137df85e40d2b76c436b))
+
+## [1.65.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.65.0...v1.65.1) (2024-10-09)
+
+### Bug Fixes
+
+* **ipsec:** Fix `auth_method` attribute validation ([#582](https://github.com/terraform-routeros/terraform-provider-routeros/issues/582)) ([98516b0](https://github.com/terraform-routeros/terraform-provider-routeros/commit/98516b07f1dbf99b9fa444f95b4a04ed61b5dcec)), closes [#581](https://github.com/terraform-routeros/terraform-provider-routeros/issues/581)
+
+## [1.65.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.64.2...v1.65.0) (2024-10-07)
+
+### Features
+
+* Disable warning output on system resources ([c799f29](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c799f299629fd82c3004dd1903487d694aeffbbf))
+* **ipsec:** Add new resource `routeros_ip_ipsec_identity` ([afdbadb](https://github.com/terraform-routeros/terraform-provider-routeros/commit/afdbadb7297560dc97d07cbd0abe8d1f7fa0fb9f))
+* **ipsec:** Add new resource `routeros_ip_ipsec_key` ([14865b9](https://github.com/terraform-routeros/terraform-provider-routeros/commit/14865b9fa989e79a07a9e46857399cf560208f61))
+* **ipsec:** Add new resource `routeros_ip_ipsec_mode_config` ([ca88a77](https://github.com/terraform-routeros/terraform-provider-routeros/commit/ca88a77f14bd5177938d20930da4ccd515e647fa))
+* **ipsec:** Add new resource `routeros_ip_ipsec_policy_group` ([d4c0817](https://github.com/terraform-routeros/terraform-provider-routeros/commit/d4c0817f6af31a3b5d1fa766bf9c4c415b43aefd))
+* **ipsec:** Add new resource `routeros_ip_ipsec_policy` ([9ba2bf9](https://github.com/terraform-routeros/terraform-provider-routeros/commit/9ba2bf961a0d7dafaf5d778a10f0a2e153f0d666))
+* **ipsec:** Add new resource `routeros_ip_ipsec_profile` ([66aa2f8](https://github.com/terraform-routeros/terraform-provider-routeros/commit/66aa2f8c830a4cfe925a315c36114ded9842264d))
+* **ipsec:** Add new resource `routeros_ip_ipsec_proposal` ([9fee803](https://github.com/terraform-routeros/terraform-provider-routeros/commit/9fee803c5a19ad244d63ff8f052dc6c9de90c47f))
+* **ipsec:** Add new resource `routeros_ip_ipsec_settings` ([7388cae](https://github.com/terraform-routeros/terraform-provider-routeros/commit/7388cae3a5753ef9c0dfbf5c2423497ee9eba838))
+* **ipsec:** New resource `routeros_ip_ipsec_peer` ([7600d45](https://github.com/terraform-routeros/terraform-provider-routeros/commit/7600d457e5e4245c9c743f2f28d42194c2a0f0e8))
+
+### Bug Fixes
+
+* Adding fields to skip for rx and tx on resource_interface_ethernet.go ([#573](https://github.com/terraform-routeros/terraform-provider-routeros/issues/573)) ([1a905f5](https://github.com/terraform-routeros/terraform-provider-routeros/commit/1a905f5e26afbd782bbd9f67c18e49abe6937ea1))
+* **file:** Field 'last_modified' not found in the schema ([#580](https://github.com/terraform-routeros/terraform-provider-routeros/issues/580)) ([cb4635a](https://github.com/terraform-routeros/terraform-provider-routeros/commit/cb4635a97b50b1e33c82622ee3f3a3defe1e6b69)), closes [#579](https://github.com/terraform-routeros/terraform-provider-routeros/issues/579)
+* **ipsec:** Add the lost attributes ([6f61879](https://github.com/terraform-routeros/terraform-provider-routeros/commit/6f61879ef8e84254fbf0a602ec8a09b714bc58be))
+* validation for routeros_wifi_security.wps ([#578](https://github.com/terraform-routeros/terraform-provider-routeros/issues/578)) ([770bfe3](https://github.com/terraform-routeros/terraform-provider-routeros/commit/770bfe37c5708227daa3a891581d86f09c9c4b54))
+* **wireless:** Delete required parameters ([616049e](https://github.com/terraform-routeros/terraform-provider-routeros/commit/616049e04bd351111c7515e801b3e9e229dc3da8))
+* **wireless:** Delete required parameters ([33793fd](https://github.com/terraform-routeros/terraform-provider-routeros/commit/33793fd70aef7580862b577cd6f001cf9d954306))
+
+## [1.64.2](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.64.1...v1.64.2) (2024-09-29)
+
+### Bug Fixes
+
+* Unable to remove routeros_interface_wireless from config ([#571](https://github.com/terraform-routeros/terraform-provider-routeros/issues/571)) ([8990eb0](https://github.com/terraform-routeros/terraform-provider-routeros/commit/8990eb05c63859b0d58be996d7d2a886868ab13a)), closes [#570](https://github.com/terraform-routeros/terraform-provider-routeros/issues/570)
+
+## [1.64.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.64.0...v1.64.1) (2024-09-28)
+
+### Bug Fixes
+
+* **no-release:** Update resource_ipv6_address.go ([#568](https://github.com/terraform-routeros/terraform-provider-routeros/issues/568)) ([587f527](https://github.com/terraform-routeros/terraform-provider-routeros/commit/587f527c532ffabfe404508512ab5b9185f68695))
+* Update resource_ip_address.go ([#569](https://github.com/terraform-routeros/terraform-provider-routeros/issues/569)) ([25a6496](https://github.com/terraform-routeros/terraform-provider-routeros/commit/25a64968c0bb8279f599859af371309fcbca1871))
+
+## [1.64.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.63.1...v1.64.0) (2024-09-27)
+
+### Features
+
+* **wireless:** Add new resource `routeros_interface_wireless_access_list` ([cd82592](https://github.com/terraform-routeros/terraform-provider-routeros/commit/cd825923390b489e41463b71e6ea253286f28c25))
+* **wireless:** Add new resource `routeros_interface_wireless_security_profiles` ([ef40fd2](https://github.com/terraform-routeros/terraform-provider-routeros/commit/ef40fd25f448c3ae1d92d2c2a60fcdde782f5df4))
+* **wireless:** Add new resource `routeros_interface_wireless` ([15c2650](https://github.com/terraform-routeros/terraform-provider-routeros/commit/15c265088c024a5b770fda1990ea3713c724d253))
+
+### Bug Fixes
+
+* **serialize:** Fix `PropTransformSet` ([8baebae](https://github.com/terraform-routeros/terraform-provider-routeros/commit/8baebae070e047a3dad3f86aa72cf502f053d781))
+* **serialize:** Fix the transformation of attribute names. ([9796820](https://github.com/terraform-routeros/terraform-provider-routeros/commit/9796820aa413ad6f45731b613a1cfa88fc124e0a))
+* **tool_sniffer:** Add resource state control ([eb53e45](https://github.com/terraform-routeros/terraform-provider-routeros/commit/eb53e456ffce679464bb9023df59056663b9c6e9))
+* **wireless_security_profile:** Add `Sensitive` flag to attributes ([909b4c7](https://github.com/terraform-routeros/terraform-provider-routeros/commit/909b4c792e169eec5c60619156be8bd10dfab7df))
+* **wireless:** Add missing field ([c112740](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c112740a660362528f9d53037e97e59c7138441f))
+
+## [1.63.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.63.0...v1.63.1) (2024-09-26)
+
+### Features
+
+* **no-release:** Add QR code generation for WiFi ([#564](https://github.com/terraform-routeros/terraform-provider-routeros/issues/564)) ([9c39ae2](https://github.com/terraform-routeros/terraform-provider-routeros/commit/9c39ae2b52e62dfc7b3451887ee726a137b1c64c))
+
+### Bug Fixes
+
+* Missing fields in `routeros_system_user ` (introduced in 7.16) ([3ae2e10](https://github.com/terraform-routeros/terraform-provider-routeros/commit/3ae2e1030a7e30e935da4cdc316028c2abd3c91b)), closes [#560](https://github.com/terraform-routeros/terraform-provider-routeros/issues/560)
+* **no-release:** Add field introduced in 7.16 `routeros_ip_address` ([de72d8e](https://github.com/terraform-routeros/terraform-provider-routeros/commit/de72d8e6c421dc4c4dee36c0a45d207a8d232c9c))
+* **no-release:** Update `datasource_ipv6_addresses.go` ROS 7.16 ([0c0306b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/0c0306b975c6be0314ea773b6ccc6f4acbfbe04d))
+* **no-release:** Update `resource_system_logging.go` ROS 7.16 ([884addc](https://github.com/terraform-routeros/terraform-provider-routeros/commit/884addca655d60e91b74bd9cc507bb17cc55e6ca))
+
+## [1.63.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.62.0...v1.63.0) (2024-09-24)
+
+
+### Features
+
+* Add new resource `routeros_tool_sniffer` ([f046966](https://github.com/terraform-routeros/terraform-provider-routeros/commit/f0469663fe7ea395825dc92c6a246e09dcd0f81c))
+* **hotspot:** Add new resource `routeros_ip_hotspot_ip_binding` ([f2e27b4](https://github.com/terraform-routeros/terraform-provider-routeros/commit/f2e27b4732f863400c6f6c7f8341315019623f47))
+* **hotspot:** Add new resource `routeros_ip_hotspot_profile` ([06b974b](https://github.com/terraform-routeros/terraform-provider-routeros/commit/06b974bdfbd6508a3f32a6b52456f0c8a6ba10b0))
+* **hotspot:** Add new resource `routeros_ip_hotspot_service_port` ([153bf68](https://github.com/terraform-routeros/terraform-provider-routeros/commit/153bf68723a1def279431593ed5f5cc2bf2f1ddc))
+* **hotspot:** Add new resource `routeros_ip_hotspot_user_profile` ([4de2db9](https://github.com/terraform-routeros/terraform-provider-routeros/commit/4de2db943c82de89e2081b8b32ffed8621f42ab9))
+* **hotspot:** Add new resource `routeros_ip_hotspot_user` ([b897532](https://github.com/terraform-routeros/terraform-provider-routeros/commit/b897532232c12245b4c92f27ca129ebe8f6c8d31))
+* **hotspot:** Add new resource `routeros_ip_hotspot_walled_garden_ip` ([92778ff](https://github.com/terraform-routeros/terraform-provider-routeros/commit/92778ff184124ce8d2d7dc0dfc266b29b6f306ef))
+* **hotspot:** Add new resource `routeros_ip_hotspot_walled_garden` ([9c111ee](https://github.com/terraform-routeros/terraform-provider-routeros/commit/9c111eeefa0ce90e0bc2f02c9c2d9a4794487cbe))
+* **hotspot:** Add new resource `routeros_ip_hotspot` ([1da8f3d](https://github.com/terraform-routeros/terraform-provider-routeros/commit/1da8f3d755ec0a35836b67037d57e40d27d3453f))
+
+
+### Bug Fixes
+
+* **dns_adlist:** Change an invalid resource name. ([e77bcbf](https://github.com/terraform-routeros/terraform-provider-routeros/commit/e77bcbf6f3bccfc3271269a4ad1fbff00038cfaf)), closes [#554](https://github.com/terraform-routeros/terraform-provider-routeros/issues/554)
+
+## [1.62.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.61.2...v1.62.0) (2024-09-19)
+
+
+### Features
+
+* **resource_dns_adlist:** Add dns ad list support ([b1ca164](https://github.com/terraform-routeros/terraform-provider-routeros/commit/b1ca164c8e1b2b5f6e9ecca90abe62f84c5a488c)), closes [#554](https://github.com/terraform-routeros/terraform-provider-routeros/issues/554)
+
+## [1.61.2](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.61.1...v1.61.2) (2024-09-02)
+
+
+### Bug Fixes
+
+* Add a validator for map name keys. ([059de30](https://github.com/terraform-routeros/terraform-provider-routeros/commit/059de305bcc829fb9be16c49c9903049f074cb13)), closes [#552](https://github.com/terraform-routeros/terraform-provider-routeros/issues/552)
+* **data.routeros_interfaces:** Fix the schema ([f9489a2](https://github.com/terraform-routeros/terraform-provider-routeros/commit/f9489a23148c4bb96a1b8db76cc409a4a9bda00a)), closes [#550](https://github.com/terraform-routeros/terraform-provider-routeros/issues/550)
+* **routeros_capsman_provisioning :** Change attributes type ([b9967d9](https://github.com/terraform-routeros/terraform-provider-routeros/commit/b9967d9c65f20da871cd6bc60597b49bd9d99d14)), closes [#551](https://github.com/terraform-routeros/terraform-provider-routeros/issues/551) [#551](https://github.com/terraform-routeros/terraform-provider-routeros/issues/551)
+* **system_user_group:** Fix `policy` validator ([6a0a0bd](https://github.com/terraform-routeros/terraform-provider-routeros/commit/6a0a0bdd370680b0ac19172ff40bc555a08c82cc))
+
+## [1.61.1](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.61.0...v1.61.1) (2024-08-27)
+
+
+### Bug Fixes
+
+* **routeros_system_user_group:** Fix change detection in sets with `SetUnset` values ([#547](https://github.com/terraform-routeros/terraform-provider-routeros/issues/547)) ([d51c4c2](https://github.com/terraform-routeros/terraform-provider-routeros/commit/d51c4c207e9f5df3979c0b090a34f24ad713c062)), closes [#544](https://github.com/terraform-routeros/terraform-provider-routeros/issues/544)
+
+## [1.61.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.60.0...v1.61.0) (2024-08-23)
+
+
+### Features
+
+* Add `class_id` property support to the `routeros_ip_dhcp_server_lease` resource ([90033af](https://github.com/terraform-routeros/terraform-provider-routeros/commit/90033afb96247b4f9f70ea5974259cdcc16d9a08))
+* Add `discover_interval` property support to the `routeros_ip_neighbor_discovery_settings` resource ([8233ace](https://github.com/terraform-routeros/terraform-provider-routeros/commit/8233ace372ea9dd9bbb0b9ad83dfbaf58c27a912))
+* Add `forward_reserved_addresses` property support to the `routeros_interface_bridge` resource ([600e2af](https://github.com/terraform-routeros/terraform-provider-routeros/commit/600e2af88f0a8e6ed9c4fe0e8e3c0a73a7359f0b))
+* Add `lldp_vlan_info` property support to the `routeros_ip_neighbor_discovery_settings` resource ([c2b07af](https://github.com/terraform-routeros/terraform-provider-routeros/commit/c2b07aff724758326f5551aa1d7efa87b72d16fa))
+* Add `max_learned_entries` property support to the `routeros_interface_bridge` resource ([a8b4191](https://github.com/terraform-routeros/terraform-provider-routeros/commit/a8b4191e67ad2e399f18729352244898caebdbf3))
+* Add `max_sessions` property support to the `routeros_ip_service` resource ([9007755](https://github.com/terraform-routeros/terraform-provider-routeros/commit/9007755b50236cb8676e191c9af4e6db8629f976))
+* Add `mdns_repeat_ifaces` property support to the `routeros_ip_dns` resource ([fb71ff7](https://github.com/terraform-routeros/terraform-provider-routeros/commit/fb71ff71ad7392088f4ee21434e9b0fc833ed252))
+* Add `slave_name_format` property support to the `routeros_wifi_provisioning` resource ([2ad0de6](https://github.com/terraform-routeros/terraform-provider-routeros/commit/2ad0de6ac0e10f431000022badec0c6595c8938c))
+* Add the `comment` property support to the DHCP resources ([0d326e9](https://github.com/terraform-routeros/terraform-provider-routeros/commit/0d326e93ea28e4f7bf2d71a0399a116d759033e0))
+
+
+### Bug Fixes
+
+* Remove the default value for the `radio_mac` property in the `routeros_wifi_provisioning` resource ([a35d307](https://github.com/terraform-routeros/terraform-provider-routeros/commit/a35d307c659d973c5a7ab0e48f70a38d0e70d17e))
+* **routeros_system_resource:** Add `bad_blocks` attribute to the ignored ones ([7b03141](https://github.com/terraform-routeros/terraform-provider-routeros/commit/7b03141f5fbbcbf56301149610dea93d1debdd82)), closes [#541](https://github.com/terraform-routeros/terraform-provider-routeros/issues/541)
+* supress hw offload writable ([6c358eb](https://github.com/terraform-routeros/terraform-provider-routeros/commit/6c358eba75de36baf5653f79da653cd10ab26982)), closes [#540](https://github.com/terraform-routeros/terraform-provider-routeros/issues/540)
+
 ## [1.60.0](https://github.com/terraform-routeros/terraform-provider-routeros/compare/v1.59.4...v1.60.0) (2024-08-19)
 
 

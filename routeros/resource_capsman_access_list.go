@@ -42,7 +42,7 @@ func ResourceCapsManAccessList() *schema.Resource {
 			Optional:         true,
 			Default:          "10s",
 			Description:      "An option that permits the client's signal to be out of the range always or for some time interval.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"ap_tx_limit": {
 			Type:        schema.TypeInt,
@@ -102,12 +102,7 @@ func ResourceCapsManAccessList() *schema.Resource {
 			Default:     "0s-1d,sun,mon,tue,wed,thu,fri,sat",
 			Description: "Time of the day and days of the week when the rule is applicable.",
 		},
-		"vlan_id": {
-			Type:         schema.TypeInt,
-			Optional:     true,
-			Description:  "VLAN ID to use if vlan-mode enables use of VLAN tagging.",
-			ValidateFunc: validation.IntBetween(1, 4094),
-		},
+		KeyVlanId: PropVlanIdRw("VLAN ID to use if vlan-mode enables use of VLAN tagging.", false),
 		"vlan_mode": {
 			Type:         schema.TypeString,
 			Optional:     true,
@@ -130,7 +125,7 @@ func ResourceCapsManAccessList() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

@@ -22,7 +22,7 @@ func ResourceDhcpRelay() *schema.Resource {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "If secs field in DHCP packet is smaller than delay-threshold, then this packet is ignored.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		KeyDisabled: PropDisabledRw,
 		"dhcp_server": {
@@ -30,6 +30,7 @@ func ResourceDhcpRelay() *schema.Resource {
 			Required:    true,
 			Description: "List of DHCP servers' IP addresses which should the DHCP requests be forwarded to.",
 		},
+		"dhcp_server_vrf": PropVrfRw,
 		"interface": {
 			Type:        schema.TypeString,
 			Required:    true,
@@ -58,7 +59,7 @@ func ResourceDhcpRelay() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

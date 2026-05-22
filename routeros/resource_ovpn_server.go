@@ -39,16 +39,16 @@ func ResourceOpenVPNServer() *schema.Resource {
 			Type:     schema.TypeSet,
 			Optional: true,
 			Elem: &schema.Schema{
-				Type: schema.TypeString,
+				Type:         schema.TypeString,
 				ValidateFunc: validation.StringInSlice([]string{"md5", "sha1", "null", "sha256", "sha512"}, false),
 			},
 			Description:      "Authentication methods that the server will accept.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"certificate": {
-			Type:        schema.TypeString,
-			Optional:    true,
-			Description: "Name of the certificate that the OVPN server will use.",
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Name of the certificate that the OVPN server will use.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"cipher": {
@@ -94,7 +94,7 @@ func ResourceOpenVPNServer() *schema.Resource {
 				"keepalive packets every second. If no traffic and no keepalive  responses have come for " +
 				"that period of time (i.e. 2 *  keepalive-timeout), not responding client is proclaimed " +
 				"disconnected",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		// Computed only???
 		"mac_address": {
@@ -150,13 +150,13 @@ func ResourceOpenVPNServer() *schema.Resource {
 			Type:     schema.TypeSet,
 			Optional: true,
 			Elem: &schema.Schema{
-				Type: schema.TypeString,
+				Type:         schema.TypeString,
 				ValidateFunc: validation.StringInSlice([]string{"def1", "disabled", "ipv6"}, false),
 			},
-			Description: "Specifies what kind of routes the OVPN client must add to the routing table. def1 – Use " +
+			Description: "Specifies what kind of routes the OVPN client must add to the routing table.\n  * def1 – Use " +
 				"this flag to override the default gateway by using 0.0.0.0/1 and  128.0.0.0/1 rather " +
 				"than 0.0.0.0/0. This has the benefit of overriding  but not wiping out the original " +
-				"default gateway. disabled - Do not send redirect-gateway flags to the OVPN client. ipv6 " +
+				"default gateway.\n  * disabled - Do not send redirect-gateway flags to the OVPN client.\n  * ipv6 " +
 				"- Redirect IPv6 routing into the tunnel on the client side. This works  similarly to the " +
 				"def1 flag, that is, more specific IPv6 routes are added  (2000::/4 and 3000::/4), " +
 				"covering the whole IPv6 unicast space.",
@@ -202,11 +202,11 @@ func ResourceOpenVPNServer() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 
-		Schema: resSchema,
+		Schema:        resSchema,
 		SchemaVersion: 1,
 		StateUpgraders: []schema.StateUpgrader{
 			{
-				Type: ResourceOpenVPNServerV0().CoreConfigSchema().ImpliedType(),
+				Type:    ResourceOpenVPNServerV0().CoreConfigSchema().ImpliedType(),
 				Upgrade: stateMigrationScalarToList("auth", "cipher", "redirect_gateway"),
 				Version: 0,
 			},

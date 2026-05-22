@@ -2,6 +2,7 @@ package routeros
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 var (
@@ -9,8 +10,13 @@ var (
 	ErrorMsgGet    = "An error was encountered while sending a GET request to the API: %v"
 	ErrorMsgPatch  = "An error was encountered while sending a PATCH request to the API: %v"
 	ErrorMsgDelete = "An error was encountered while sending a DELETE request to the API: %v"
+
+	RouterOSVersion string
 )
 
+// Generate the resources drift:
+//
+//go:generate go run ../tools/drift/main.go
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
@@ -55,7 +61,7 @@ func Provider() *schema.Provider {
 					[]string{"ROS_PASSWORD", "MIKROTIK_PASSWORD"},
 					nil,
 				),
-				Description: "Password for the MikroTik user.",
+				Description: "Password for the MikroTik user (env: ROS_PASSWORD | MIKROTIK_PASSWORD).",
 				Sensitive:   true,
 			},
 			"ca_certificate": {
@@ -65,7 +71,7 @@ func Provider() *schema.Provider {
 					[]string{"ROS_CA_CERTIFICATE", "MIKROTIK_CA_CERTIFICATE"},
 					nil,
 				),
-				Description: "Path to MikroTik's certificate authority file.",
+				Description: "Path to MikroTik's certificate authority file (env: ROS_CA_CERTIFICATE | MIKROTIK_CA_CERTIFICATE).",
 			},
 			"insecure": {
 				Type:     schema.TypeBool,
@@ -74,12 +80,39 @@ func Provider() *schema.Provider {
 					[]string{"ROS_INSECURE", "MIKROTIK_INSECURE"},
 					false,
 				),
-				Description: "Whether to verify the SSL certificate or not.",
+				Description: "Whether to verify the SSL certificate or not (env: ROS_INSECURE | MIKROTIK_INSECURE).",
+			},
+			"suppress_syso_del_warn": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				DefaultFunc: schema.MultiEnvDefaultFunc(
+					[]string{"ROS_SUPPRESS_SYSO_DEL_WARN"},
+					false,
+				),
+				Description: "Suppress the system object deletion warning (env: ROS_SUPPRESS_SYSO_DEL_WARN).",
+			},
+			"routeros_version": {
+				Type:     schema.TypeString,
+				Optional: true,
+				DefaultFunc: schema.MultiEnvDefaultFunc(
+					[]string{"ROS_VERSION"},
+					nil,
+				),
+				Description: "RouterOS version for which resource schemes will be adapted. The version obtained from " +
+					"MikroTik will be used if not specified (env: ROS_VERSION).",
+			},
+			"rest_timeout": {
+				Type:         schema.TypeInt,
+				Optional:     true,
+				Default:      59,
+				Description:  "HTTP Client Timeout",
+				ValidateFunc: validation.IntAtLeast(5),
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
 
 			// IP objects
+			"routeros_ip_address":                      ResourceIPAddress(),
 			"routeros_ip_dhcp_client":                  ResourceDhcpClient(),
 			"routeros_ip_dhcp_client_option":           ResourceDhcpClientOption(),
 			"routeros_ip_dhcp_relay":                   ResourceDhcpRelay(),
@@ -88,31 +121,56 @@ func Provider() *schema.Provider {
 			"routeros_ip_dhcp_server_network":          ResourceDhcpServerNetwork(),
 			"routeros_ip_dhcp_server_lease":            ResourceDhcpServerLease(),
 			"routeros_ip_dhcp_server_option":           ResourceDhcpServerOption(),
-			"routeros_ip_dhcp_server_option_set":       ResourceDhcpServerOptionSet(),
+			"routeros_ip_dhcp_server_option_matcher":   ResourceDhcpServerOptionMatcher(),
+			"routeros_ip_dhcp_server_option_sets":      ResourceDhcpServerOptionSets(),
+			"routeros_ip_dns":                          ResourceDns(),
+			"routeros_ip_dns_adlist":                   ResourceDnsAdlist(),
+			"routeros_ip_dns_forwarders":               ResourceIpDnsForwarders(),
+			"routeros_ip_dns_record":                   ResourceDnsRecord(),
 			"routeros_ip_firewall_addr_list":           ResourceIPFirewallAddrList(),
 			"routeros_ip_firewall_connection_tracking": ResourceIPConnectionTracking(),
 			"routeros_ip_firewall_filter":              ResourceIPFirewallFilter(),
+			"routeros_ip_firewall_layer7_protocol":     ResourceIpFirewallLayer7Protocol(),
 			"routeros_ip_firewall_mangle":              ResourceIPFirewallMangle(),
 			"routeros_ip_firewall_nat":                 ResourceIPFirewallNat(),
 			"routeros_ip_firewall_raw":                 ResourceIPFirewallRaw(),
-			"routeros_ip_address":                      ResourceIPAddress(),
+			"routeros_ip_hotspot":                      ResourceIpHotspot(),
+			"routeros_ip_hotspot_ip_binding":           ResourceIpHotspotIpBinding(),
+			"routeros_ip_hotspot_profile":              ResourceIpHotspotProfile(),
+			"routeros_ip_hotspot_service_port":         ResourceIpHotspotServicePort(),
+			"routeros_ip_hotspot_user":                 ResourceIpHotspotUser(),
+			"routeros_ip_hotspot_user_profile":         ResourceIpHotspotUserProfile(),
+			"routeros_ip_hotspot_walled_garden":        ResourceIpHotspotWalledGarden(),
+			"routeros_ip_hotspot_walled_garden_ip":     ResourceIpHotspotWalledGardenIp(),
+			"routeros_ip_nat_pmp":                      ResourceNatPmpSettings(),
+			"routeros_ip_nat_pmp_interfaces":           ResourceNatPmpInterfaces(),
+			"routeros_ip_neighbor_discovery_settings":  ResourceIpNeighborDiscoverySettings(),
 			"routeros_ip_pool":                         ResourceIPPool(),
 			"routeros_ip_route":                        ResourceIPRoute(),
-			"routeros_ip_dns":                          ResourceDns(),
-			"routeros_ip_dns_record":                   ResourceDnsRecord(),
 			"routeros_ip_service":                      ResourceIpService(),
-			"routeros_ip_neighbor_discovery_settings":  ResourceIpNeighborDiscoverySettings(),
+			"routeros_ip_settings":                     ResourceIpSettings(),
+			"routeros_ip_smb":                          ResourceIpSMB(),
 			"routeros_ip_ssh_server":                   ResourceIpSSHServer(),
+			"routeros_ip_tftp":                         ResourceIpTFTP(),
+			"routeros_ip_tftp_settings":                ResourceIpTFTPSettings(),
 			"routeros_ip_upnp":                         ResourceUPNPSettings(),
 			"routeros_ip_upnp_interfaces":              ResourceUPNPInterfaces(),
 			"routeros_ip_vrf":                          ResourceIPVrf(),
 			"routeros_ipv6_address":                    ResourceIPv6Address(),
 			"routeros_ipv6_dhcp_client":                ResourceIPv6DhcpClient(),
 			"routeros_ipv6_dhcp_client_option":         ResourceIPv6DhcpClientOption(),
+			"routeros_ipv6_dhcp_server":                ResourceIpv6DhcpServer(),
+			"routeros_ipv6_dhcp_server_option":         ResourceIpv6DhcpServerOption(),
+			"routeros_ipv6_dhcp_server_option_sets":    ResourceIpv6DhcpServerOptionSets(),
 			"routeros_ipv6_firewall_addr_list":         ResourceIPv6FirewallAddrList(),
 			"routeros_ipv6_firewall_filter":            ResourceIPv6FirewallFilter(),
+			"routeros_ipv6_firewall_nat":               ResourceIPv6FirewallNat(),
+			"routeros_ipv6_firewall_mangle":            ResourceIPv6FirewallMangle(),
 			"routeros_ipv6_neighbor_discovery":         ResourceIPv6NeighborDiscovery(),
+			"routeros_ipv6_nd_prefix":                  ResourceIpv6NdPrefix(),
+			"routeros_ipv6_pool":                       ResourceIpv6Pool(),
 			"routeros_ipv6_route":                      ResourceIPv6Route(),
+			"routeros_ipv6_settings":                   ResourceIpv6Settings(),
 
 			// Aliases for IP objects to retain compatibility between original and fork
 			"routeros_dhcp_client":         ResourceDhcpClient(),
@@ -128,37 +186,54 @@ func Provider() *schema.Provider {
 			"routeros_dns_record":          ResourceDnsRecord(),
 
 			// Interface Objects
-			"routeros_interface_bridge":                         ResourceInterfaceBridge(),
+			"routeros_interface_6to4":                           ResourceInterface6to4(),
+			"routeros_interface_bonding":                        ResourceInterfaceBonding(),
+			"routeros_interface_bridge_filter":                  ResourceInterfaceBridgeFilter(),
 			"routeros_interface_bridge_port":                    ResourceInterfaceBridgePort(),
-			"routeros_interface_bridge_vlan":                    ResourceInterfaceBridgeVlan(),
 			"routeros_interface_bridge_settings":                ResourceInterfaceBridgeSettings(),
+			"routeros_interface_bridge_vlan":                    ResourceInterfaceBridgeVlan(),
+			"routeros_interface_bridge":                         ResourceInterfaceBridge(),
+			"routeros_interface_detect_internet":                ResourceInterfaceDetectInternet(),
 			"routeros_interface_dot1x_client":                   ResourceInterfaceDot1xClient(),
 			"routeros_interface_dot1x_server":                   ResourceInterfaceDot1xServer(),
 			"routeros_interface_eoip":                           ResourceInterfaceEoip(),
+			"routeros_interface_ethernet":                       ResourceInterfaceEthernet(),
 			"routeros_interface_ethernet_switch":                ResourceInterfaceEthernetSwitch(),
 			"routeros_interface_ethernet_switch_host":           ResourceInterfaceEthernetSwitchHost(),
 			"routeros_interface_ethernet_switch_port":           ResourceInterfaceEthernetSwitchPort(),
 			"routeros_interface_ethernet_switch_port_isolation": ResourceInterfaceEthernetSwitchPortIsolation(),
-			"routeros_interface_ethernet_switch_vlan":           ResourceInterfaceEthernetSwitchVlan(),
 			"routeros_interface_ethernet_switch_rule":           ResourceInterfaceEthernetSwitchRule(),
+			"routeros_interface_ethernet_switch_vlan":           ResourceInterfaceEthernetSwitchVlan(),
 			"routeros_interface_gre":                            ResourceInterfaceGre(),
-			"routeros_interface_macvlan":                        ResourceInterfaceMacVlan(),
+			"routeros_interface_gre6":                           ResourceInterfaceGre6(),
 			"routeros_interface_ipip":                           ResourceInterfaceIPIP(),
-			"routeros_interface_vlan":                           ResourceInterfaceVlan(),
-			"routeros_interface_vrrp":                           ResourceInterfaceVrrp(),
-			"routeros_interface_wireguard":                      ResourceInterfaceWireguard(),
-			"routeros_interface_wireguard_peer":                 ResourceInterfaceWireguardPeer(),
-			"routeros_interface_wireless_cap":                   ResourceInterfaceWirelessCap(),
 			"routeros_interface_list":                           ResourceInterfaceList(),
 			"routeros_interface_list_member":                    ResourceInterfaceListMember(),
 			"routeros_interface_lte":                            ResourceInterfaceLte(),
 			"routeros_interface_lte_apn":                        ResourceInterfaceLteApn(),
-			"routeros_interface_ovpn_server":                    ResourceInterfaceOpenVPNServer(),
+			"routeros_interface_l2tp_client":                    ResourceInterfaceL2tpClient(),
+			"routeros_interface_l2tp_server":                    ResourceInterfaceL2tpServer(),
+			"routeros_interface_macvlan":                        ResourceInterfaceMacVlan(),
+			"routeros_interface_sstp_client":                    ResourceInterfaceSSTPClient(),
+			"routeros_interface_sstp_server":                    ResourceInterfaceSSTPServer(),
 			"routeros_interface_ovpn_client":                    ResourceOpenVPNClient(),
-			"routeros_interface_veth":                           ResourceInterfaceVeth(),
-			"routeros_interface_bonding":                        ResourceInterfaceBonding(),
+			"routeros_interface_ovpn_server":                    ResourceInterfaceOpenVPNServer(),
 			"routeros_interface_pppoe_client":                   ResourceInterfacePPPoEClient(),
-			"routeros_interface_ethernet":                       ResourceInterfaceEthernet(),
+			"routeros_interface_pppoe_server":                   ResourceInterfacePppoeServer(),
+			"routeros_interface_veth":                           ResourceInterfaceVeth(),
+			"routeros_interface_vlan":                           ResourceInterfaceVlan(),
+			"routeros_interface_vrrp":                           ResourceInterfaceVrrp(),
+			"routeros_interface_vxlan":                          ResourceInterfaceVxlan(),
+			"routeros_interface_vxlan_vteps":                    ResourceInterfaceVxlanVteps(),
+			"routeros_interface_wireguard":                      ResourceInterfaceWireguard(),
+			"routeros_interface_wireguard_peer":                 ResourceInterfaceWireguardPeer(),
+			"routeros_interface_wireless":                       ResourceInterfaceWireless(),
+			"routeros_interface_wireless_access_list":           ResourceInterfaceWirelessAccessList(),
+			"routeros_interface_wireless_cap":                   ResourceInterfaceWirelessCap(),
+			"routeros_interface_wireless_connect_list":          ResourceInterfaceWirelessConnectList(),
+			"routeros_interface_wireless_security_profiles":     ResourceInterfaceWirelessSecurityProfiles(),
+			"routeros_interface_w60g":                           ResourceInterfaceW60g(),
+			"routeros_interface_w60g_station":                   ResourceInterfaceW60gStation(),
 
 			// Aliases for interface objects to retain compatibility between original and fork
 			"routeros_bridge":         ResourceInterfaceBridge(),
@@ -171,8 +246,11 @@ func Provider() *schema.Provider {
 			"routeros_vrrp":           ResourceInterfaceVrrp(),
 			"routeros_wireguard":      ResourceInterfaceWireguard(),
 			"routeros_wireguard_peer": ResourceInterfaceWireguardPeer(),
+			// Aliases for backward compatibility
+			"routeros_ip_dhcp_server_option_set": ResourceDhcpServerOptionSets(),
 
 			// System Objects
+			"routeros_disk_settings":                   ResourceDiskSettings(),
 			"routeros_ip_cloud":                        ResourceIpCloud(),
 			"routeros_ip_cloud_advanced":               ResourceIpCloudAdvanced(),
 			"routeros_system_certificate":              ResourceSystemCertificate(),
@@ -184,6 +262,7 @@ func Provider() *schema.Provider {
 			"routeros_system_led_settings":             ResourceSystemLedSettings(),
 			"routeros_system_logging":                  ResourceSystemLogging(),
 			"routeros_system_logging_action":           ResourceSystemLoggingAction(),
+			"routeros_system_note":                     ResourceSystemNote(),
 			"routeros_system_ntp_client":               ResourceSystemNtpClient(),
 			"routeros_system_ntp_server":               ResourceSystemNtpServer(),
 			"routeros_system_routerboard_button_mode":  ResourceSystemRouterboardButtonMode(),
@@ -194,6 +273,7 @@ func Provider() *schema.Provider {
 			"routeros_system_scheduler":                ResourceSystemScheduler(),
 			"routeros_system_script":                   ResourceSystemScript(),
 			"routeros_system_user":                     ResourceUser(),
+			"routeros_system_user_sshkeys":             ResourceUserSshKeys(),
 			"routeros_system_user_aaa":                 ResourceUserAaa(),
 			"routeros_system_user_group":               ResourceUserGroup(),
 			"routeros_system_user_settings":            ResourceSystemUserSettings(),
@@ -225,19 +305,35 @@ func Provider() *schema.Provider {
 			"routeros_file": ResourceFile(),
 
 			// Routing
-			"routeros_routing_bgp_connection": ResourceRoutingBGPConnection(),
-			"routeros_routing_bgp_template":   ResourceRoutingBGPTemplate(),
-			"routeros_routing_filter_rule":    ResourceRoutingFilterRule(),
-			"routeros_routing_table":          ResourceRoutingTable(),
-			"routeros_routing_rule":           ResourceRoutingRule(),
+			"routeros_routing_bfd_configuration":    ResourceRoutingBfdConfiguration(),
+			"routeros_routing_bgp_connection":       ResourceRoutingBgpConnection(),
+			"routeros_routing_bgp_evpn":             ResourceRoutingBgpEvpn(),
+			"routeros_routing_bgp_instance":         ResourceRoutingBgpInstance(),
+			"routeros_routing_bgp_template":         ResourceRoutingBgpTemplate(),
+			"routeros_routing_bgp_vpn":              ResourceRoutingBgpVpn(),
+			"routeros_routing_filter_rule":          ResourceRoutingFilterRule(),
+			"routeros_routing_id":                   ResourceRoutingId(),
+			"routeros_routing_igmp_proxy_interface": ResourceRoutingIgmpProxyInterface(),
+			"routeros_routing_table":                ResourceRoutingTable(),
+			"routeros_routing_rule":                 ResourceRoutingRule(),
 
 			// OSPF
 			"routeros_routing_ospf_instance":           ResourceRoutingOspfInstance(),
 			"routeros_routing_ospf_area":               ResourceRoutingOspfArea(),
+			"routeros_routing_ospf_area_range":         ResourceRoutingOspfAreaRange(),
 			"routeros_routing_ospf_interface_template": ResourceRoutingOspfInterfaceTemplate(),
 
 			// VPN
-			"routeros_ovpn_server": ResourceOpenVPNServer(),
+			"routeros_ip_ipsec_identity":     ResourceIpIpsecIdentity(),
+			"routeros_ip_ipsec_key":          ResourceIpIpsecKey(),
+			"routeros_ip_ipsec_mode_config":  ResourceIpIpsecModeConfig(),
+			"routeros_ip_ipsec_peer":         ResourceIpIpsecPeer(),
+			"routeros_ip_ipsec_policy":       ResourceIpIpsecPolicy(),
+			"routeros_ip_ipsec_policy_group": ResourceIpIpsecPolicyGroup(),
+			"routeros_ip_ipsec_profile":      ResourceIpIpsecProfile(),
+			"routeros_ip_ipsec_proposal":     ResourceIpIpsecProposal(),
+			"routeros_ip_ipsec_settings":     ResourceIpIpsecSettings(),
+			"routeros_ovpn_server":           ResourceOpenVPNServer(),
 
 			// PPP
 			"routeros_ppp_aaa":     ResourcePppAaa(),
@@ -257,10 +353,19 @@ func Provider() *schema.Provider {
 			"routeros_move_items":     ResourceMoveItems(),
 
 			// Tools
-			"routeros_tool_bandwidth_server":  ResourceToolBandwidthServer(),
-			"routeros_tool_mac_server":        ResourceToolMacServer(),
-			"routeros_tool_mac_server_winbox": ResourceToolMacServerWinBox(),
-			"routeros_tool_netwatch":          ResourceToolNetwatch(),
+			"routeros_tool_bandwidth_server":   ResourceToolBandwidthServer(),
+			"routeros_tool_email":              ResourceToolEmail(),
+			"routeros_tool_graphing_interface": ResourceToolGraphingInterface(),
+			"routeros_tool_graphing_queue":     ResourceToolGraphingQueue(),
+			"routeros_tool_graphing_resource":  ResourceToolGraphingResource(),
+			"routeros_tool_mac_server":         ResourceToolMacServer(),
+			"routeros_tool_mac_server_winbox":  ResourceToolMacServerWinBox(),
+			"routeros_tool_mac_server_ping":    ResourceToolMacServerPing(),
+			"routeros_tool_netwatch":           ResourceToolNetwatch(),
+			"routeros_tool_sniffer":            ResourceToolSniffer(),
+			"routeros_ip_traffic_flow":         ResourceIpTrafficFlow(),
+			"routeros_ip_traffic_flow_target":  ResourceIpTrafficFlowTarget(),
+			"routeros_ip_traffic_flow_ipfix":   ResourceIpTrafficFlowIpfix(),
 
 			// User Manager
 			"routeros_user_manager_advanced":           ResourceUserManagerAdvanced(),
@@ -276,37 +381,53 @@ func Provider() *schema.Provider {
 			"routeros_user_manager_user_profile":       ResourceUserManagerUserProfile(),
 
 			// WiFi
-			"routeros_wifi":               ResourceWifi(),
-			"routeros_wifi_aaa":           ResourceWifiAaa(),
-			"routeros_wifi_access_list":   ResourceWifiAccessList(),
-			"routeros_wifi_cap":           ResourceWifiCap(),
-			"routeros_wifi_capsman":       ResourceWifiCapsman(),
-			"routeros_wifi_channel":       ResourceWifiChannel(),
-			"routeros_wifi_configuration": ResourceWifiConfiguration(),
-			"routeros_wifi_datapath":      ResourceWifiDatapath(),
-			"routeros_wifi_interworking":  ResourceWifiInterworking(),
-			"routeros_wifi_provisioning":  ResourceWifiProvisioning(),
-			"routeros_wifi_security":      ResourceWifiSecurity(),
-			"routeros_wifi_steering":      ResourceWifiSteering(),
+			"routeros_wifi":                           ResourceWifi(),
+			"routeros_wifi_aaa":                       ResourceWifiAaa(),
+			"routeros_wifi_access_list":               ResourceWifiAccessList(),
+			"routeros_wifi_cap":                       ResourceWifiCap(),
+			"routeros_wifi_capsman":                   ResourceWifiCapsman(),
+			"routeros_wifi_channel":                   ResourceWifiChannel(),
+			"routeros_wifi_configuration":             ResourceWifiConfiguration(),
+			"routeros_wifi_datapath":                  ResourceWifiDatapath(),
+			"routeros_wifi_interworking":              ResourceWifiInterworking(),
+			"routeros_wifi_provisioning":              ResourceWifiProvisioning(),
+			"routeros_wifi_security":                  ResourceWifiSecurity(),
+			"routeros_wifi_security_multi_passphrase": ResourceWifiSecurityMultiPassphrase(),
+			"routeros_wifi_steering":                  ResourceWifiSteering(),
 
 			// ZeroTier
 			"routeros_zerotier":            ResourceZerotier(),
 			"routeros_zerotier_controller": ResourceZerotierController(),
 			"routeros_zerotier_interface":  ResourceZerotierInterface(),
+
+			// Queue
+			"routeros_queue_simple": ResourceQueueSimple(),
+			"routeros_queue_tree":   ResourceQueueTree(),
+			"routeros_queue_type":   ResourceQueueType(),
+
+			// Hardware devices
+			"routeros_interface_ethernet_switch_crs":                          ResourceInterfaceEthernetSwitchCrs(),
+			"routeros_interface_ethernet_switch_crs_vlan":                     ResourceInterfaceEthernetSwitchCrsVlan(),
+			"routeros_interface_ethernet_switch_crs_egress_vlan_tag":          ResourceInterfaceEthernetSwitchCrsEgressVlanTag(),
+			"routeros_interface_ethernet_switch_crs_egress_vlan_translation":  ResourceInterfaceEthernetSwitchCrsEgressVlanTranslation(),
+			"routeros_interface_ethernet_switch_crs_ingress_vlan_translation": ResourceInterfaceEthernetSwitchCrsIngressVlanTranslation(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"routeros_files":                 DatasourceFiles(),
-			"routeros_interfaces":            DatasourceInterfaces(),
-			"routeros_ip_addresses":          DatasourceIPAddresses(),
-			"routeros_ip_arp":                DatasourceIpArp(),
-			"routeros_ip_dhcp_server_leases": DatasourceIpDhcpServerLeases(),
-			"routeros_ip_firewall":           DatasourceIPFirewall(),
-			"routeros_ip_routes":             DatasourceIPRoutes(),
-			"routeros_ip_services":           DatasourceIPServices(),
-			"routeros_ipv6_addresses":        DatasourceIPv6Addresses(),
-			"routeros_ipv6_firewall":         DatasourceIPv6Firewall(),
-			"routeros_system_resource":       DatasourceSystemResource(),
-			"routeros_x509":                  DatasourceX509(),
+			"routeros_files":                   DatasourceFiles(),
+			"routeros_interfaces":              DatasourceInterfaces(),
+			"routeros_interface_bridge_filter": DatasourceInterfaceBridgeFilter(),
+			"routeros_ip_addresses":            DatasourceIPAddresses(),
+			"routeros_ip_arp":                  DatasourceIpArp(),
+			"routeros_ip_dhcp_server_leases":   DatasourceIpDhcpServerLeases(),
+			"routeros_ip_firewall":             DatasourceIPFirewall(),
+			"routeros_ip_routes":               DatasourceIPRoutes(),
+			"routeros_ip_services":             DatasourceIPServices(),
+			"routeros_ipv6_addresses":          DatasourceIPv6Addresses(),
+			"routeros_ipv6_firewall":           DatasourceIPv6Firewall(),
+			"routeros_system_resource":         DatasourceSystemResource(),
+			"routeros_system_routerboard":      DatasourceSystemRouterboard(),
+			"routeros_wifi_easy_connect":       DatasourceWiFiEasyConnect(),
+			"routeros_x509":                    DatasourceX509(),
 
 			// Aliases for entries that have been renamed
 			"routeros_firewall": DatasourceIPFirewall(),

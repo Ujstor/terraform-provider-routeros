@@ -9,6 +9,7 @@ import (
 
 // https://github.com/xhit/go-str2duration
 var unitMap = map[string]int64{
+	"us": int64(time.Nanosecond),
 	"ms": int64(time.Millisecond),
 	"s":  int64(time.Second),
 	"m":  int64(time.Minute),
@@ -17,10 +18,20 @@ var unitMap = map[string]int64{
 	"w":  int64(time.Hour) * 168,
 }
 
-func ParseDuration(s string) (time.Duration, error) {
+func ParseDuration(s string, baseUnits time.Duration) (time.Duration, error) {
 	// ([0-9]*([0-9]*)?[a-z]+)+
 	orig := s
 	var d int64
+
+	// 1d 00:00:00
+	if ss := strings.SplitN(s, " ", 2); len(ss) > 1 {
+		res, err := ParseDuration(ss[1], baseUnits)
+		if err != nil {
+			return 0, err
+		}
+		d += int64(res)
+		s = ss[0]
+	}
 
 	// Special case: if all that is left is "0", this is zero.
 	if s == "0" {
@@ -87,7 +98,7 @@ func ParseDuration(s string) (time.Duration, error) {
 			}
 		} else {
 			// missing unit in duration
-			unit = int64(time.Second)
+			unit = int64(baseUnits)
 		}
 		if v > (1<<63-1)/unit {
 			// overflow

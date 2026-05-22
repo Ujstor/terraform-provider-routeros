@@ -45,7 +45,7 @@ func ResourceSystemRouterboardSettings() *schema.Resource {
 			Optional:         true,
 			Description:      "A delay for a keystroke while booting.",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"boot_device": {
 			Type:     schema.TypeString,
@@ -82,6 +82,11 @@ func ResourceSystemRouterboardSettings() *schema.Resource {
 			ValidateFunc:     validation.StringInSlice([]string{"power-save", "regular"}, false),
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
+		"disable_pci": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Description: "Specific setting for devices with the MT7621 chip. Allows disabling PCI.",
+		},
 		"enable_jumper_reset": {
 			Type:             schema.TypeBool,
 			Optional:         true,
@@ -106,7 +111,7 @@ func ResourceSystemRouterboardSettings() *schema.Resource {
 			Optional:         true,
 			Description:      "An option to set a delay before the USB port is initialized. Used for mPCIe modems with RB9xx series devices only.",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"memory_frequency": {
 			Type:             schema.TypeString,
@@ -145,14 +150,14 @@ func ResourceSystemRouterboardSettings() *schema.Resource {
 			Optional:         true,
 			Description:      "An option to enable resetting everything by pressing the button at power-on for longer than the specified time but less than `reformat_hold_button_max.`",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"reformat_hold_button_max": {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "See `reformat_hold_button`.",
 			ValidateFunc:     ValidationTime,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"regulatory_domain_ce": {
 			Type:             schema.TypeBool,

@@ -29,7 +29,7 @@ resource "routeros_capsman_datapath" "test_rule" {
 - `mac_mask` (String) MAC address mask to apply when comparing clients' addresses.
 - `place_before` (String) Before which position the rule will be inserted.  
 	> Please check the effect of this option, as it does not work as you think!  
-	> Best way to use in conjunction with a data source. See [example](../data-sources/firewall.md#example-usage).
+	> Best way to use in conjunction with a data source. See [example](../data-sources/ip_firewall.md#example-usage).
 - `private_passphrase` (String) PSK passphrase for the client if some PSK authentication algorithm is used.
 - `radius_accounting` (Boolean) An option that specifies if RADIUS traffic accounting should be used in case of RADIUS authentication of the client.
 - `signal_range` (String) The range in which the client signal must fall.
@@ -48,4 +48,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/caps-man/access-list get [print show-ids]]
 terraform import routeros_capsman_access_list.test_rule "*1"
+#Or you can import a resource using one of its attributes
+terraform import routeros_capsman_access_list.test_rule "name=xxx"
 ```

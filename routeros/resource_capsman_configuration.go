@@ -39,8 +39,8 @@ func ResourceCapsManConfiguration() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
 		MetaResourcePath: PropResourcePath("/caps-man/configuration"),
 		MetaId:           PropId(Id),
-		MetaTransformSet: PropTransformSet("channel: channel.config", "datapath: datapath.config",
-			"rates: rates.config", "security: security.config"),
+		MetaTransformSet: PropTransformSet("channel.config: channel", "datapath.config: datapath",
+			"rates.config: rates", "security.config: security"),
 
 		"channel": {
 			Type:        schema.TypeMap,
@@ -49,6 +49,7 @@ func ResourceCapsManConfiguration() *schema.Resource {
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
 			},
+			ValidateDiagFunc: ValidationMapKeyNames,
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		KeyComment: PropCommentRw,
@@ -65,6 +66,7 @@ func ResourceCapsManConfiguration() *schema.Resource {
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
 			},
+			ValidateDiagFunc: ValidationMapKeyNames,
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"disconnect_timeout": {
@@ -75,7 +77,7 @@ func ResourceCapsManConfiguration() *schema.Resource {
 				"transmission will be retried with on-fail-retry-time interval. If no frame can be transmitted successfully " +
 				`during disconnect-timeout, the connection is closed, and this event is logged as "extensive data loss". ` +
 				"Successful frame transmission resets this timer.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"distance": {
 			Type:     schema.TypeString,
@@ -88,7 +90,7 @@ func ResourceCapsManConfiguration() *schema.Resource {
 			Optional: true,
 			Description: "Discard frames that have been queued for sending longer than frame-lifetime. By default, when " +
 				"value of this property is 0, frames are discarded only after connection is closed (format: 0.00 sec).",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"guard_interval": {
 			Type:     schema.TypeString,
@@ -167,6 +169,7 @@ func ResourceCapsManConfiguration() *schema.Resource {
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
 			},
+			ValidateDiagFunc: ValidationMapKeyNames,
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"rx_chains": {
@@ -185,6 +188,7 @@ func ResourceCapsManConfiguration() *schema.Resource {
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
 			},
+			ValidateDiagFunc: ValidationMapKeyNames,
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"ssid": {
@@ -212,7 +216,7 @@ func ResourceCapsManConfiguration() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		SchemaVersion: 1,

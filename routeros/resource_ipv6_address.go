@@ -25,7 +25,7 @@ import (
 ]
 */
 
-// ResourceIPv6Address https://wiki.mikrotik.com/wiki/Manual:IPv6/Address
+// ResourceIPv6Address https://help.mikrotik.com/docs/display/ROS/IP+Addressing
 func ResourceIPv6Address() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
 		MetaResourcePath: PropResourcePath("/ipv6/address"),
@@ -103,9 +103,21 @@ func ResourceIPv6Address() *schema.Resource {
 			Computed:    true,
 			Description: "Name of the actual interface the logical one is bound to.",
 		},
+		"auto_link_local": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "If newly created address is manual link-local address this setting allows to override " +
+				"dynamically created IPv6 link-local address.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		KeyComment:  PropCommentRw,
 		KeyDisabled: PropDisabledRw,
 		KeyDynamic:  PropDynamicRo,
+		"deprecated": {
+			Type:        schema.TypeBool,
+			Computed:    true,
+			Description: "Whether address is deprecated",
+		},
 		"eui_64": {
 			Type:        schema.TypeBool,
 			Optional:    true,
@@ -136,6 +148,12 @@ func ResourceIPv6Address() *schema.Resource {
 			Description: "If set indicates that address is anycast address and Duplicate Address Detection should " +
 				"not be performed.",
 		},
+		"slave": {
+			Type:        schema.TypeBool,
+			Computed:    true,
+			Description: "Whether address belongs to an interface which is a slave port to some other master interface",
+		},
+		KeyVrf: PropVrfRw,
 	}
 	return &schema.Resource{
 		CreateContext: DefaultCreate(resSchema),
@@ -143,7 +161,7 @@ func ResourceIPv6Address() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

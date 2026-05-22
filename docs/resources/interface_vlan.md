@@ -19,25 +19,26 @@ resource "routeros_interface_vlan" "interface_vlan" {
 - `name` (String) Changing the name of this resource will force it to be recreated.
 	> The links of other configuration properties to this resource may be lost!
 	> Changing the name of the resource outside of a Terraform will result in a loss of control integrity for that resource!
-- `vlan_id` (Number)
 
 ### Optional
 
 - `arp` (String) Address Resolution Protocol mode:
-		* disabled - the interface will not use ARP
-		* enabled - the interface will use ARP
-		* local-proxy-arp - the router performs proxy ARP on the interface and sends replies to the same interface
-		* proxy-arp - the router performs proxy ARP on the interface and sends replies to other interfaces
-		* reply-only - the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the ARP table. No dynamic entries will be automatically stored in the ARP table. Therefore for communications to be successful, a valid static entry must already exist.
-- `arp_timeout` (String) ARP timeout is time how long ARP record is kept in ARP table after no packets are received from IP. Value auto equals to the value of arp-timeout in IP/Settings, default is 30s. Can use postfix ms, s, M, h, d for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.
+  * disabled - the interface will not use ARP
+  * enabled - the interface will use ARP
+  * local-proxy-arp - the router performs proxy ARP on the interface and sends replies to the same interface
+  * proxy-arp - the router performs proxy ARP on the interface and sends replies to other interfaces
+  * reply-only - the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the ARP table. No dynamic entries will be automatically stored in the ARP table. Therefore for communications to be successful, a valid static entry must already exist.
+- `arp_timeout` (String) ARP timeout is time how long ARP record is kept in ARP table after no packets are received from IP. Value auto equals to the value of arp-timeout in IP/Settings, default is 30s. Can use postfix `ms`, `s`, `m`, `h`, `d` for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.
 - `comment` (String)
 - `disabled` (Boolean)
+- `hw_offloaded` (Boolean)
 - `loop_protect` (String)
 - `loop_protect_disable_time` (String)
 - `loop_protect_send_interval` (String)
-- `mtu` (String) Layer3 Maximum transmission unit ('auto', 0 .. 65535)
+- `mtu` (String) Layer3 Maximum transmission unit ('auto', 0 .. 65535). Look for the exact minimum value in the MikroTik documentation
 - `mvrp` (Boolean) Specifies whether this VLAN should declare its attributes through Multiple VLAN Registration Protocol (MVRP) as an applicant (available since RouterOS 7.15). It can be used to register the VLAN with connected bridges that support MVRP. This property only has an effect when use-service-tag is disabled.
 - `use_service_tag` (Boolean)
+- `vlan_id` (Number) Virtual LAN identifier or tag that is used to distinguish VLANs. Must be equal for all computers that belong to the same VLAN.
 
 ### Read-Only
 
@@ -53,4 +54,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/interface/vlan get [print show-ids]]
 terraform import routeros_interface_vlan.interface_vlan "*1"
+#Or you can import a resource using one of its attributes
+terraform import routeros_interface_vlan.interface_vlan "name=xxx"
 ```

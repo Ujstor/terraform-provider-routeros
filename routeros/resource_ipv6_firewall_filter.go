@@ -21,7 +21,7 @@ func ResourceIPv6FirewallFilter() *schema.Resource {
 			Required:    true,
 			Description: "Action to take if a packet is matched by the rule",
 			ValidateFunc: validation.StringInSlice([]string{
-				"accept", "add-dst-to-address-list", "add-src-to-address-list", "drop",
+				"accept", "add-dst-to-address-list", "add-src-to-address-list", "drop", "fasttrack-connection",
 				"jump", "log", "passthrough", "reject", "return",
 			}, false),
 		},
@@ -101,9 +101,10 @@ func ResourceIPv6FirewallFilter() *schema.Resource {
 			ValidateFunc: validation.IntBetween(0, 63),
 		},
 		"dst_address": {
-			Type:        schema.TypeString,
-			Optional:    true,
-			Description: "Matches packets which destination is equal to specified IP or falls into specified IP range.",
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Matches packets which destination is equal to specified IP or falls into specified IP range.",
+			DiffSuppressFunc: ImplicitSingleHostCIDR6,
 		},
 		"dst_address_list": {
 			Type:        schema.TypeString,
@@ -282,8 +283,8 @@ func ResourceIPv6FirewallFilter() *schema.Resource {
 			Optional:    true,
 			Description: "Specifies ICMP error to be sent back if the packet is rejected. Applicable if action=reject.",
 			ValidateFunc: validation.StringInSlice([]string{
-				"icmp-admin-prohibited", "icmp-net-prohibited", "icmp-protocol-unreachable", "icmp-host-prohibited",
-				"icmp-network-unreachable", "tcp-reset", "icmp-host-unreachable", "icmp-port-unreachable",
+				"icmp-address-unreachable", "icmp-admin-prohibited", "icmp-err-src-routing-header", "icmp-headers-too-long",
+				"icmp-no-route", "icmp-not-neighbour", "icmp-port-unreachable", "tcp-reset",
 			}, false),
 		},
 		// Was removed? No information.
@@ -298,9 +299,10 @@ func ResourceIPv6FirewallFilter() *schema.Resource {
 			Description: "Matches packets marked by mangle facility with particular routing mark.",
 		},
 		"src_address": {
-			Type:        schema.TypeString,
-			Optional:    true,
-			Description: "Matches packets which source is equal to specified IP or falls into a specified IP range.",
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Matches packets which source is equal to specified IP or falls into a specified IP range.",
+			DiffSuppressFunc: ImplicitSingleHostCIDR6,
 		},
 		"src_address_list": {
 			Type:        schema.TypeString,
@@ -353,7 +355,7 @@ func ResourceIPv6FirewallFilter() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

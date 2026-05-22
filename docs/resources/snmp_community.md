@@ -41,7 +41,7 @@ resource "routeros_snmp_community" "mything" {
 
 ### Read-Only
 
-- `default` (Boolean) It's a default community.
+- `default` (Boolean) It's the default item.
 - `id` (String) The ID of this resource.
 
 ## Import
@@ -50,4 +50,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/snmp/community get [print show-ids]]
 terraform import routeros_snmp_community.test "*0"
+#Or you can import a resource using one of its attributes
+terraform import routeros_snmp_community.test "name=xxx"
 ```

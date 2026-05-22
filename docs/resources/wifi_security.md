@@ -37,7 +37,7 @@ resource "routeros_wifi_security" "security1" {
 - `eap_username` (String) Username to use when the chosen EAP method requires one.
 - `encryption` (Set of String) A list of ciphers to support for encrypting unicast traffic.
 - `ft` (Boolean) An option to enable 802.11r fast BSS transitions (roaming).
-- `ft_mobility_domain` (Number) The fast BSS transition mobility domain ID.
+- `ft_mobility_domain` (String) The fast BSS transition mobility domain ID.
 - `ft_nas_identifier` (String) Fast BSS transition PMK-R0 key holder identifier.
 - `ft_over_ds` (Boolean) An option to enable fast BSS transitions over DS (distributed system).
 - `ft_preserve_vlanid` (Boolean) An option to preserve VLAN ID when roaming.
@@ -47,6 +47,7 @@ resource "routeros_wifi_security" "security1" {
 - `group_key_update` (String) The interval at which the group temporal key (key for encrypting broadcast traffic) is renewed.
 - `management_encryption` (String) A cipher to use for encrypting protected management frames.
 - `management_protection` (String) An option to enable 802.11w management frame protection.
+- `multi_passphrase_group` (String) Name of `/interface/wifi/security/multi-passphrase/` group that will be used. Only a single group can be defined under the security profile.
 - `owe_transition_interface` (String) Name or internal ID of an interface which MAC address and SSID to advertise as the matching AP when running in OWE transition mode.
 - `passphrase` (String) Passphrase to use for PSK authentication types.
 - `sae_anti_clogging_threshold` (String) A parameter to mitigate DoS attacks by specifying a threshold of in-progress SAE authentications.
@@ -64,4 +65,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/interface/wifi/security get [print show-ids]]
 terraform import routeros_wifi_security.security1 '*1'
+#Or you can import a resource using one of its attributes
+terraform import routeros_wifi_security.security1 "name=xxx"
 ```

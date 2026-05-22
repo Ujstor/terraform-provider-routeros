@@ -54,22 +54,22 @@ func ResourceWifiProvisioning() *schema.Resource {
 			Description: "Regular expression to match radios by router identity.",
 		},
 		"master_configuration": {
-			Type:        schema.TypeString,
-			Optional:    true,
+			Type:     schema.TypeString,
+			Optional: true,
 			Description: "If action specifies to create interfaces, then a new master interface with its configuration " +
 				"set to this configuration profile will be created.",
 		},
 		"name_format": {
-			Type:         schema.TypeString,
-			Optional:     true,
-			Description:  "Specify the format of the CAP interface name creation.",
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "Specify the format of the CAP interface name creation.",
 		},
 		"radio_mac": {
-			Type:         schema.TypeString,
-			Optional:     true,
-			Default:      "00:00:00:00:00:00",
-			Description:  "MAC address of radio to be matched, empty MAC (00:00:00:00:00:00) means match all MAC addresses.",
-			ValidateFunc: ValidationMacAddress,
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "MAC address of radio to be matched, empty MAC means match all MAC addresses. `00:00:00:00:00:00` is not considered empty MAC-address.",
+			ValidateFunc:     ValidationMacAddress,
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"slave_configurations": {
 			Type:     schema.TypeList,
@@ -78,11 +78,17 @@ func ResourceWifiProvisioning() *schema.Resource {
 			Description: "If action specifies to create interfaces, then a new slave interface for each configuration " +
 				"profile in this list is created.",
 		},
+		"slave_name_format": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "The name format of the slave CAP interfaces. This option is available in RouterOS starting from version 7.16.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"supported_bands": {
 			Type:     schema.TypeList,
 			Optional: true,
 			Elem: &schema.Schema{
-				Type: schema.TypeString,
+				Type:         schema.TypeString,
 				ValidateFunc: validation.StringInSlice([]string{"2ghz-ax", "2ghz-g", "2ghz-n", "5ghz-a", "5ghz-ac", "5ghz-ax", "5ghz-n"}, false),
 			},
 			Description: "Match CAPs by supported modes.",
@@ -97,7 +103,7 @@ func ResourceWifiProvisioning() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

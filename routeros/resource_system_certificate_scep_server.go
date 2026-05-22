@@ -40,7 +40,7 @@ func ResourceCertificateScepServer() *schema.Resource {
 		"request_lifetime": {
 			Type:             schema.TypeString,
 			Optional:         true,
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 			ValidateDiagFunc: ValidationDurationAtLeast(time.Minute * 5),
 			Description:      "Request lifetime (5m minimum).",
 		},
@@ -54,7 +54,7 @@ func ResourceCertificateScepServer() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 	}
 }

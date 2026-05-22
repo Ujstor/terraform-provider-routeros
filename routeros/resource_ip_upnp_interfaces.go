@@ -22,15 +22,14 @@ func ResourceUPNPInterfaces() *schema.Resource {
 		"interface": {
 			Type:        schema.TypeString,
 			Required:    true,
-			Description: "Interface name on which uPnP will be running.",
+			Description: "Interface name on which UPnP will be running.",
 		},
 		"type": {
 			Type:     schema.TypeString,
 			Optional: true,
-			Description: `UPnP interface type:
-
-			external - the interface a global IP address is assigned to
-			internal - router's local interface the clients are connected to`,
+			Description: "UPnP interface type:" +
+				"\n  * external - the interface a global IP address is assigned to" +
+				"\n  * internal - router's local interface the clients are connected to",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 	}
@@ -40,7 +39,7 @@ func ResourceUPNPInterfaces() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

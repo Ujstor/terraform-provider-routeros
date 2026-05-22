@@ -30,7 +30,7 @@ func ResourceInterfaceBridge() *schema.Resource {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "How long a host's information will be kept in the bridge database.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		KeyArp:        PropArpRw,
 		KeyArpTimeout: PropArpTimeoutRw,
@@ -48,6 +48,7 @@ func ResourceInterfaceBridge() *schema.Resource {
 			Optional: true,
 		},
 		KeyDisabled: PropDisabledRw,
+		KeyDynamic:  PropDynamicRo,
 		"ether_type": {
 			Type:             schema.TypeString,
 			Optional:         true,
@@ -66,7 +67,13 @@ func ResourceInterfaceBridge() *schema.Resource {
 			Description: "Time which is spent during the initialization phase of the bridge interface " +
 				"(i.e., after router startup or enabling the interface) in listening/learning state before the " +
 				"bridge will start functioning normally.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
+		},
+		"forward_reserved_addresses": {
+			Type:             schema.TypeBool,
+			Optional:         true,
+			Description:      "An option whether to forward IEEE reserved multicast MAC addresses that are in the `01:80:C2:00:00:0x` range. This option is available in RouterOS starting from version 7.16.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"frame_types": {
 			Type:     schema.TypeString,
@@ -112,7 +119,7 @@ func ResourceInterfaceBridge() *schema.Resource {
 			Description: "If a port has fast-leave set to no and a bridge port receives a IGMP Leave message, " +
 				"then a IGMP Snooping enabled bridge will send a IGMP query to make sure that no devices has " +
 				"subscribed to a certain multicast stream on a bridge port.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 			RequiredWith:     []string{"igmp_snooping"},
 		},
 		"last_member_query_count": {
@@ -134,6 +141,12 @@ func ResourceInterfaceBridge() *schema.Resource {
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 			ValidateFunc:     validation.IntBetween(6, 40),
 		},
+		"max_learned_entries": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "An option to set the maximum number of learned hosts for the bridge interface. This option is available in RouterOS starting from version 7.16.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"max_message_age": {
 			Type:     schema.TypeString,
 			Optional: true,
@@ -147,7 +160,7 @@ func ResourceInterfaceBridge() *schema.Resource {
 			Computed: true,
 			Description: "Amount of time after an entry in the Multicast Database (MDB) is removed if a IGMP membership " +
 				"report is not received on a certain port. This property only has effect when igmp-snooping is set to yes.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 			RequiredWith:     []string{"igmp_snooping"},
 		},
 		"mld_version": {
@@ -237,7 +250,7 @@ func ResourceInterfaceBridge() *schema.Resource {
 			Computed: true,
 			Description: "Used to change the interval how often a bridge checks if it is the active multicast " +
 				"querier. This property only has effect when igmp-snooping and multicast-querier is set to yes.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 			RequiredWith:     []string{"igmp_snooping", "multicast_querier"},
 		},
 		"query_interval": {
@@ -246,7 +259,7 @@ func ResourceInterfaceBridge() *schema.Resource {
 			Computed: true,
 			Description: "Used to change the interval how often IGMP general membership queries are sent out. " +
 				"This property only has effect when igmp-snooping and multicast-querier is set to yes.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 			RequiredWith:     []string{"igmp_snooping", "multicast_querier"},
 		},
 		"query_response_interval": {
@@ -255,7 +268,7 @@ func ResourceInterfaceBridge() *schema.Resource {
 			Computed: true,
 			Description: "Interval in which a IGMP capable device must reply to a IGMP query with a IGMP membership " +
 				"report. This property only has effect when igmp-snooping and multicast-querier is set to yes.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 			RequiredWith:     []string{"igmp_snooping", "multicast_querier"},
 		},
 		KeyRunning: PropRunningRo,
@@ -287,7 +300,7 @@ func ResourceInterfaceBridge() *schema.Resource {
 			Description: "Used to change the amount of time after a bridge starts sending out IGMP general membership " +
 				"queries after the bridge is enabled. This property only has effect when igmp-snooping and " +
 				"multicast-querier is set to yes.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 			RequiredWith:     []string{"igmp_snooping", "multicast_querier"},
 		},
 		"transmit_hold_count": {
@@ -313,7 +326,7 @@ func ResourceInterfaceBridge() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		SchemaVersion: 1,

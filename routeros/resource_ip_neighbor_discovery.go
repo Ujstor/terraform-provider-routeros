@@ -26,6 +26,21 @@ func ResourceIpNeighborDiscoverySettings() *schema.Resource {
 			Description:      "Interface list on which members the discovery protocol will run on.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
+		"discover_interval": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "An option to adjust the frequency at which neighbor discovery packets are transmitted. " +
+				"The setting is available since RouterOS version 7.16.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"lldp_dcbx": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "Whether to send Data Center Bridging Capabilities Exchange Protocol (DCBX) TLVs, which " +
+				"allows to communicate switch QoS settings and capabilities with other neighboring devices using LLDP. " +
+				"**Only applies to CRS3xx, CRS5xx, CCR2116 and CCR2216 devices.**",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"lldp_mac_phy_config": {
 			Type:     schema.TypeBool,
 			Optional: true,
@@ -45,19 +60,16 @@ func ResourceIpNeighborDiscoverySettings() *schema.Resource {
 		"lldp_med_net_policy_vlan": {
 			Type:     schema.TypeString,
 			Optional: true,
-			Description: `Advertised VLAN ID for LLDP-MED Network Policy TLV. This allows assigning a VLAN ID for 
-			LLDP-MED capable devices, such as VoIP phones. The TLV will only be added to interfaces where LLDP-MED 
-			capable devices are discovered. Other TLV values are predefined and cannot be changed:
-
-			- Application Type - Voice
-			- VLAN Type - Tagged
-			- L2 Priority - 0
-			- DSCP Priority - 0
-		
-		When used together with the bridge interface, the (R/M)STP protocol should be enabled with protocol-mode setting. 
-		
-		Additionally, other neighbor discovery protocols (e.g. CDP) should be excluded using protocol setting to 
-		avoid LLDP-MED misconfiguration.`,
+			Description: "Advertised VLAN ID for LLDP-MED Network Policy TLV. This allows assigning a VLAN ID for " +
+				"LLDP-MED capable devices, such as VoIP phones. The TLV will only be added to interfaces where LLDP-MED " +
+				"capable devices are discovered. Other TLV values are predefined and cannot be changed:" +
+				"\n  * Application Type - Voice" +
+				"\n  * VLAN Type - Tagged" +
+				"\n  * L2 Priority - 0" +
+				"\n  * DSCP Priority - 0\n" +
+				"When used together with the bridge interface, the (R/M)STP protocol should be enabled with protocol-mode setting.\n" +
+				"Additionally, other neighbor discovery protocols (e.g. CDP) should be excluded using protocol setting to " +
+				"avoid LLDP-MED misconfiguration.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"lldp_poe_power": {
@@ -65,6 +77,13 @@ func ResourceIpNeighborDiscoverySettings() *schema.Resource {
 			Optional: true,
 			Description: "Two specific TLVs facilitate Power over Ethernet (PoE) management between Power Sourcing " +
 				"Equipment (PSE) and Powered Devices (PD).",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"lldp_vlan_info": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "An option whether to send IEEE 802.1 Organizationally Specific TLVs in LLDP related to VLANs. " +
+				"The setting is available since RouterOS version 7.16.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"mode": {
@@ -94,7 +113,7 @@ func ResourceIpNeighborDiscoverySettings() *schema.Resource {
 		DeleteContext: DefaultSystemDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

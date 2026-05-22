@@ -18,13 +18,23 @@ resource "routeros_ip_dhcp_client" "client" {
 ### Optional
 
 - `add_default_route` (String) Whether to install default route in routing table received from DHCP server.
+- `allow_reconfigure` (Boolean)
+- `check_gateway` (String) Method on how to check gateway reachability.
 - `comment` (String)
 - `default_route_distance` (Number) Distance of default route. Applicable if add-default-route is set to yes.
+- `default_route_tables` (Set of String) Default route tables.
 - `dhcp_options` (String) Options that are sent to the DHCP server.
 - `disabled` (Boolean)
+- `dscp` (Number) Sets the DSCP (Differentiated Services Code Point) value for outgoing DHCP client packets. This value is part of the IP header and is used to indicate the desired Quality of Service (QoS) level for network traffic.
 - `script` (String) A script.
+- `use_broadcast` (String) Whether to set broadcast bit in DHCPDISCOVER and DHCPREQUEST messages.
+    -  `always` - broadcast bit is set always
+    -  `both` - broadcast bit is set only first 15 seconds
+    -  `never` - broadcast bit is not set
 - `use_peer_dns` (Boolean) Whether to accept the DNS settings advertised by DHCP Server (will override the settings put in the /ip dns submenu).
 - `use_peer_ntp` (Boolean) Whether to accept the NTP settings advertised by DHCP Server (will override the settings put in the /system ntp client submenu).
+- `use_reconfigure` (Boolean) Allow the server to send Reconfigure messages to clients, prompting them to renew or update their configuration without waiting for their lease to expire.
+- `vlan_priority` (Number) If the DHCP client is running on a VLAN interface (`/interface/vlan`), you can specify the Priority Code Point (PCP) value. PCP is a 3-bit field in the VLAN header used to mark the priority of packets within a VLAN, allowing traffic to be prioritized accordingly. This setting applies only to VLAN interfaces and affects the priority of outgoing DHCP client packets.
 
 ### Read-Only
 
@@ -47,4 +57,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/ip/dhcp-client get [print show-ids]]
 terraform import routeros_ip_dhcp_client.client "*0"
+#Or you can import a resource using one of its attributes
+terraform import routeros_ip_dhcp_client.client "name=xxx"
 ```

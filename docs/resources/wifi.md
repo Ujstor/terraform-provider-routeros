@@ -3,6 +3,11 @@
 
 ## Example Usage
 ```terraform
+# If you need to add a reference to an existing configuration, each inline section contains a `config` parameter 
+# where you can specify the name of the actual resource.
+# configuration = {
+#   config = routeros_wifi_configuration.my-config.name
+# }
 resource "routeros_wifi" "wifi1" {
   configuration = {
     manager = "capsman"
@@ -22,16 +27,17 @@ resource "routeros_wifi" "wifi1" {
 
 - `aaa` (Map of String) AAA inline settings.
 - `arp` (String) Address Resolution Protocol mode:
-		* disabled - the interface will not use ARP
-		* enabled - the interface will use ARP
-		* local-proxy-arp - the router performs proxy ARP on the interface and sends replies to the same interface
-		* proxy-arp - the router performs proxy ARP on the interface and sends replies to other interfaces
-		* reply-only - the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the ARP table. No dynamic entries will be automatically stored in the ARP table. Therefore for communications to be successful, a valid static entry must already exist.
-- `arp_timeout` (String) ARP timeout is time how long ARP record is kept in ARP table after no packets are received from IP. Value auto equals to the value of arp-timeout in IP/Settings, default is 30s. Can use postfix ms, s, M, h, d for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.
+  * disabled - the interface will not use ARP
+  * enabled - the interface will use ARP
+  * local-proxy-arp - the router performs proxy ARP on the interface and sends replies to the same interface
+  * proxy-arp - the router performs proxy ARP on the interface and sends replies to other interfaces
+  * reply-only - the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the ARP table. No dynamic entries will be automatically stored in the ARP table. Therefore for communications to be successful, a valid static entry must already exist.
+- `arp_timeout` (String) ARP timeout is time how long ARP record is kept in ARP table after no packets are received from IP. Value auto equals to the value of arp-timeout in IP/Settings, default is 30s. Can use postfix `ms`, `s`, `m`, `h`, `d` for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.
 - `channel` (Map of String) Channel inline settings.
 - `comment` (String)
 - `configuration` (Map of String) Configuration inline settings.
 - `datapath` (Map of String) Datapath inline settings.
+- `deprioritize_unii_3_4` (Boolean) Whether to assign lower priority to channels with a control frequency of 5720 or 5825-5885 MHz. These channels are unsupported by some client devices, making their automatic selection undesirable. Defaults to `yes` in ETSI regulatory domains, elsewhere to `no`.
 - `disable_running_check` (Boolean) An option to set the running property to true if it is not disabled.
 - `disabled` (Boolean)
 - `interworking` (Map of String) Interworking inline settings.

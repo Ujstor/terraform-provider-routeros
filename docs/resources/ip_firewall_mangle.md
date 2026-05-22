@@ -59,11 +59,11 @@ resource "routeros_ip_firewall_mangle" "rule" {
 - `log_prefix` (String) Adds specified text at the beginning of every log message. Applicable if action=log or log=yes configured.
 - `new_connection_mark` (String) Sets a new connection-mark value.
 - `new_dscp` (Number) Sets a new DSCP value for a packet.
-- `new_mss` (String) Sets a new MSS for a packet.  
-	> clamp-to-pmtu feature sets (DF) bit in the IP header to dynamically discover the PMTU of a path.  
-	> Host sends all datagrams on that path with the DF bit set until receives ICMP.  
-	> Destination Unreachable messages with a code meaning "fragmentation needed and DF set".    
-	> Upon receipt of such a message, the source host reduces its assumed PMTU for the path.
+- `new_mss` (String) Sets a new MSS for a packet.
+  * clamp-to-pmtu feature sets (DF) bit in the IP header to dynamically discover the PMTU of a path.
+  * Host sends all datagrams on that path with the DF bit set until receives ICMP.
+  * Destination Unreachable messages with a code meaning `fragmentation needed and DF set`.
+  * Upon receipt of such a message, the source host reduces its assumed PMTU for the path.
 - `new_packet_mark` (String) Sets a new packet-mark value.
 - `new_priority` (String) Sets a new priority for a packet. This can be the VLAN, WMM, DSCP or MPLS EXP priority. This property can also be used to set an internal priority.
 - `new_routing_mark` (String) Sets a new routing-mark value.
@@ -79,7 +79,7 @@ resource "routeros_ip_firewall_mangle" "rule" {
 - `per_connection_classifier` (String) PCC matcher allows dividing traffic into equal streams with the ability to keep packets with a specific set of options in one particular stream.
 - `place_before` (String) Before which position the rule will be inserted.  
 	> Please check the effect of this option, as it does not work as you think!  
-	> Best way to use in conjunction with a data source. See [example](../data-sources/firewall.md#example-usage).
+	> Best way to use in conjunction with a data source. See [example](../data-sources/ip_firewall.md#example-usage).
 - `port` (String) Matches if any (source or destination) port matches the specified list of ports or port ranges. Applicable only if protocol is TCP or UDP
 - `protocol` (String) Matches particular IP protocol specified by protocol name or number.
 - `psd` (String) Attempts to detect TCP and UDP scans. Parameters are in the following format WeightThreshold, DelayThreshold, LowPortWeight, HighPortWeight.
@@ -109,4 +109,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/ip/firewall/mangle get [print show-ids]]
 terraform import routeros_ip_firewall_mangle.rule "*0"
+#Or you can import a resource using one of its attributes
+terraform import routeros_ip_firewall_mangle.rule "name=xxx"
 ```

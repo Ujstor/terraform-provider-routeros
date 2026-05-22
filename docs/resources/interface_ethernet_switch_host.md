@@ -27,7 +27,7 @@ resource "routeros_interface_ethernet_switch_host" "test" {
 - `mirror` (Boolean) Whether to send a frame copy to mirror-target port from a frame with matching MAC destination address (matching destination or source address for CRS3xx series switches).
 - `redirect_to_cpu` (Boolean) Whether to redirect a frame to switch CPU port from a frame with matching MAC destination address (matching destination or source address for CRS3xx series switches).
 - `share_vlan_learned` (Boolean) Whether the static host MAC address lookup is used with shared-VLAN-learning (SVL) or independent-VLAN-learning (IVL). The SVL mode is used for those VLAN entries that do not support IVL or IVL is disabled (independent-learning=no).
-- `vlan_id` (String) VLAN ID for the statically added MAC address entry.
+- `vlan_id` (Number) VLAN ID for the statically added MAC address entry.
 
 ### Read-Only
 
@@ -41,4 +41,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/interface/ethernet/switch/host get [print show-ids]]
 terraform import routeros_interface_ethernet_switch_host.test *0
+#Or you can import a resource using one of its attributes
+terraform import routeros_interface_ethernet_switch_host.test "name=xxx"
 ```

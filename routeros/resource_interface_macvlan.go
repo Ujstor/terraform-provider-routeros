@@ -19,15 +19,23 @@ func ResourceInterfaceMacVlan() *schema.Resource {
 		KeyLoopProtect:             PropLoopProtectRw,
 		KeyLoopProtectDisableTime:  PropLoopProtectDisableTimeRw,
 		KeyLoopProtectSendInterval: PropLoopProtectSendIntervalRw,
+		"loop_protect_status": {
+			Type:             schema.TypeBool,
+			Optional:         true,
+			Description:      "Loop protect status",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"mode": {
 			Type:     schema.TypeString,
 			Optional: true,
 			Default:  "bridge",
-			Description: `Sets MACVLAN interface mode:
-	private - does not allow communication between MACVLAN instances on the same parent interface.
-	bridge - allows communication between MACVLAN instances on the same parent interface.`,
-			ValidateFunc:     validation.StringInSlice([]string{"private", "bridge"}, true),
+			Description: "Sets MACVLAN interface mode:\n  *	private - does not allow communication between MACVLAN " +
+				"instances on the same parent interface.\n  * bridge - allows communication between MACVLAN instances on " +
+				"the same parent interface.",
+			ValidateFunc: validation.StringInSlice([]string{"private", "bridge"}, true),
 		},
+		KeyMtu:     PropMtuRw(),
+		KeyRunning: PropRunningRo,
 		KeyMacAddress: PropMacAddressRw(
 			`Static MAC address of the interface. A randomly generated MAC address will be assigned when not specified.`,
 			false,
@@ -42,7 +50,7 @@ func ResourceInterfaceMacVlan() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 		Schema: resSchema,
 	}

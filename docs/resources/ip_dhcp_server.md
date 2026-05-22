@@ -23,6 +23,7 @@ resource "routeros_ip_dhcp_server" "server" {
 ### Optional
 
 - `add_arp` (Boolean) Whether to add dynamic ARP entry.
+- `address_lists` (Set of String) Address list to which address will be added if lease is bound.
 - `address_pool` (String) IP pool, from which to take IP addresses for the clients. If set to static-only, then only the clients that have a static lease (added in lease submenu) will be allowed.
 - `allow_dual_stack_queue` (Boolean) Creates a single simple queue entry for both IPv4 and IPv6 addresses, uses the MAC address and DUID for identification. Requires IPv6 DHCP Server to have this option enabled as well to work properly.
 - `always_broadcast` (Boolean) Always send replies as broadcasts even if destination IP is known.
@@ -35,14 +36,17 @@ resource "routeros_ip_dhcp_server" "server" {
 - `delay_threshold` (String) If secs field in DHCP packet is smaller than delay-threshold, then this packet is ignored. If set to none - there is no threshold (all DHCP packets are processed).
 - `dhcp_option_set` (String) Use custom set of DHCP options defined in option sets menu.
 - `disabled` (Boolean)
+- `dynamic_lease_identifiers` (String) Dynamic lease identifier
 - `insert_queue_before` (String) Specify where to place dynamic simple queue entries for static DCHP leases with rate-limit parameter set.
 - `lease_script` (String) A script that will be executed after a lease is assigned or de-assigned.
 - `lease_time` (String) The time that a client may use the assigned address. The client will try to renew this address after half of this time and will request a new address after the time limit expires.
 - `parent_queue` (String)
 - `relay` (String) The IP address of the relay this DHCP server.
 - `src_address` (String) The address which the DHCP client must send requests to in order to renew an IP address lease.
+- `support_broadband_tr101` (Boolean) Support broadband TR101
 - `use_framed_as_classless` (Boolean) Forward RADIUS Framed-Route as a DHCP Classless-Static-Route to DHCP-client.
 - `use_radius` (String) Whether to use RADIUS server.
+- `use_reconfigure` (Boolean) Allow the server to send Reconfigure (forcerenew) messages to clients, prompting them to renew configuration without waiting for their lease to expire.
 
 ### Read-Only
 

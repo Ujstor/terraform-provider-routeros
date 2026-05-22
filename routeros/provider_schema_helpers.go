@@ -1,9 +1,9 @@
 package routeros
 
 import (
-	"context"
 	"fmt"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -31,6 +31,7 @@ const (
 	KeyArpTimeout              = "arp_timeout"
 	KeyClampTcpMss             = "clamp_tcp_mss"
 	KeyComment                 = "comment"
+	KeyDefault                 = "default"
 	KeyDynamic                 = "dynamic"
 	KeyDefaultName             = "default_name"
 	KeyDisabled                = "disabled"
@@ -38,6 +39,7 @@ const (
 	KeyDscp                    = "dscp"
 	KeyEnabled                 = "enabled"
 	KeyFilter                  = "filter"
+	KeyHwOffloaded             = "hw_offloaded"
 	KeyInactive                = "inactive"
 	KeyInterface               = "interface"
 	KeyInvalid                 = "invalid"
@@ -56,6 +58,7 @@ const (
 	KeyRemoteAddress           = "remote_address"
 	KeyRunning                 = "running"
 	KeyVrf                     = "vrf"
+	KeyVlanId                  = "vlan_id"
 )
 
 // PropResourcePath Resource path property.
@@ -108,7 +111,7 @@ func PropDropByValue(s ...string) *schema.Schema {
 	}
 }
 
-// PropTransformSet List of []string{"TF", "MT"} string pairs.
+// PropTransformSet List of []string{"TF : MT", "TF : MT", ...} string pairs.
 func PropTransformSet(s ...string) *schema.Schema {
 	return &schema.Schema{
 		Type:        schema.TypeString,
@@ -121,7 +124,7 @@ func PropTransformSet(s ...string) *schema.Schema {
 	}
 }
 
-// PropSkipFields
+// PropSkipFields SnakeName notation
 func PropSkipFields(s ...string) *schema.Schema {
 	return &schema.Schema{
 		Type:        schema.TypeString,
@@ -194,11 +197,27 @@ func PropMacAddressRw(description string, required bool) *schema.Schema {
 	}
 	return mac
 }
+
 func PropDefaultNameRo(description string) *schema.Schema {
 	return &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
 		Description: description,
+	}
+}
+
+func PropVlanIdRw(description string, required bool) *schema.Schema {
+	var ds schema.SchemaDiffSuppressFunc
+	if !required {
+		ds = AlwaysPresentNotUserProvided
+	}
+	return &schema.Schema{
+		Type:             schema.TypeInt,
+		Optional:         !required,
+		Required:         required,
+		Description:      description,
+		ValidateFunc:     validation.IntBetween(0, 4094),
+		DiffSuppressFunc: ds,
 	}
 }
 
@@ -217,12 +236,13 @@ var (
 	PropArpRw = &schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
-		Description: `Address Resolution Protocol mode:
-		* disabled - the interface will not use ARP
-		* enabled - the interface will use ARP
-		* local-proxy-arp - the router performs proxy ARP on the interface and sends replies to the same interface
-		* proxy-arp - the router performs proxy ARP on the interface and sends replies to other interfaces
-		* reply-only - the interface will only reply to requests originated from matching IP address/MAC address combinations which are entered as static entries in the ARP table. No dynamic entries will be automatically stored in the ARP table. Therefore for communications to be successful, a valid static entry must already exist.`,
+		Description: "Address Resolution Protocol mode:\n  * disabled - the interface will not use ARP\n  * enabled - " +
+			"the interface will use ARP\n  * local-proxy-arp - the router performs proxy ARP on the interface and sends " +
+			"replies to the same interface\n  * proxy-arp - the router performs proxy ARP on the interface and sends " +
+			"replies to other interfaces\n  * reply-only - the interface will only reply to requests originated from " +
+			"matching IP address/MAC address combinations which are entered as static entries in the ARP table. No " +
+			"dynamic entries will be automatically stored in the ARP table. Therefore for communications to be " +
+			"successful, a valid static entry must already exist.",
 		ValidateFunc: validation.StringInSlice([]string{"disabled", "enabled", "local-proxy-arp", "proxy-arp",
 			"reply-only"}, false),
 		DiffSuppressFunc: AlwaysPresentNotUserProvided,
@@ -232,8 +252,8 @@ var (
 		Optional: true,
 		Description: "ARP timeout is time how long ARP record is kept in ARP table after no packets are received " +
 			"from IP. Value auto equals to the value of arp-timeout in IP/Settings, default is 30s. Can use postfix " +
-			"ms, s, M, h, d for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.",
-		ValidateFunc: validation.StringMatch(regexp.MustCompile(`^$|auto$|(\d+(ms|s|M|h|d)?)+$`),
+			"`ms`, `s`, `m`, `h`, `d` for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.",
+		ValidateFunc: validation.StringMatch(regexp.MustCompile(`^$|auto$|(\d+(ms|s|m|h|d)?)+$`),
 			"expected arp_timout value to be 'auto' string or time value"),
 		DiffSuppressFunc: AlwaysPresentNotUserProvided,
 	}
@@ -254,6 +274,11 @@ var (
 		Type:             schema.TypeBool,
 		Optional:         true,
 		DiffSuppressFunc: AlwaysPresentNotUserProvided,
+	}
+	PropDefaultRo = &schema.Schema{
+		Type:        schema.TypeBool,
+		Computed:    true,
+		Description: "It's the default item.",
 	}
 	PropDontFragmentRw = &schema.Schema{
 		Type:             schema.TypeString,
@@ -298,10 +323,16 @@ var (
 			"and cannot be directly modified.",
 	}
 	PropFilterRw = &schema.Schema{
-		Type:        schema.TypeMap,
-		Optional:    true,
-		Elem:        schema.TypeString,
-		Description: "Additional request filtering options.",
+		Type:             schema.TypeMap,
+		Optional:         true,
+		Elem:             schema.TypeString,
+		Description:      "Additional request filtering options.",
+		ValidateDiagFunc: ValidationMapKeyNames,
+	}
+	PropHwOffloadedRo = &schema.Schema{
+		Type:        schema.TypeBool,
+		Computed:    true,
+		Description: "Indicates whether the route is eligible to be hardware offloaded on supported hardware.",
 	}
 	PropInactiveRo = &schema.Schema{
 		Type:     schema.TypeBool,
@@ -327,16 +358,19 @@ var (
 	PropKeepaliveRw = &schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
-		Default:  "10s,10",
 		ValidateFunc: validation.StringMatch(regexp.MustCompile(`^(\d+[smhdw]?)+(,\d+)?$`),
 			"value must be integer[/time],integer 0..4294967295 (https://help.mikrotik.com/docs/display/ROS/GRE)"),
 		Description: "Tunnel keepalive parameter sets the time interval in which the tunnel running flag will " +
 			"remain even if the remote end of tunnel goes down. If configured time,retries fail, interface " +
 			"running flag is removed. Parameters are written in following format: " +
-			"KeepaliveInterval,KeepaliveRetries where KeepaliveInterval is time interval and " +
-			"KeepaliveRetries - number of retry attempts. KeepaliveInterval is integer 0..4294967295",
+			"`KeepaliveInterval,KeepaliveRetries` where `KeepaliveInterval` is time interval and " +
+			"`KeepaliveRetries` - number of retry attempts. `KeepaliveInterval` is integer 0..4294967295",
 		DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 			if old == new {
+				return true
+			}
+
+			if AlwaysPresentNotUserProvided(k, old, new, d) {
 				return true
 			}
 
@@ -347,7 +381,7 @@ var (
 			o := strings.Split(old, ",")
 			n := strings.Split(new, ",")
 			if len(o) != 2 || len(n) != 2 {
-				panic(fmt.Sprintf("[GRE keepalive] wrong keepalive format, old: '%v', new: '%v'", old, new))
+				panic(fmt.Sprintf("[Keepalive] wrong keepalive format, old: '%v', new: '%v'", old, new))
 			}
 
 			// Compare keepalive retries.
@@ -356,14 +390,14 @@ var (
 			}
 
 			// Compare keepalive intervals.
-			oDuration, err := ParseDuration(o[0])
+			oDuration, err := ParseDuration(o[0], time.Second)
 			if err != nil {
-				panic("[GRE keepalive] parse 'old' duration error: " + err.Error())
+				panic("[Keepalive] parse 'old' duration error: " + err.Error())
 			}
 
-			nDuration, err := ParseDuration(n[0])
+			nDuration, err := ParseDuration(n[0], time.Second)
 			if err != nil {
-				panic("[GRE keepalive] parse 'new' duration error: " + err.Error())
+				panic("[Keepalive] parse 'new' duration error: " + err.Error())
 			}
 
 			return oDuration.Seconds() == nDuration.Seconds()
@@ -387,7 +421,7 @@ var (
 		Type:             schema.TypeString,
 		Optional:         true,
 		Description:      "Source address of the tunnel packets, local on the router.",
-		ValidateFunc:     validation.IsIPv4Address,
+		ValidateFunc:     validation.IsIPAddress,
 		DiffSuppressFunc: AlwaysPresentNotUserProvided,
 	}
 	PropLoopProtectRw = &schema.Schema{
@@ -400,13 +434,13 @@ var (
 		Type:             schema.TypeString,
 		Optional:         true,
 		ValidateFunc:     ValidationTime,
-		DiffSuppressFunc: TimeEquall,
+		DiffSuppressFunc: TimeEqual,
 	}
 	PropLoopProtectSendIntervalRw = &schema.Schema{
 		Type:             schema.TypeString,
 		Optional:         true,
 		ValidateFunc:     ValidationTime,
-		DiffSuppressFunc: TimeEquall,
+		DiffSuppressFunc: TimeEqual,
 	}
 	PropLoopProtectStatusRo = &schema.Schema{
 		Type:     schema.TypeString,
@@ -434,14 +468,14 @@ var (
 		ForceNew: true,
 		Description: `Before which position the rule will be inserted.  
 	> Please check the effect of this option, as it does not work as you think!  
-	> Best way to use in conjunction with a data source. See [example](../data-sources/firewall.md#example-usage).  
+	> Best way to use in conjunction with a data source. See [example](../data-sources/ip_firewall.md#example-usage).  
 `,
 	}
 	PropRemoteAddressRw = &schema.Schema{
 		Type:             schema.TypeString,
 		Optional:         true,
 		Description:      "IP address of the remote end of the tunnel.",
-		ValidateFunc:     validation.IsIPv4Address,
+		ValidateFunc:     validation.IsIPAddress,
 		DiffSuppressFunc: AlwaysPresentNotUserProvided,
 	}
 	PropRunningRo = &schema.Schema{
@@ -489,8 +523,14 @@ func PropMtuRw() *schema.Schema {
 
 			return nil
 		},
-		Description: "Layer3 Maximum transmission unit ('auto', 0 .. 65535)",
+		Description: "Layer3 Maximum transmission unit ('auto', 0 .. 65535). Look for the exact minimum value in " +
+			"the MikroTik documentation",
 	}
+}
+
+// Unified information on attribute deprecation
+func DeprecatedInfo(ros string) string {
+	return "Deprecated since ROS v" + ros
 }
 
 // Properties validation.
@@ -509,7 +549,7 @@ var (
 				return diag.Errorf("expected type to be string")
 			}
 
-			duration, err := ParseDuration(value)
+			duration, err := ParseDuration(value, time.Second)
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -522,6 +562,26 @@ var (
 		}
 	}
 
+	// ValidationDurationBetween returns a SchemaValidateFunc which tests if the provided value
+	// is a valid duration expected by RouterOS and is between minVal and maxVal (inclusive)
+	ValidationDurationBetween = func(minVal, maxVal int) schema.SchemaValidateFunc {
+		return func(i interface{}, k string) (warnings []string, errors []error) {
+			value, ok := i.(string)
+			if !ok {
+				errors = append(errors, fmt.Errorf("expected type of %s to be string", k))
+				return warnings, errors
+			}
+
+			duration, err := ParseDuration(value, time.Second)
+			if err != nil {
+				errors = append(errors, fmt.Errorf("expected %q to be a valid time, got %q: %+v", k, i, err))
+				return warnings, errors
+			}
+
+			return validation.IntBetween(minVal, maxVal)(int(duration.Seconds()), k)
+		}
+	}
+
 	ValidationAutoYesNo = validation.StringInSlice([]string{"auto", "yes", "no"}, false)
 	ValidationIpAddress = validation.StringMatch(
 		regexp.MustCompile(`^$|^!?(\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(/([0-9]|[0-9]|[1-2][0-9]|3[0-2]))?)$`),
@@ -530,6 +590,10 @@ var (
 	ValidationMacAddress = validation.StringMatch(
 		regexp.MustCompile(`^!?\b(?:[0-9A-F]{2}\:){5}(?:[0-9A-F]{2})$`),
 		"Allowed MAC addresses should be [!]AA:BB:CC:DD:EE:FF",
+	)
+	ValidationMacAddressWithMask = validation.StringMatch(
+		regexp.MustCompile(`^!?\b(?:[0-9A-F]{2}\:){5}(?:[0-9A-F]{2})\/\b(?:[0-9A-F]{2}\:){5}(?:[0-9A-F]{2})$`),
+		"Allowed MAC addresses should be [!]AA:BB:CC:DD:EE:FF/FF:FF:FF:FF:FF:FF",
 	)
 
 	// ValidationMultiValInSlice returns a SchemaValidateDiagFunc which works like the StringInSlice function,
@@ -618,11 +682,52 @@ var (
 			return
 		}
 	}
+
+	reTerraformField = regexp.MustCompile("^[a-z0-9_]+$")
+	// ValidationMapKeyNames, A function to check map names for compliance with the TF standard.
+	// When copying keys from a real configuration it is easy to make a mistake and transfer a key
+	// containing dashes instead of underscores. This validator is added to prevent such errors.
+	ValidationMapKeyNames = func(v interface{}, path cty.Path) diag.Diagnostics {
+		var diags diag.Diagnostics
+
+		for key := range v.(map[string]interface{}) {
+			if reTerraformField.MatchString(key) {
+				continue
+			}
+
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Invalid attribute name",
+				Detail: fmt.Sprintf("%s: Attribute name may only contain lowercase alphanumeric characters & "+
+					"underscores.", key),
+				AttributePath: append(path, cty.IndexStep{Key: cty.StringVal(key)}),
+			})
+		}
+
+		return diags
+	}
 )
 
 // Properties DiffSuppressFunc.
 var (
-	TimeEquall = func(k, old, new string, d *schema.ResourceData) bool {
+	// Composite parameter splitting function.
+	split = func(r rune) bool { return r == '/' || r == ',' }
+
+	// A common function for comparing time when it is specified in seconds.
+	TimeEqual = func(k, old, new string, d *schema.ResourceData) bool {
+		return timeEqual(k, old, new, d, time.Second)
+	}
+
+	// Function for comparing time at a base value other than seconds.
+	TimeEqualU = func(baseUnits time.Duration) schema.SchemaDiffSuppressFunc {
+		return func(k, old, new string, d *schema.ResourceData) bool {
+			return timeEqual(k, old, new, d, baseUnits)
+		}
+	}
+
+	timeControlWords = []string{"immediately", "infinity", "none"}
+
+	timeEqual = func(k, old, new string, d *schema.ResourceData, baseUnits time.Duration) bool {
 		if old == "" {
 			return false
 		}
@@ -632,22 +737,35 @@ var (
 		}
 
 		// #447 routeros_ip_dhcp_server_config.store_leases_disk == "immediately"
-		if old == "immediately" || new == "immediately" {
+		// routeros_ipv6_nd_prefix.preferred_lifetime == "infinity"
+		if slices.Contains(timeControlWords, old) || slices.Contains(timeControlWords, new) {
 			return old == new
 		}
 
 		// Compare intervals:
-		oDuration, err := ParseDuration(old)
-		if err != nil {
-			panic("[TimeEquall] parse 'old' duration error: " + err.Error())
+		oldSet := strings.FieldsFunc(old, split)
+		newSet := strings.FieldsFunc(new, split)
+		if len(oldSet) != len(newSet) {
+			return false
 		}
 
-		nDuration, err := ParseDuration(new)
-		if err != nil {
-			panic("[TimeEquall] parse 'new' duration error: " + err.Error())
+		for i, _ := range oldSet {
+			o, err := ParseDuration(oldSet[i], baseUnits)
+			if err != nil {
+				panic("[TimeEquall] parse 'old' duration error: " + err.Error())
+			}
+
+			n, err := ParseDuration(newSet[i], baseUnits)
+			if err != nil {
+				panic("[TimeEquall] parse 'new' duration error: " + err.Error())
+			}
+
+			if o != n {
+				return false
+			}
 		}
 
-		return oDuration.Seconds() == nDuration.Seconds()
+		return true
 	}
 
 	HexEqual = func(k, old, new string, d *schema.ResourceData) bool {
@@ -712,9 +830,94 @@ var (
 	MacAddressEqual = func(k, old, new string, d *schema.ResourceData) bool {
 		return strings.EqualFold(old, new)
 	}
+
+	BitsEqual = func(k, old, new string, d *schema.ResourceData) bool {
+		if old == "" {
+			return false
+		}
+
+		if AlwaysPresentNotUserProvided(k, old, new, d) {
+			return true
+		}
+
+		// Compare values 30M/30M <> 30000000/30000000 or 30M <> 30000000:
+		oldSet := strings.FieldsFunc(old, split)
+		newSet := strings.FieldsFunc(new, split)
+		if len(oldSet) != len(newSet) {
+			return false
+		}
+
+		for i, _ := range oldSet {
+			o, err := ParseBitValues(oldSet[i])
+			if err != nil {
+				panic("[BitsEqual] parse 'old' value error: " + err.Error())
+			}
+
+			n, err := ParseBitValues(newSet[i])
+			if err != nil {
+				panic("[BitsEqual] parse 'new' value error: " + err.Error())
+			}
+
+			if o != n {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	BytesEqual = func(k, old, new string, d *schema.ResourceData) bool {
+		if old == "" {
+			return false
+		}
+
+		if AlwaysPresentNotUserProvided(k, old, new, d) {
+			return true
+		}
+
+		if slices.Contains([]string{"unlimited"}, old) || slices.Contains([]string{"unlimited"}, new) {
+			return old == new
+		}
+
+		// Compare values 64M/64M <> 67108864/67108864 or 64M <> 67108864:
+		oldSet := strings.FieldsFunc(old, split)
+		newSet := strings.FieldsFunc(new, split)
+		if len(oldSet) != len(newSet) {
+			return false
+		}
+
+		for i, _ := range oldSet {
+			o, err := ParseByteValues(oldSet[i])
+			if err != nil {
+				panic("[BytesEqual] parse 'old' value error: " + err.Error())
+			}
+
+			n, err := ParseByteValues(newSet[i])
+			if err != nil {
+				panic("[BytesEqual] parse 'new' value error: " + err.Error())
+			}
+
+			if o != n {
+				return false
+			}
+		}
+
+		return true
+	}
 )
 
-func buildReadFilter(m map[string]interface{}) []string {
+// ImplicitSingleHostCIDR is a DiffSuppressFunc function that prevents a configuration such as `192.168.1.2/32`
+// constantly planning a diff against a parameter read as `192.168.1.2` (i.e. without a prefix length) where
+// the ROS API omits it for single hosts. ImplicitSingleHostCIDR should only be used where ROS does otherwise
+// admit a prefix length, i.e. `192.168.1.2/24` would both write and read back as such for the same parameter.
+func ImplicitSingleHostCIDR4(k, old, new string, d *schema.ResourceData) bool {
+	return new == old + "/32"
+}
+func ImplicitSingleHostCIDR6(k, old, new string, d *schema.ResourceData) bool {
+	return new == old + "/128"
+}
+
+func buildReadFilter(m map[string]any) []string {
 	var res []string
 
 	for fieldName, fieldValue := range m {
@@ -732,51 +935,3 @@ var DeleteSystemObject = []diag.Diagnostic{{
 		"This action will remove the object from the Terraform state. " +
 		"See also: 'terraform state rm' https://developer.hashicorp.com/terraform/cli/commands/state/rm",
 }}
-
-// ImportStateCustomContext is an implementation of StateContextFunc that can be used to
-// import resources with the ability to explicitly or implicitly specify a key field.
-// `terraform [global options] import [options] ADDR ID`.
-// During import the content of the `ID` is checked and depending on the specified string it is possible to automatically search for the internal Mikrotik identifier.
-// Logic of `ID` processing
-// - The first character of the string contains an asterisk (standard Mikrotik identifier `*3E`): import without additional search.
-// - String containing no "=" character (`wifi-01`): the "name" field is used for searching.
-// - String containing only one "=" character (`"comment=hAP-ac3"`): the "word left" and "word right" pair is used for searching.
-func ImportStateCustomContext(s map[string]*schema.Schema) schema.StateContextFunc {
-	return func(ctx context.Context, d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
-		id := d.Id()
-		fieldName := "name"
-
-		if len(id) == 0 || id[0] == '*' {
-			return []*schema.ResourceData{d}, nil
-		} else {
-			// By default, we filter by the "name" field
-			if s := strings.Split(id, "="); len(s) == 2 {
-				// field=value
-				fieldName = s[0]
-				id = s[1]
-			}
-		}
-
-		path := s[MetaResourcePath].Default.(string)
-
-		res, err := ReadItemsFiltered([]string{SnakeToKebab(fieldName) + "=" + id}, path, m.(Client))
-		if err != nil {
-			return nil, err
-		}
-
-		switch len(*res) {
-		case 0:
-			return nil, fmt.Errorf("resource not found: %v=%v", fieldName, id)
-		case 1:
-			retId, ok := (*res)[0][Id.String()]
-			if !ok {
-				return nil, fmt.Errorf("attribute %v not found in the response", Id.String())
-			}
-			d.SetId(retId)
-		default:
-			return nil, fmt.Errorf("more than one resource found: %v=%v", fieldName, id)
-		}
-
-		return []*schema.ResourceData{d}, nil
-	}
-}

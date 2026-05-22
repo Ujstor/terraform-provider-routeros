@@ -22,10 +22,7 @@ func ResourceSystemLed() *schema.Resource {
 		MetaResourcePath: PropResourcePath("/system/leds"),
 		MetaId:           PropId(Id),
 
-		"default": {
-			Type:     schema.TypeBool,
-			Computed: true,
-		},
+		KeyDefault:  PropDefaultRo,
 		KeyDisabled: PropDisabledRw,
 		"interface": {
 			Type:             schema.TypeString,
@@ -69,7 +66,7 @@ func ResourceSystemLed() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

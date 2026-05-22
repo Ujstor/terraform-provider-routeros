@@ -13,7 +13,8 @@
 
 ### Optional
 
-- `bsd_syslog` (Boolean) Whether to use bsd-syslog as defined in RFC 3164.
+- `bsd_syslog` (Boolean, Deprecated) Whether to use bsd-syslog as defined in RFC 3164.
+- `cef_event_delimiter` (String) Option helps remote syslog to distinguish between individual events within sent batch
 - `disk_file_count` (Number) Specifies number of files used to store log messages, applicable only if `action=disk`.
 - `disk_file_name` (String) Name of the file used to store log messages, applicable only if `action=disk`.
 - `disk_lines_per_file` (Number) Specifies maximum size of file in lines, applicable only if `action=disk`.
@@ -24,15 +25,29 @@
 - `memory_stop_on_full` (Boolean) Whether to stop to save log messages in local buffer after the specified memory-lines number is reached.
 - `remember` (Boolean) Whether to keep log messages, which have not yet been displayed in console, applicable if `action=echo`.
 - `remote` (String) Remote logging server's IP/IPv6 address, applicable if `action=remote`.
+- `remote_log_format` (String) Format for logs to be sent to remote instance:
+
+    - **cef** - logs are sent in CEF format;
+    - **default** - logs are sent as it is;
+    - **syslog** - logs are sent in BSD-syslog format.
 - `remote_port` (Number) Remote logging server's UDP port, applicable if `action=remote`.
+- `remote_protocol` (String) Protocol for remote logging messages.
 - `src_address` (String) Source address used when sending packets to remote server, applicable if `action=remote`.
 - `syslog_facility` (String) SYSLOG facility, applicable if `action=remote`.
 - `syslog_severity` (String) Severity level indicator defined in RFC 3164, applicable if `action=remote`.
 - `syslog_time_format` (String) SYSLOG time format (`bsd-syslog` or `iso8601`).
+- `vrf` (String) The VRF table this resource operates on.
 
 ### Read-Only
 
-- `default` (Boolean) This is a default action.
+- `default` (Boolean) It's the default item.
 - `id` (String) The ID of this resource.
 
+## Import
+Import is supported using the following syntax:
+```shell
+# The ID can be found via API or the terminal
+# The command for the terminal is -> :put [/system/logging/action get [print show-ids]]
 
+terraform import routeros_system_logging_action.disk "*1"
+```

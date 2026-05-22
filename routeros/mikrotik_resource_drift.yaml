@@ -1,0 +1,39 @@
+7.1:
+  /ip/dhcp-server:
+    - tf: src_address
+      mt: server-address
+  /routing/ospf/area:
+    - tf: nssa_translate
+      mt: nssa-translator
+7.17:
+  /interface/wireguard/peers:
+    - tf: is_responder
+      mt: responder
+7.18:
+  /container:
+    - tf: tag
+      mt: repo
+7.19:
+  /routing/bgp/connection:
+    - tf: address_families
+      mt: afi
+  /routing/bgp/template:
+    - tf: address_families
+      mt: afi
+7.20:
+  /interface/vxlan:
+    - tf: vrf
+      mt: vtep-vrf
+  /container:
+    - tf: envlist
+      mt: envlists
+  /container/config:
+    - tf: ram_high
+      mt: memory-high
+  /container/envs:
+    - tf: name
+      mt: list
+7.21:
+  /ip/ssh:
+    - tf: always-allow-password-login
+      mt: password-authentication

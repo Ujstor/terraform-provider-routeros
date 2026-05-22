@@ -23,10 +23,12 @@ func TestParseDuration(t *testing.T) {
 		{name: "163w4d9h", args: args{"163w4d9h"}, want: time.Duration(98960400 * time.Second), wantErr: false},
 		{name: "27489h", args: args{"27489h"}, want: time.Duration(98960400 * time.Second), wantErr: false},
 		{name: "120ms", args: args{"0.12"}, want: time.Duration(120 * time.Millisecond), wantErr: false},
+		{name: "1d 00:00:00", args: args{"1d 00:00:00"}, want: time.Duration(24 * time.Hour), wantErr: false},
+		{name: "2w 1d 00:00:00", args: args{"2w 1d 00:00:00"}, want: time.Duration(24 * 15 * time.Hour), wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ParseDuration(tt.args.s)
+			got, err := ParseDuration(tt.args.s, time.Second)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseDuration() error = %v, wantErr %v", err, tt.wantErr)
 				return

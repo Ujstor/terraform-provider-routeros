@@ -42,7 +42,7 @@ For more in-depth documentation about each of the resources and datasources, ple
 
 ### Versions tested
 
-- go 1.21 and ROS 7.12, 7.13, 7.14 (stable)
+- go 1.24.2 and ROS 7.12, 7.15, 7.16 (stable)
 
 ## Changelog
 
@@ -51,3 +51,64 @@ For a detailed changelog, please see the [changelog.md](CHANGELOG.md).
 ## Contributing
 This version of the module greatly simplifies the process of adding new resources.
 You are welcome!
+
+### Testing
+
+You can build the provider locally to test fixes by following these intructions:
+- Build and copy the provider where Terraform reads it
+```
+go build *.go && \
+mkdir -p ~/.terraform.d/plugins/terraform.local/local/routeros/1.0.0/$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m) && \
+mv main ~/.terraform.d/plugins/terraform.local/local/routeros/1.0.0/$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m)/terraform-provider-routeros_v1.0.0
+```
+- Change provider from 
+```hcl
+required_providers {
+  routeros = {
+    source  = "terraform-routeros/routeros"
+    version = "1.85.1"
+  }
+}
+```
+
+to
+```hcl
+required_providers {
+  routeros = {
+    source  = "terraform.local/local/routeros"
+    version = "1.0.0"
+  }
+}
+```
+- Clean your providers, init and apply
+- Alternatively, you can edit/create ~/.terraformrc add add a provider installation block like:
+```hcl
+provider_installation {
+  dev_overrides {
+     "terraform-routeros/routeros" = "/path/to/your/git/clone"
+  }
+
+  direct {
+  }
+}
+```
+
+and then build the provider using
+```
+go build -o terraform-provider-routeros *.go
+```
+in order for Terraform to find it.
+
+### Fixing RouterOS property drift
+
+Sometimes RouterOS might introduce a breaking change on a property. You can easilfy contribute to the provider by following these intructions:
+
+- Edit `routeros/mikrotik_resource_drift.yaml`. Add the resource used as well as the old property name and the new one
+- Perform the generator. It should edit file `routeros/mikrotik_resource_drift.go`.
+```bash
+cd routeros/
+go run ../tools/drift/main.go
+```
+- Submit your changes!
+
+[Here](https://github.com/terraform-routeros/terraform-provider-routeros/pull/758/files) is a example of pull request.

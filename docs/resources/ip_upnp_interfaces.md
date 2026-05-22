@@ -15,16 +15,15 @@ resource "routeros_ip_upnp_interfaces" "test" {
 
 ### Required
 
-- `interface` (String) Interface name on which uPnP will be running.
+- `interface` (String) Interface name on which UPnP will be running.
 
 ### Optional
 
 - `disabled` (Boolean)
 - `forced_ip` (String) Allow specifying what public IP to use if the external interface has more than one IP available.
 - `type` (String) UPnP interface type:
-
-			external - the interface a global IP address is assigned to
-			internal - router's local interface the clients are connected to
+  * external - the interface a global IP address is assigned to
+  * internal - router's local interface the clients are connected to
 
 ### Read-Only
 
@@ -37,4 +36,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/ip/upnp/interfaces get [print show-ids]]
 terraform import routeros_ip_upnp_interfaces.test '*1'
+#Or you can import a resource using one of its attributes
+terraform import routeros_ip_upnp_interfaces.test "name=xxx"
 ```

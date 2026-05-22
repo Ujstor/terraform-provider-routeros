@@ -32,8 +32,9 @@ func ResourceIPFirewallNat() *schema.Resource {
 		MetaResourcePath: PropResourcePath("/ip/firewall/nat"),
 		MetaId:           PropId(Id),
 		MetaSkipFields:   PropSkipFields("bytes", "packets"),
-		MetaSetUnsetFields: PropSetUnsetFields("dst_address_list", "src_address_list", "in_interface", "in_interface_list",
-			"out_interface", "out_interface_list", "in_bridge_port_list", "out_bridge_port_list"),
+		MetaSetUnsetFields: PropSetUnsetFields("dst_address", "dst_address_list", "src_address", "src_address_list",
+			"in_interface", "in_interface_list", "out_interface", "out_interface_list", "in_bridge_port_list",
+			"out_bridge_port_list"),
 
 		"action": {
 			Type:        schema.TypeString,
@@ -113,9 +114,10 @@ func ResourceIPFirewallNat() *schema.Resource {
 			ValidateFunc: validation.IntBetween(0, 63),
 		},
 		"dst_address": {
-			Type:        schema.TypeString,
-			Optional:    true,
-			Description: "Matches packets which destination is equal to specified IP or falls into specified IP range.",
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Matches packets which destination is equal to specified IP or falls into specified IP range.",
+			DiffSuppressFunc: ImplicitSingleHostCIDR4,
 		},
 		"dst_address_list": {
 			Type:        schema.TypeString,
@@ -326,9 +328,10 @@ func ResourceIPFirewallNat() *schema.Resource {
 				"new source IP address. Applicable if action=same",
 		},
 		"src_address": {
-			Type:        schema.TypeString,
-			Optional:    true,
-			Description: "Matches packets which source is equal to specified IP or falls into a specified IP range.",
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Matches packets which source is equal to specified IP or falls into a specified IP range.",
+			DiffSuppressFunc: ImplicitSingleHostCIDR4,
 		},
 		"src_address_list": {
 			Type:        schema.TypeString,
@@ -351,6 +354,27 @@ func ResourceIPFirewallNat() *schema.Resource {
 			Optional:     true,
 			Description:  "Matches source MAC address of the packet.",
 			ValidateFunc: validation.IsMACAddress,
+		},
+		// https://help.mikrotik.com/docs/spaces/ROS/pages/343244851/Socksify
+		"socks5_port": {
+			Type:             schema.TypeInt,
+			Optional:         true,
+			Description:      "Listening port of the SOCKS5 proxy server.",
+			ValidateFunc:     validation.IsPortNumber,
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"socks5_server": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "IP address of the SOCKS5 proxy server. (only IPv4 addresses are supported)",
+			ValidateFunc:     validation.IsIPv4Address,
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"socksify_service": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Name of existing socksify service.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"tcp_mss": {
 			Type:        schema.TypeString,
@@ -395,7 +419,7 @@ func ResourceIPFirewallNat() *schema.Resource {
 		},
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

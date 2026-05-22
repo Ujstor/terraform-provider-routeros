@@ -3,6 +3,7 @@ package routeros
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -78,7 +79,7 @@ func isEmpty(propName string, schemaProp *schema.Schema, d *schema.ResourceData,
 // serialization/deserialization.
 // Forward transformation for use in the 'MikrotikResourceDataToTerraform' function, reverse transformation for use
 // in the 'TerraformResourceDataToMikrotik' function.
-// s: "channel: channel.config","datapath: datapath.config"` in the Mikrotik (kebab) notation!
+// s: "channel.config: channel","datapath.config: datapath"` in the Mikrotik (kebab) notation!
 func loadTransformSet(s string, reverse bool) (m map[string]string) {
 	m = make(map[string]string)
 	for _, b := range reTransformSet.FindAllStringSubmatch(s, -1) {
@@ -120,9 +121,19 @@ func TerraformResourceDataToMikrotik(s map[string]*schema.Schema, d *schema.Reso
 	var transformSet map[string]string
 	var skipFields, setUnsetFields map[string]struct{}
 
-	// {"channel.config": "channel", "schema-field-name": "mikrotik-field-name"}
+	// {"channel.config: channel", "datapath.config: datapath", "schema-field-name": "mikrotik-field-name"}
 	if ts, ok := s[MetaTransformSet]; ok {
-		transformSet = loadTransformSet(ts.Default.(string), true)
+		transformSet = loadTransformSet(ts.Default.(string), false)
+	}
+
+	// Resource attribute drift compensation.
+	if drift := driftAttributeSlice.GetDriftMap(RouterOSVersion, s[MetaResourcePath].Default.(string), false); len(drift) > 0 {
+		if transformSet == nil {
+			transformSet = make(map[string]string)
+		}
+		for k, v := range drift {
+			transformSet[k] = v
+		}
 	}
 
 	// "field_first", "field_second", "field_third"
@@ -195,6 +206,13 @@ func TerraformResourceDataToMikrotik(s map[string]*schema.Schema, d *schema.Reso
 		mikrotikKebabName := SnakeToKebab(terraformSnakeName)
 		value := d.Get(terraformSnakeName)
 
+		// WiFi basic_rates_ag -> basic-rates-a/g
+		if transformSet != nil && terraformMetadata.Type != schema.TypeMap {
+			if new, ok := transformSet[terraformSnakeName]; ok {
+				mikrotikKebabName = SnakeToKebab(new)
+			}
+		}
+
 		switch terraformMetadata.Type {
 		case schema.TypeString:
 			if _, ok := setUnsetFields[terraformSnakeName]; ok && value.(string) == "" {
@@ -240,7 +258,7 @@ func TerraformResourceDataToMikrotik(s map[string]*schema.Schema, d *schema.Reso
 
 				for fieldName, value := range list {
 					// "output.0.affinity"
-					filedNameInState := fmt.Sprintf("%v.%v.%v", terraformSnakeName, 0, fieldName)
+					fieldNameInState := fmt.Sprintf("%v.%v.%v", terraformSnakeName, 0, fieldName)
 					fieldSchema := terraformMetadata.Elem.(*schema.Resource).Schema[fieldName]
 
 					// Skip all read-only properties.
@@ -248,11 +266,16 @@ func TerraformResourceDataToMikrotik(s map[string]*schema.Schema, d *schema.Reso
 						continue
 					}
 
-					if fieldSchema.Optional && !d.HasChange(filedNameInState) &&
-						isEmpty(filedNameInState, fieldSchema, d, ctyList.GetAttr(fieldName)) {
+					if fieldSchema.Optional && !d.HasChange(fieldNameInState) &&
+						isEmpty(fieldNameInState, fieldSchema, d, ctyList.GetAttr(fieldName)) {
 						continue
 					}
 					fieldName = SnakeToKebab(mikrotikKebabName + "." + fieldName)
+
+					// Serialization of sets.
+					if fieldSchema.Type == schema.TypeSet {
+						value = ListToString(value.(*schema.Set).List())
+					}
 
 					switch value := value.(type) {
 					case string:
@@ -266,6 +289,25 @@ func TerraformResourceDataToMikrotik(s map[string]*schema.Schema, d *schema.Reso
 			}
 			// Used to represent an unordered collection of items.
 		case schema.TypeSet:
+			if _, ok := setUnsetFields[terraformSnakeName]; ok {
+				// policy = ["api", "read", "winbox"] -> ["api", "read"]
+				// old = ... read, !telnet, !rommon, api, !local, winbox
+				// new = api, read
+				var res []string
+				for _, v := range d.GetRawConfig().GetAttr(terraformSnakeName).AsValueSet().Values() {
+					res = append(res, v.AsString())
+				}
+
+				old, _ := d.GetChange(terraformSnakeName)
+				for _, v := range old.(*schema.Set).List() {
+					elem := v.(string)
+					if len(elem) > 0 && elem[0] != '!' && !slices.Contains(res, elem) {
+						res = append(res, "!"+elem)
+					}
+				}
+				item[mikrotikKebabName] = strings.Join(res, ",")
+				continue
+			}
 			item[mikrotikKebabName] = ListToString(value.(*schema.Set).List())
 		case schema.TypeMap:
 			for k, v := range value.(map[string]interface{}) {
@@ -302,7 +344,17 @@ func MikrotikResourceDataToTerraform(item MikrotikItem, s map[string]*schema.Sch
 
 	// {"channel": "channel.config", "mikrotik-field-name": "schema-field-name"}
 	if ts, ok := s[MetaTransformSet]; ok {
-		transformSet = loadTransformSet(ts.Default.(string), false)
+		transformSet = loadTransformSet(ts.Default.(string), true)
+	}
+
+	// Resource attribute drift compensation.
+	if drift := driftAttributeSlice.GetDriftMap(RouterOSVersion, s[MetaResourcePath].Default.(string), true); len(drift) > 0 {
+		if transformSet == nil {
+			transformSet = make(map[string]string)
+		}
+		for k, v := range drift {
+			transformSet[k] = v
+		}
 	}
 
 	// "field_first", "field_second", "field_third"
@@ -481,6 +533,33 @@ func MikrotikResourceDataToTerraform(item MikrotikItem, s map[string]*schema.Sch
 						}
 					case schema.TypeBool:
 						v = BoolFromMikrotikJSON(mikrotikValue)
+					case schema.TypeSet:
+						var nl []interface{} // Nested list.
+
+						for _, v := range strings.Split(mikrotikValue, ",") {
+							switch s[terraformSnakeName].Elem.(*schema.Resource).Schema[subFieldSnakeName].Elem.(*schema.Schema).Type {
+							case schema.TypeFloat:
+								f, err := strconv.ParseFloat(v, 64)
+								if err != nil {
+									diags = diag.Errorf("%v for '%v' field", err, terraformSnakeName)
+									continue
+								}
+								nl = append(nl, f)
+
+							case schema.TypeInt:
+								i, err := strconv.Atoi(v)
+								if err != nil {
+									diags = diag.Errorf("%v for '%v' field", err, terraformSnakeName)
+									continue
+								}
+								nl = append(nl, i)
+
+							default:
+								nl = append(nl, v)
+							}
+						}
+
+						v = nl
 					}
 
 					if err != nil {
@@ -547,7 +626,18 @@ func MikrotikResourceDataToTerraformDatasource(items *[]MikrotikItem, resourceDa
 	var dsItems []map[string]interface{}
 	// System resource have an empty 'resourceDataKeyName'.
 	var isSystemDatasource bool = (resourceDataKeyName == "")
+	var transformSet map[string]string
 	var skipFields map[string]struct{}
+
+	// Resource attribute drift compensation.
+	if drift := driftAttributeSlice.GetDriftMap(RouterOSVersion, s[MetaResourcePath].Default.(string), true); len(drift) > 0 {
+		if transformSet == nil {
+			transformSet = make(map[string]string)
+		}
+		for k, v := range drift {
+			transformSet[k] = v
+		}
+	}
 
 	if sf, ok := s[MetaSkipFields]; ok {
 		skipFields = loadSkipFields(sf.Default.(string))
@@ -599,6 +689,14 @@ func MikrotikResourceDataToTerraformDatasource(items *[]MikrotikItem, resourceDa
 			// Skip all service fields.
 			if mikrotikKebabName[0:1] == "." {
 				continue
+			}
+
+			// Mikrotik fields transformation: "channel" ---> "channel.config".
+			// For further use in the map.
+			if transformSet != nil {
+				if new, ok := transformSet[mikrotikKebabName]; ok {
+					mikrotikKebabName = new
+				}
 			}
 
 			// field-name => field_name

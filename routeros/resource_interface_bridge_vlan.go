@@ -85,7 +85,7 @@ func ResourceInterfaceBridgeVlan() *schema.Resource {
 				Type: schema.TypeString,
 			},
 			Description: "The list of VLAN IDs for certain port configuration. This setting accepts VLAN ID range " +
-				"as well as comma separated values. E.g. vlan-ids=100-115,120,122,128-130.",
+				"as well as comma separated values. E.g. `vlan-ids=[\"100-115\",\"120\",\"122\",\"128-130\"]`.",
 		},
 	}
 
@@ -95,14 +95,14 @@ func ResourceInterfaceBridgeVlan() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
-		Schema: resSchema,
+		Schema:        resSchema,
 		SchemaVersion: 1,
 		StateUpgraders: []schema.StateUpgrader{
 			{
-				Type: ResourceInterfaceBridgeVlanV0().CoreConfigSchema().ImpliedType(),
+				Type:    ResourceInterfaceBridgeVlanV0().CoreConfigSchema().ImpliedType(),
 				Upgrade: stateMigrationScalarToList("vlan_ids"),
 				Version: 0,
 			},

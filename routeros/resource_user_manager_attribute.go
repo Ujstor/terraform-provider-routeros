@@ -25,10 +25,7 @@ func ResourceUserManagerAttribute() *schema.Resource {
 		MetaResourcePath: PropResourcePath("/user-manager/attribute"),
 		MetaId:           PropId(Id),
 
-		"default": {
-			Type:     schema.TypeBool,
-			Computed: true,
-		},
+		KeyDefault:     PropDefaultRo,
 		KeyDefaultName: PropDefaultNameRo("The attribute's default name."),
 		KeyName:        PropName("The attribute's name."),
 		"packet_types": {
@@ -72,7 +69,7 @@ func ResourceUserManagerAttribute() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

@@ -26,7 +26,7 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
@@ -34,7 +34,7 @@ jobs:
 
       - name: Import GPG key
         id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v6
+        uses: crazy-max/ghaction-import-gpg@v7
         with:
           # These secrets will need to be configured for the repository:
           gpg_private_key: ${{ secrets.TERRAFORM_GPG_SIGNING_KEY }}
@@ -42,7 +42,7 @@ jobs:
 
       - name: Release
         id: release
-        uses: cycjimmy/semantic-release-action@v4
+        uses: cycjimmy/semantic-release-action@v6
         with:
           extra_plugins: |
             "@semantic-release/changelog@6.0.2"
@@ -51,20 +51,20 @@ jobs:
             "@semantic-release/git@10.0.1"
             "@semantic-release/github@8.0.7"
             "@semantic-release/release-notes-generator@10.0.3"
-            "conventional-changelog-conventionalcommits@5.0.0"
+            "conventional-changelog-conventionalcommits@8.0.0"
         env:
           GITHUB_TOKEN: ${{ secrets.ROUTEROS_ACTIONS }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
 
       - name: Set up Go
         if: steps.release.outputs.new_release_published == 'true'
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.21
+          go-version: 1.25
 
       - name: Run GoReleaser
         if: steps.release.outputs.new_release_published == 'true'
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v7
         with:
           version: latest
           args: release --clean

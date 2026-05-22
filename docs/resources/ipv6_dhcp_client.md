@@ -31,23 +31,31 @@ resource "routeros_ipv6_dhcp_client" "client" {
 
 ### Optional
 
+- `accept_prefix_without_address` (Boolean)
 - `add_default_route` (Boolean) Whether to add default IPv6 route after a client connects.
+- `allow_reconfigure` (Boolean) Allow reconfigure messages.
+- `check_gateway` (String) Method on how to check gateway reachability.
 - `comment` (String)
+- `custom_iana_id` (String) Allow to specify custom IANA ID.
+- `custom_iapd_id` (String) Allow to specify custom IAPD ID.
 - `default_route_distance` (Number) Distance of default route. Applicable if add-default-route is set to yes.
+- `default_route_tables` (Set of String) List of routing tables to which default route must be added. Table name can be proceeded with ":x" where x would be the distance for the route to be installed with.
 - `dhcp_options` (Set of String) Options that are sent to the DHCP server.
 - `disabled` (Boolean)
 - `pool_name` (String) Name of the IPv6 pool in which received IPv6 prefix will be added
 - `pool_prefix_length` (Number) Prefix length parameter that will be set for IPv6 pool in which received IPv6 prefix is added. Prefix length must be greater than the length of the received prefix, otherwise, prefix-length will be set to received prefix length + 8 bits.
+- `prefix_address_lists` (Set of String) Names of the firewall address lists to which received prefix will be added.
 - `prefix_hint` (String) Include a preferred prefix length.
 - `rapid_commit` (Boolean) Enable DHCP rapid commit (fast address assignment)
 - `script` (String) Run this script on the DHCP-client status change. Available variables:
-			- pd-valid - if the prefix is acquired by the client;
-			- pd-prefix - the prefix acquired by the client if any;
-			- na-valid - if the address is acquired by the client;
-			- na-address - the address acquired by the client if any.
-			- options - array of received options (only ROSv7)
+  * pd-valid - if the prefix is acquired by the client;
+  * pd-prefix - the prefix acquired by the client if any;
+  * na-valid - if the address is acquired by the client;
+  * na-address - the address acquired by the client if any.
+  * options - array of received options (only ROSv7)
 - `use_interface_duid` (Boolean) Specifies the MAC address of the specified interface as the DHCPv6 client DUID.
 - `use_peer_dns` (Boolean) Whether to accept the DNS settings advertised by the IPv6 DHCP Server.
+- `validate_server_duid` (Boolean) Whether to validate the DUID of the IPv6 DHCP Server.
 
 ### Read-Only
 
@@ -61,13 +69,13 @@ resource "routeros_ipv6_dhcp_client" "client" {
 - `invalid` (Boolean)
 - `prefix` (String) Shows received IPv6 prefix from DHCPv6-PD server
 - `status` (String) Shows the status of DHCPv6 Client:
-			- stopped - dhcpv6 client is stopped
-			- searching - sending "solicit" and trying to get "advertise"  Shows actual (resolved) gateway and interface that will be used for packet forwarding.requesting - sent "request" waiting for "reply"
-			- bound - received "reply". Prefix assigned.
-			- renewing - sent "renew", waiting for "reply"
-			- rebinding - sent "rebind", waiting for "reply"
-			- error - reply was not received in time or some other error occurred.
-			- stopping - sent "release"
+  * stopped - dhcpv6 client is stopped
+  * searching - sending `solicit` and trying to get `advertise`  Shows actual (resolved) gateway and interface that will be used for packet forwarding.requesting - sent `request` waiting for `reply`
+  * bound - received `reply`. Prefix assigned.
+  * renewing - sent `renew`, waiting for `reply`
+  * rebinding - sent `rebind`, waiting for `reply`
+  * error - reply was not received in time or some other error occurred.
+  * stopping - sent `release`
 
 ## Import
 Import is supported using the following syntax:
@@ -75,4 +83,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/ipv6/dhcp-client/  get [print show-ids]]
 terraform import routeros_ipv6_dhcp_client.inet_provider "*1"
+#Or you can import a resource using one of its attributes
+terraform import routeros_ipv6_dhcp_client.inet_provider "name=xxx"
 ```

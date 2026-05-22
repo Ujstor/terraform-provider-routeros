@@ -46,22 +46,33 @@ func ResourceToolNetwatch() *schema.Resource {
 			Optional:    true,
 			Description: "Script to execute on the event of probe state change `OK` --> `fail`.",
 		},
+		"early_failure_detection": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "Netwatch will not wait to finish all the packets to be processed to change probe status if " +
+				"it is already known that host will be considered as `down`.",
+		},
+		"early_success_detection": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "Netwatch will not wait to finish all the packets to be processed to change probe status if " +
+				"it is already known that host will be considered as `up`.",
+		},
 		"host": {
 			Type:     schema.TypeString,
 			Required: true,
-			Description: `The IP address of the server to be probed. Formats:
-			- ipv4
-			- ipv4@vrf
-			- ipv6 
-			- ipv6@vrf
-			- ipv6-linklocal%interface
-			`,
+			Description: "The IP address of the server to be probed. Formats:" +
+				"\n  * ipv4" +
+				"\n  * ipv4@vrf" +
+				"\n  * ipv6 " +
+				"\n  * ipv6@vrf" +
+				"\n  * ipv6-linklocal%interface",
 		},
 		"interval": {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "The time interval between probe tests.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		KeyName: PropName("Task name."),
 		"src_address": {
@@ -74,13 +85,13 @@ func ResourceToolNetwatch() *schema.Resource {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "Time to wait before starting probe (on add, enable, or system start).",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"startup_delay": {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "Time to wait until starting Netwatch probe after system startup.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"test_script": {
 			Type:        schema.TypeString,
@@ -91,17 +102,17 @@ func ResourceToolNetwatch() *schema.Resource {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "Max time limit to wait for a response.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"type": {
 			Type:     schema.TypeString,
 			Optional: true,
-			Description: `Type of the probe:
-			- icmp - (ping-style) series of ICMP request-response with statistics
-			- tcp-conn - test TCP connection (3-way handshake) to a server specified by IP and port
-			- http-get - do an HTTP Get request and test for a range of correct replies
-			- simple - simplified ICMP probe, with fewer options than **ICMP** type, used for backward compatibility with the older Netwatch version
-			`,
+			Description: "Type of the probe:" +
+				"\n  *  icmp - (ping-style) series of ICMP request-response with statistics" +
+				"\n  *  tcp-conn - test TCP connection (3-way handshake) to a server specified by IP and port" +
+				"\n  *  http-get - do an HTTP Get request and test for a range of correct replies" +
+				"\n  *  simple - simplified ICMP probe, with fewer options than **ICMP** type, used for backward " +
+				"compatibility with the older Netwatch version",
 			ValidateFunc:     validation.StringInSlice([]string{"icmp", "tcp-conn", "http-get", "simple"}, false),
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
@@ -128,7 +139,7 @@ func ResourceToolNetwatch() *schema.Resource {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "The time between ICMP-request packet send.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"packet_size": {
 			Type:             schema.TypeInt,
@@ -152,25 +163,25 @@ func ResourceToolNetwatch() *schema.Resource {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "Fail threshold for rtt-avg.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"thr_jitter": {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "Fail threshold for rtt-jitter.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"thr_max": {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "Fail threshold for rtt-max (a value above thr-max is a probe fail).",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"thr_stdev": {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "Fail threshold for rtt-stdev.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"ttl": {
 			Type:        schema.TypeInt,
@@ -193,7 +204,7 @@ func ResourceToolNetwatch() *schema.Resource {
 			Optional: true,
 			Description: "Fail threshold for tcp-connect-time, the configuration uses microseconds, if the time " +
 				"unit is not specified (s/m/h), log and status pages display the same value in milliseconds.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 
 		// HTTP-GET probe pass/fail criteria
@@ -201,7 +212,7 @@ func ResourceToolNetwatch() *schema.Resource {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "Fail threshold for http-resp-time.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"http_code_min": {
 			Type:             schema.TypeInt,
@@ -241,7 +252,7 @@ func ResourceToolNetwatch() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

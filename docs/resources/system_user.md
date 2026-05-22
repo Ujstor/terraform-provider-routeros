@@ -25,6 +25,8 @@ resource "routeros_system_user" "test" {
 - `address` (String) Host or network address from which the user is allowed to log in.
 - `comment` (String)
 - `disabled` (Boolean)
+- `inactivity_policy` (String) Inactivity policy.
+- `inactivity_timeout` (String) Inactivity timeout for non-GUI sessions.
 - `password` (String, Sensitive) User  password. If not specified, it is left blank (hit [Enter] when logging  in). It conforms to standard Unix characteristics of passwords and may  contain letters, digits, '*' and '_' symbols.
 
 ### Read-Only
@@ -38,4 +40,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/user get [print show-ids]]
 terraform import routeros_system_user.test *1
+#Or you can import a resource using one of its attributes
+terraform import routeros_system_user.test "name=xxx"
 ```

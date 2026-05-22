@@ -140,10 +140,10 @@ func ResourceWifiSecurity() *schema.Resource {
 			Description: "An option to enable 802.11r fast BSS transitions (roaming).",
 		},
 		"ft_mobility_domain": {
-			Type:         schema.TypeInt,
-			Optional:     true,
-			Description:  "The fast BSS transition mobility domain ID.",
-			ValidateFunc: Validation64k,
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "The fast BSS transition mobility domain ID.",
+			DiffSuppressFunc: HexEqual,
 		},
 		"ft_nas_identifier": {
 			Type:        schema.TypeString,
@@ -166,13 +166,13 @@ func ResourceWifiSecurity() *schema.Resource {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "The lifetime of the fast BSS transition PMK-R0 encryption key.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"ft_reassociation_deadline": {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "Fast BSS transition reassociation deadline.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"group_encryption": {
 			Type:         schema.TypeString,
@@ -184,7 +184,7 @@ func ResourceWifiSecurity() *schema.Resource {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Description:      "The interval at which the group temporal key (key for encrypting broadcast traffic) is renewed.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"management_encryption": {
 			Type:         schema.TypeString,
@@ -197,6 +197,12 @@ func ResourceWifiSecurity() *schema.Resource {
 			Optional:     true,
 			Description:  "An option to enable 802.11w management frame protection.",
 			ValidateFunc: validation.StringInSlice([]string{"allowed", "disabled", "required"}, false),
+		},
+		"multi_passphrase_group": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "Name of `/interface/wifi/security/multi-passphrase/` group that will be used. Only a " +
+				"single group can be defined under the security profile.",
 		},
 		"owe_transition_interface": {
 			Type:        schema.TypeString,
@@ -229,7 +235,7 @@ func ResourceWifiSecurity() *schema.Resource {
 			Type:         schema.TypeString,
 			Optional:     true,
 			Description:  "An option to enable WPS (Wi-Fi Protected Setup).",
-			ValidateFunc: validation.StringInSlice([]string{"disabled", "push-button"}, false),
+			ValidateFunc: validation.StringInSlice([]string{"disable", "push-button"}, false),
 		},
 	}
 
@@ -241,7 +247,7 @@ func ResourceWifiSecurity() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

@@ -18,7 +18,9 @@ func DatasourceIPv6Firewall() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			MetaSkipFields: PropSkipFields("packets"),
 
-			"rules": getIPv6FirewallFilterSchema(),
+			"mangle": getIPv6FirewallMangleSchema(),
+			"nat":    getIPv6FirewallNatSchema(),
+			"rules":  getIPv6FirewallFilterSchema(),
 		},
 	}
 }
@@ -58,6 +60,8 @@ func datasourceIPv6FirewallFilterRead(ctx context.Context, d *schema.ResourceDat
 			// Kebab case!
 			path += SnakeToKebab(section)
 		}
+		// To handle drift.
+		s[MetaResourcePath] = PropResourcePath(path)
 
 		// Snake case!
 		var res []MikrotikItem

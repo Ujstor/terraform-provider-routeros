@@ -27,6 +27,7 @@ resource "routeros_radius" "user_manager" {
 - `disabled` (Boolean)
 - `domain` (String) Microsoft Windows domain of client passed to RADIUS servers that require domain validation.
 - `protocol` (String) An option specifies the protocol to use when communicating with the RADIUS Server.
+- `radsec_timeout` (String) Timeout after which the request should be resent over RadSec protocol.
 - `realm` (String) Explicitly stated realm (user domain), so the users do not have to provide proper ISP domain name in the user name.
 - `require_message_auth` (String) An option whether to require `Message-Authenticator` in received Access-Accept/Challenge/Reject messages.
 - `secret` (String, Sensitive) The shared secret to access the RADIUS server.
@@ -37,6 +38,7 @@ resource "routeros_radius" "user_manager" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `status` (String)
 
 ## Import
 Import is supported using the following syntax:
@@ -44,4 +46,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/radius get [print show-ids]]
 terraform import routeros_radius.user_manager *1
+#Or you can import a resource using one of its attributes
+terraform import routeros_radius.user_manager "name=xxx"
 ```

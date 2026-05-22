@@ -58,18 +58,23 @@ resource "routeros_ip_service" "enabled" {
 - `address` (String) List of IP/IPv6 prefixes from which the service is accessible.
 - `certificate` (String) The name of the certificate used by a particular service. Applicable only for services that depend on certificates ( www-ssl, api-ssl ).
 - `disabled` (Boolean)
+- `max_sessions` (Number) Maximum number of concurrent connections to a particular service. This option is available in RouterOS starting from version 7.16.
 - `tls_version` (String) Specifies which TLS versions to allow by a particular service.
 - `vrf` (String) The VRF table this resource operates on.
 
 ### Read-Only
 
+- `dynamic` (Boolean) Configuration item created by software, not by management interface. It is not exported, and cannot be directly modified.
 - `id` (String) The ID of this resource.
 - `invalid` (Boolean)
 - `name` (String) Service name.
+- `proto` (String)
 
 ## Import
 Import is supported using the following syntax:
 ```shell
 # Import with the name of the ip service in case of the example use www-ssl
 terraform import routeros_ip_service.www_ssl www-ssl
+#Or you can import a resource using one of its attributes
+terraform import routeros_ip_service.www_ssl "name=xxx"
 ```

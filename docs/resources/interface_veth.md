@@ -5,7 +5,7 @@
 ```terraform
 resource "routeros_interface_veth" "test" {
   name    = "veth-test"
-  address = "192.168.120.2/24"
+  address = ["192.168.120.2/24"]
   gateway = "192.168.120.1"
   comment = "Virtual interface"
 }
@@ -20,11 +20,13 @@ resource "routeros_interface_veth" "test" {
 
 ### Optional
 
-- `address` (String) IP address.
+- `address` (Set of String) Ip address.
 - `comment` (String)
+- `dhcp` (Boolean)
 - `disabled` (Boolean)
 - `gateway` (String) Gateway IP address.
 - `gateway6` (String) Gateway IPv6 address.
+- `mac_address` (String) MAC address.
 
 ### Read-Only
 
@@ -37,4 +39,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/interface/veth get [print show-ids]]
 terraform import routeros_interface_veth.test "*0"
+#Or you can import a resource using one of its attributes
+terraform import routeros_interface_veth.test "name=xxx"
 ```

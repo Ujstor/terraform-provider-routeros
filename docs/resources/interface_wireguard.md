@@ -23,7 +23,7 @@ resource "routeros_interface_wireguard" "test_wg_interface" {
 
 - `comment` (String)
 - `disabled` (Boolean)
-- `mtu` (String) Layer3 Maximum transmission unit ('auto', 0 .. 65535)
+- `mtu` (String) Layer3 Maximum transmission unit ('auto', 0 .. 65535). Look for the exact minimum value in the MikroTik documentation
 - `private_key` (String, Sensitive) A base64 private key. If not specified, it will be automatically generated upon interface creation.
 
 ### Read-Only
@@ -38,4 +38,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/interface/wireguard get [print show-ids]]
 terraform import routeros_interface_wireguard.test_wg_interface "*1"
+#Or you can import a resource using one of its attributes
+terraform import routeros_interface_wireguard.test_wg_interface "name=xxx"
 ```

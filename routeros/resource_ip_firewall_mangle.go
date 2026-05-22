@@ -30,8 +30,9 @@ func ResourceIPFirewallMangle() *schema.Resource {
 		MetaResourcePath: PropResourcePath("/ip/firewall/mangle"),
 		MetaId:           PropId(Id),
 		MetaSkipFields:   PropSkipFields("bytes", "packets"),
-		MetaSetUnsetFields: PropSetUnsetFields("dst_address_list", "src_address_list", "in_interface", "in_interface_list",
-			"out_interface", "out_interface_list", "in_bridge_port_list", "out_bridge_port_list"),
+		MetaSetUnsetFields: PropSetUnsetFields("dst_address", "dst_address_list", "src_address", "src_address_list",
+			"in_interface", "in_interface_list", "out_interface", "out_interface_list", "in_bridge_port_list",
+			"out_bridge_port_list"),
 
 		"action": {
 			Type:        schema.TypeString,
@@ -102,7 +103,7 @@ func ResourceIPFirewallMangle() *schema.Resource {
 			Optional:    true,
 			Description: "Interprets the connection tracking analysis data for a particular packet.",
 			ValidateDiagFunc: ValidationMultiValInSlice([]string{
-				"estabilished", "invalid", "new", "related", "untracked",
+				"established", "invalid", "new", "related", "untracked",
 			}, false, true),
 		},
 		"connection_type": {
@@ -127,9 +128,10 @@ func ResourceIPFirewallMangle() *schema.Resource {
 			ValidateFunc: validation.IntBetween(0, 63),
 		},
 		"dst_address": {
-			Type:        schema.TypeString,
-			Optional:    true,
-			Description: "Matches packets which destination is equal to specified IP or falls into specified IP range.",
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Matches packets which destination is equal to specified IP or falls into specified IP range.",
+			DiffSuppressFunc: ImplicitSingleHostCIDR4,
 		},
 		"dst_address_list": {
 			Type:        schema.TypeString,
@@ -261,12 +263,10 @@ func ResourceIPFirewallMangle() *schema.Resource {
 		"new_mss": {
 			Type:     schema.TypeString,
 			Optional: true,
-			Description: `Sets a new MSS for a packet.  
-	> clamp-to-pmtu feature sets (DF) bit in the IP header to dynamically discover the PMTU of a path.  
-	> Host sends all datagrams on that path with the DF bit set until receives ICMP.  
-	> Destination Unreachable messages with a code meaning "fragmentation needed and DF set".    
-	> Upon receipt of such a message, the source host reduces its assumed PMTU for the path.  
-`,
+			Description: "Sets a new MSS for a packet.\n  * clamp-to-pmtu feature sets (DF) bit in the IP header to " +
+				"dynamically discover the PMTU of a path.\n  * Host sends all datagrams on that path with the DF bit set " +
+				"until receives ICMP.\n  * Destination Unreachable messages with a code meaning `fragmentation needed and " +
+				"DF set`.\n  * Upon receipt of such a message, the source host reduces its assumed PMTU for the path.",
 			ValidateFunc: validation.StringMatch(regexp.MustCompile(`^(\d+|clamp-to-pmtu)$`),
 				`Value must be a number in quotes or the string "clamp-to-pmtu".`),
 		},
@@ -445,7 +445,7 @@ func ResourceIPFirewallMangle() *schema.Resource {
 		},
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

@@ -21,20 +21,24 @@ resource "routeros_ipv6_address" "ipv6_address" {
 
 - `address` (String) IPv6 address. Using the eui_64 and from_pool options can transform the original address! [See docs](https://wiki.mikrotik.com/wiki/Manual:IPv6/Address#Properties)
 - `advertise` (Boolean) Whether to enable stateless address configuration. The prefix of that address is automatically advertised to hosts using ICMPv6 protocol. The option is set by default for addresses with prefix length 64.
+- `auto_link_local` (Boolean) If newly created address is manual link-local address this setting allows to override dynamically created IPv6 link-local address.
 - `comment` (String)
 - `disabled` (Boolean)
 - `eui_64` (Boolean) Whether to calculate EUI-64 address and use it as last 64 bits of the IPv6 address.
 - `from_pool` (String) Name of the pool from which prefix will be taken to construct IPv6 address taking last part of the address from address property.
 - `no_dad` (Boolean) If set indicates that address is anycast address and Duplicate Address Detection should not be performed.
+- `vrf` (String) The VRF table this resource operates on.
 
 ### Read-Only
 
 - `actual_interface` (String) Name of the actual interface the logical one is bound to.
+- `deprecated` (Boolean) Whether address is deprecated
 - `dynamic` (Boolean) Configuration item created by software, not by management interface. It is not exported, and cannot be directly modified.
 - `global` (Boolean) Whether address is global.
 - `id` (String) The ID of this resource.
 - `invalid` (Boolean)
 - `link_local` (Boolean) Whether address is link local.
+- `slave` (Boolean) Whether address belongs to an interface which is a slave port to some other master interface
 
 ## Import
 Import is supported using the following syntax:

@@ -23,6 +23,15 @@ func ResourceDhcpServer() *schema.Resource {
 				"the clients that have a static lease (added in lease submenu) will be allowed.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
+		"address_lists": {
+			Type:        schema.TypeSet,
+			Optional:    true,
+			Description: "Address list to which address will be added if lease is bound.",
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"allow_dual_stack_queue": {
 			Type:     schema.TypeBool,
 			Optional: true,
@@ -79,6 +88,16 @@ func ResourceDhcpServer() *schema.Resource {
 			Optional:    true,
 			Description: "Use custom set of DHCP options defined in option sets menu.",
 		},
+		"dynamic_lease_identifiers": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "Dynamic lease identifier",
+		},
+		"support_broadband_tr101": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Description: "Support broadband TR101",
+		},
 		KeyDisabled: PropDisabledRw,
 		KeyDynamic:  PropDynamicRo,
 		"insert_queue_before": {
@@ -130,6 +149,12 @@ func ResourceDhcpServer() *schema.Resource {
 			ValidateFunc:     validation.StringInSlice([]string{"yes", "no", "accounting"}, false),
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
+		"use_reconfigure": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "Allow the server to send Reconfigure (forcerenew) messages to clients, prompting them to renew " +
+				"configuration without waiting for their lease to expire.",
+		},
 	}
 	return &schema.Resource{
 		CreateContext: DefaultCreate(resSchema),
@@ -137,7 +162,7 @@ func ResourceDhcpServer() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		SchemaVersion: 1,

@@ -1,6 +1,8 @@
 package routeros
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
@@ -20,17 +22,26 @@ import (
 // https://help.mikrotik.com/docs/display/ROS/Container
 func ResourceInterfaceVeth() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
-		MetaResourcePath: PropResourcePath("/interface/veth"),
-		MetaId:           PropId(Id),
+		MetaResourcePath:   PropResourcePath("/interface/veth"),
+		MetaId:             PropId(Id),
 
 		"address": {
-			Type:         schema.TypeString,
-			Optional:     true,
-			Description:  "IP address.",
-			ValidateFunc: validation.IsCIDR,
+			Type:        schema.TypeSet,
+			Optional:    true,
+			Description: "Ip address.",
+			Elem: &schema.Schema{
+				Type:         schema.TypeString,
+				ValidateFunc: validation.IsCIDR,
+			},
 		},
 		KeyComment:  PropCommentRw,
 		KeyDisabled: PropDisabledRw,
+		"dhcp": {
+			Type:             schema.TypeBool,
+			Optional:         true,
+			Description:      "",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"gateway": {
 			Type:         schema.TypeString,
 			Optional:     true,
@@ -43,6 +54,19 @@ func ResourceInterfaceVeth() *schema.Resource {
 			Description:  "Gateway IPv6 address.",
 			ValidateFunc: validation.IsIPv6Address,
 		},
+		KeyMacAddress: {
+			Type:         schema.TypeString,
+			Description:  "MAC address.",
+			Optional:     true,
+			Computed:     true,
+			ValidateFunc: validation.IsMACAddress,
+			DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+				if old != "" && d.GetRawConfig().GetAttr(k).IsNull() {
+					return true
+				}
+				return strings.EqualFold(old, new)
+			},
+		},
 		KeyName:    PropName("Interface name."),
 		KeyRunning: PropRunningRo,
 	}
@@ -54,7 +78,7 @@ func ResourceInterfaceVeth() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

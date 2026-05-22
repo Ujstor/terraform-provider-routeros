@@ -15,7 +15,11 @@ resource "routeros_routing_rule" "test" {
 
 ### Optional
 
-- `action` (String) An action to take on the matching packet:drop - silently drop the packet.lookup - perform a lookup in routing tables.lookup-only-in-table - perform lookup only in the specified routing table (see table parameter).unreachable - generate ICMP unreachable message and send it back to the source.
+- `action` (String) An action to take on the matching packet:
+  * drop - silently drop the packet.
+  * lookup - perform a lookup in routing tables.
+  * lookup-only-in-table - perform lookup only in the specified routing table (see table parameter).
+  * unreachable - generate ICMP unreachable message and send it back to the source.
 - `comment` (String)
 - `disabled` (Boolean)
 - `dst_address` (String) The destination address of the packet to match.
@@ -36,4 +40,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/routing/rule get [print show-ids]]
 terraform import routeros_routing_rule.test *3
+#Or you can import a resource using one of its attributes
+terraform import routeros_routing_rule.test "name=xxx"
 ```

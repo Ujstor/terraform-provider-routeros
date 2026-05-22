@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-// ResourceInterfaceVlan https://wiki.mikrotik.com/wiki/Manual:Interface/VLAN
+// ResourceInterfaceVlan https://help.mikrotik.com/docs/spaces/ROS/pages/88014957/VLAN
 func ResourceInterfaceVlan() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
 		MetaResourcePath: PropResourcePath("/interface/vlan"),
@@ -36,12 +36,12 @@ func ResourceInterfaceVlan() *schema.Resource {
 		"use_service_tag": {
 			Type:     schema.TypeBool,
 			Optional: true,
-			Default:  false,
 		},
-		"vlan_id": {
-			Type:     schema.TypeInt,
-			Required: true,
+		KeyHwOffloaded: {
+			Type:     schema.TypeBool,
+			Optional: true,
 		},
+		KeyVlanId: PropVlanIdRw("Virtual LAN identifier or tag that is used to distinguish VLANs. Must be equal for all computers that belong to the same VLAN.", false),
 	}
 
 	return &schema.Resource{
@@ -51,7 +51,7 @@ func ResourceInterfaceVlan() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		SchemaVersion: 1,

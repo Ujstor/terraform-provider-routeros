@@ -18,15 +18,16 @@ resource "routeros_system_logging" "log_snmp_disk" {
 
 ### Optional
 
-- `disabled` (Boolean) Whether or not this logging should be disabled
+- `disabled` (Boolean)
 - `prefix` (String) prefix added at the beginning of log messages
+- `regex` (String) Regex which will be used in order to match or not match message. If the regex is not matched, then even if topic is configured to be logged, but log message does not match regex, action will not be performed.
 - `topics` (Set of String) log all messages that falls into specified topic or list of topics.
 						  '!' character can be used before topic to exclude messages falling under this topic. For example, we want to log NTP debug info without too much details:
 						  /system logging add topics=ntp,debug,!packet
 
 ### Read-Only
 
-- `default` (String)
+- `default` (Boolean) It's the default item.
 - `id` (String) The ID of this resource.
 - `invalid` (Boolean)
 
@@ -34,7 +35,7 @@ resource "routeros_system_logging" "log_snmp_disk" {
 Import is supported using the following syntax:
 ```shell
 # The ID can be found via API or the terminal
-# The command for the terminal is -> :put [/system/logging/print  get [print show-ids]]
+# The command for the terminal is -> :put [/system/logging get [print show-ids]]
 
 terraform import routeros_system_logging.log_snmp_disk "*4"
 ```

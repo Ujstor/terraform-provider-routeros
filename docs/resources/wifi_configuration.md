@@ -72,6 +72,7 @@ resource "routeros_wifi_configuration" "configuration1" {
 - `comment` (String)
 - `country` (String) An option determines which regulatory domain restrictions are applied to an interface.
 - `datapath` (Map of String) Datapath inline settings.
+- `deprioritize_unii_3_4` (Boolean) Whether to assign lower priority to channels with a control frequency of 5720 or 5825-5885 MHz. These channels are unsupported by some client devices, making their automatic selection undesirable. Defaults to `yes` in ETSI regulatory domains, elsewhere to `no`.
 - `disabled` (Boolean)
 - `dtim_period` (Number) A period at which to transmit multicast traffic, when there are client devices in power save mode connected to the AP.
 - `hide_ssid` (Boolean) This property has effect only in AP mode. Setting it to yes can remove this network from the list of wireless networks that are shown by some client software. Changing this setting does not improve the security of the wireless network, because SSID is included in other frames sent by the AP.
@@ -96,4 +97,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/interface/wifi/configuration get [print show-ids]]
 terraform import routeros_wifi_configuration.configuration1 '*1'
+#Or you can import a resource using one of its attributes
+terraform import routeros_wifi_configuration.configuration1 "name=xxx"
 ```

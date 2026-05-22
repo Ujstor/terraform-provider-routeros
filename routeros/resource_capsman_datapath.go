@@ -87,12 +87,7 @@ func ResourceCapsManDatapath() *schema.Resource {
 			Optional:    true,
 			Description: "OpenFlow switch to add interface to, as port when enabled.",
 		},
-		"vlan_id": {
-			Type:         schema.TypeInt,
-			Optional:     true,
-			Description:  "VLAN ID to assign to interface if vlan-mode enables use of VLAN tagging.",
-			ValidateFunc: validation.IntBetween(1, 4095),
-		},
+		KeyVlanId: PropVlanIdRw("VLAN ID to assign to interface if vlan-mode enables use of VLAN tagging.", false),
 		"vlan_mode": {
 			Type:     schema.TypeString,
 			Optional: true,
@@ -109,7 +104,7 @@ func ResourceCapsManDatapath() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		SchemaVersion: 1,

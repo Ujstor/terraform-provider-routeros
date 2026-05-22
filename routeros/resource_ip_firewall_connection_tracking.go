@@ -24,6 +24,8 @@ import (
     "tcp-time-wait-timeout": "1m",
     "tcp-unacked-timeout": "5m",
     "total-entries": "87",
+	"total-ip4-entries: "499",
+    "total-ip6-entries: "1",
     "udp-stream-timeout": "3m",
     "udp-timeout": "10s"
 }
@@ -35,7 +37,7 @@ func ResourceIPConnectionTracking() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
 		MetaResourcePath: PropResourcePath("/ip/firewall/connection/tracking"),
 		MetaId:           PropId(Name),
-		MetaSkipFields:   PropSkipFields("total_entries"),
+		MetaSkipFields:   PropSkipFields("total_entries", "total_ip4_entries", "total_ip6_entries"),
 
 		"active_ipv4": {
 			Type:        schema.TypeBool,
@@ -68,6 +70,15 @@ func ResourceIPConnectionTracking() *schema.Resource {
 			Description:      "ICMP connection timeout",
 			ValidateFunc:     ValidationTime,
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"liberal_tcp_tracking": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "Enables or disables liberal TCP connection tracking by toggling the kernel parameter " +
+				"nf_conntrack_tcp_be_liberal. When set to `yes`, the system mark only out of window RST segments as INVALID." +
+				"\n\n`Enabling this setting may allow malformed packets that would otherwise be considered invalid by the " +
+				"firewall's connection-state matcher. This can increase exposure to certain evasion techniques. This " +
+				"property should be enabled only when troubleshooting or working around known issues.`",
 		},
 		"loose_tcp_tracking": {
 			Type:             schema.TypeString,

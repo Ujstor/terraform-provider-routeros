@@ -31,8 +31,9 @@ func ResourceIPFirewallRaw() *schema.Resource {
 		MetaResourcePath: PropResourcePath("/ip/firewall/raw"),
 		MetaId:           PropId(Id),
 		MetaSkipFields:   PropSkipFields("bytes", "packets"),
-		MetaSetUnsetFields: PropSetUnsetFields("dst_address_list", "src_address_list", "in_interface", "in_interface_list",
-			"out_interface", "out_interface_list", "in_bridge_port_list", "out_bridge_port_list", "protocol"),
+		MetaSetUnsetFields: PropSetUnsetFields("dst_address", "dst_address_list", "src_address", "src_address_list",
+			"in_interface", "in_interface_list", "out_interface", "out_interface_list", "in_bridge_port_list",
+			"out_bridge_port_list", "protocol"),
 
 		"action": {
 			Type:        schema.TypeString,
@@ -54,7 +55,7 @@ func ResourceIPFirewallRaw() *schema.Resource {
 			Description: "Time interval after which the address will be removed from the address list specified by " +
 				"address-list parameter. Used in conjunction with add-dst-to-address-list or add-src-to-address-list " +
 				"actions.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 		"chain": {
 			Type:     schema.TypeString,
@@ -76,9 +77,10 @@ func ResourceIPFirewallRaw() *schema.Resource {
 			ValidateFunc: validation.IntBetween(0, 63),
 		},
 		"dst_address": {
-			Type:        schema.TypeString,
-			Optional:    true,
-			Description: "Matches packets which destination is equal to specified IP or falls into specified IP range.",
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Matches packets which destination is equal to specified IP or falls into specified IP range.",
+			DiffSuppressFunc: ImplicitSingleHostCIDR4,
 		},
 		"dst_address_list": {
 			Type:        schema.TypeString,
@@ -267,9 +269,10 @@ func ResourceIPFirewallRaw() *schema.Resource {
 			ValidateFunc: validation.IntBetween(1, 99),
 		},
 		"src_address": {
-			Type:        schema.TypeString,
-			Optional:    true,
-			Description: "Matches packets which source is equal to specified IP or falls into a specified IP range.",
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Matches packets which source is equal to specified IP or falls into a specified IP range.",
+			DiffSuppressFunc: ImplicitSingleHostCIDR4,
 		},
 		"src_address_list": {
 			Type:        schema.TypeString,
@@ -335,7 +338,7 @@ func ResourceIPFirewallRaw() *schema.Resource {
 		},
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

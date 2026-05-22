@@ -52,7 +52,23 @@ func ResourceInterfaceVrrp() *schema.Resource {
 			ValidateFunc:     validation.StringInSlice([]string{"ah", "none", "simple"}, false),
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
-		KeyComment:  PropCommentRw,
+		KeyComment: PropCommentRw,
+		"connection_tracking_mode": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "Specifies the mode for connection tracking synchronization. This setting is only relevant " +
+				"when `sync-connection-tracking=yes` is enabled.",
+			ValidateFunc:     validation.StringInSlice([]string{"active-active", "passive-active"}, false),
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"connection_tracking_port": {
+			Type:     schema.TypeInt,
+			Optional: true,
+			Description: "Specifies UDP port for connection tracking synchronization. This setting is only relevant " +
+				"when `sync-connection-tracking=yes` is enabled.",
+			ValidateFunc:     validation.IsPortNumber,
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		KeyDisabled: PropDisabledRw,
 		"group_authority": {
 			Type:     schema.TypeString,
@@ -98,7 +114,7 @@ func ResourceInterfaceVrrp() *schema.Resource {
 			Type:        schema.TypeString,
 			Optional:    true,
 			Description: "VRRP update interval in seconds. Defines how often master sends advertisement packets.",
-			ValidateFunc: validation.StringMatch(regexp.MustCompile(`^(\d+(ms|s|M)?)+$`),
+			ValidateFunc: validation.StringMatch(regexp.MustCompile(`^(\d+(ms|s|m)?)+$`),
 				"expected hello interval 10ms..4m15s"),
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
@@ -107,7 +123,7 @@ func ResourceInterfaceVrrp() *schema.Resource {
 			Computed: true,
 		},
 		KeyMacAddress: PropMacAddressRo,
-		KeyMtu:        PropMtuRw(),
+		KeyMtu:        PropL2MtuRo,
 		KeyName:       PropNameForceNewRw,
 		"on_fail": {
 			Type:        schema.TypeString,
@@ -133,7 +149,7 @@ func ResourceInterfaceVrrp() *schema.Resource {
 		"preemption_mode": {
 			Type:     schema.TypeBool,
 			Optional: true,
-			Description: "Whether the master node always has the priority. When set to 'no' the backup node will not " +
+			Description: "Whether the master node always has the priority. When set to `no` the backup node will not " +
 				"be elected to be a master until the current master fails, even if the backup node has higher priority " +
 				"than the current master. This setting is ignored if the owner router becomes available",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
@@ -142,7 +158,7 @@ func ResourceInterfaceVrrp() *schema.Resource {
 			Type:     schema.TypeInt,
 			Optional: true,
 			Description: "Priority of VRRP node used in Master election algorithm. A higher number means higher " +
-				"priority. '255' is reserved for the router that owns VR IP and '0' is reserved for the Master router " +
+				"priority. `255` is reserved for the router that owns VR IP and `0` is reserved for the Master router " +
 				"to indicate that it is releasing responsibility.",
 			ValidateFunc:     validation.IntBetween(1, 254),
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
@@ -152,7 +168,7 @@ func ResourceInterfaceVrrp() *schema.Resource {
 			Optional: true,
 			Description: "Specifies the remote address of the other VRRP router for syncing connection tracking. " +
 				"If not set, the system autodetects the remote address via VRRP. The remote address is used only if " +
-				"sync-connection-tracking=yes.Sync connection tracking uses UDP port 8275.",
+				"`sync_connection_tracking = true`.Sync connection tracking uses UDP port 8275.",
 			ValidateFunc: validation.IsIPv4Address,
 		},
 		"running": {
@@ -194,7 +210,7 @@ func ResourceInterfaceVrrp() *schema.Resource {
 					{
 						Severity: diag.Warning,
 						Summary:  "sync_connection_tracking not enabled",
-						Detail: "The remote address is used only if sync-connection-tracking=yes. " +
+						Detail: "The remote address is used only if sync_connection_tracking=true. " +
 							"The field will be omitted in the returned response.",
 					},
 				}
@@ -208,7 +224,7 @@ func ResourceInterfaceVrrp() *schema.Resource {
 					{
 						Severity: diag.Warning,
 						Summary:  "sync_connection_tracking not enabled",
-						Detail: "The remote address is used only if sync-connection-tracking=yes. " +
+						Detail: "The remote address is used only if sync_connection_tracking=true. " +
 							"The field will be omitted in the returned response.",
 					},
 				}
@@ -217,7 +233,7 @@ func ResourceInterfaceVrrp() *schema.Resource {
 		}),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		SchemaVersion: 1,

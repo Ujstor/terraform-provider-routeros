@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-routeros/routeros"
+	"github.com/go-routeros/routeros/v3"
 )
 
 var (
@@ -19,6 +19,7 @@ var (
 		"/ip/pool/add name=dhcp ranges=192.168.88.100-192.168.88.200",
 		"/interface/wireguard/add name=wg1",
 		"/interface/list/add name=list",
+		"/interface/print",
 	}
 )
 
@@ -26,6 +27,18 @@ func main() {
 	username := os.Getenv("ROS_USERNAME")
 	password := os.Getenv("ROS_PASSWORD")
 	host := os.Getenv("ROS_IP_ADDRESS")
+
+	if username == "" {
+		username = "admin"
+	}
+
+	if host == "" {
+		if l := len(os.Args); l > 0 {
+			host = os.Args[l-1]
+		} else {
+			log.Fatal("The IP address of the router must be set")
+		}
+	}
 
 	var err error
 	var client *routeros.Client

@@ -30,6 +30,7 @@ resource "routeros_interface_pppoe_client" "test" {
 - `default_route_distance` (Number) sets distance value applied to auto created default route, if add-default-route is also selected.
 - `dial_on_demand` (Boolean) connects to AC only when outbound traffic is generated. If selected, then route with gateway address from 10.112.112.0/24 network will be added while connection is not established.
 - `disabled` (Boolean)
+- `host_uniq` (String)
 - `keepalive_timeout` (Number) Sets keepalive timeout in seconds.
 - `max_mru` (String) Maximum Receive Unit.
 - `max_mtu` (String) Maximum Transmission Unit.
@@ -52,4 +53,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/interface/pppoe-client get [print show-ids]]
 terraform import routeros_interface_pppoe_client.test "*0"
+#Or you can import a resource using one of its attributes
+terraform import routeros_interface_pppoe_client.test "name=xxx"
 ```

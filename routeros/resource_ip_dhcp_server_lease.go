@@ -68,6 +68,11 @@ func ResourceDhcpServerLease() *schema.Resource {
 			Optional:    true,
 			Description: "Send all replies as broadcasts.",
 		},
+		"class_id": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Class ID of the client. This option is available in RouterOS starting from version 7.16.",
+		},
 		"block_access": {
 			Type:        schema.TypeBool,
 			Optional:    true,
@@ -175,7 +180,7 @@ func ResourceDhcpServerLease() *schema.Resource {
 		UpdateContext: DefaultUpdate(resSchema),
 		DeleteContext: DefaultDelete(resSchema),
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

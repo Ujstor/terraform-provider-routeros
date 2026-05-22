@@ -25,10 +25,9 @@ func ResourceRadius() *schema.Resource {
 			ValidateFunc: Validation64k,
 		},
 		"address": {
-			Type:         schema.TypeString,
-			Required:     true,
-			Description:  "IPv4 or IPv6 address of RADIUS server.",
-			ValidateFunc: validation.IsIPAddress,
+			Type:        schema.TypeString,
+			Required:    true,
+			Description: "IPv4 or IPv6 address of RADIUS server.",
 		},
 		"authentication_port": {
 			Type:         schema.TypeInt,
@@ -61,6 +60,12 @@ func ResourceRadius() *schema.Resource {
 			Default:      "udp",
 			Description:  "An option specifies the protocol to use when communicating with the RADIUS Server.",
 			ValidateFunc: validation.StringInSlice([]string{"radsec", "udp"}, false),
+		},
+		"radsec_timeout": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Timeout after which the request should be resent over RadSec protocol.",
+			DiffSuppressFunc: TimeEqual,
 		},
 		"realm": {
 			Type:        schema.TypeString,
@@ -97,12 +102,16 @@ func ResourceRadius() *schema.Resource {
 			Description:  "Source IPv4/IPv6 address of the packets sent to the RADIUS server.",
 			ValidateFunc: validation.IsIPAddress,
 		},
+		"status": {
+			Type:     schema.TypeString,
+			Computed: true,
+		},
 		"timeout": {
 			Type:             schema.TypeString,
 			Optional:         true,
 			Default:          "300ms",
 			Description:      "A timeout, after which the request should be resent.",
-			DiffSuppressFunc: TimeEquall,
+			DiffSuppressFunc: TimeEqual,
 		},
 	}
 
@@ -113,7 +122,7 @@ func ResourceRadius() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema:        resSchema,

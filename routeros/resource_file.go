@@ -1,6 +1,10 @@
 package routeros
 
 import (
+	"context"
+	"fmt"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -21,11 +25,12 @@ func ResourceFile() *schema.Resource {
 			Computed:    true,
 			Description: "A time when the file was created",
 		},
-		"name": {
+		"last_modified": {
 			Type:        schema.TypeString,
-			Required:    true,
-			Description: "Name of the file",
+			Computed:    true,
+			Description: "A time when the file was modified",
 		},
+		KeyName: PropName("Name of the file"),
 		"package_architecture": {
 			Type:        schema.TypeString,
 			Computed:    true,
@@ -62,12 +67,84 @@ func ResourceFile() *schema.Resource {
 		CreateContext: DefaultCreate(resSchema),
 		ReadContext:   DefaultRead(resSchema),
 		UpdateContext: DefaultUpdate(resSchema),
-		DeleteContext: DefaultDelete(resSchema),
+		DeleteContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+			metadata := GetMetadata(resSchema)
+
+			id, err := dynamicIdLookup(metadata.IdType, metadata.Path, m.(Client), d)
+			if err != nil {
+				if err != errorNoLongerExists {
+					ColorizedDebug(ctx, fmt.Sprintf(ErrorMsgDelete, err))
+					return diag.FromErr(err)
+				}
+
+				// We inform the user that the resource no longer exists.
+				d.SetId("")
+				return diag.Diagnostics{
+					diag.Diagnostic{
+						Severity: diag.Warning,
+						Summary:  errorNoLongerExists.Error(),
+					},
+				}
+			}
+
+			if diags := fileDelete(ctx, id, m); diags.HasError() {
+				ColorizedDebug(ctx, fmt.Sprintf(ErrorMsgDelete, err))
+				return diags
+			}
+
+			d.SetId("")
+			return nil
+		},
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,
 	}
+}
+
+func fileCreate(ctx context.Context, name, contents string, m interface{}) (id string, diags diag.Diagnostics) {
+	res, err := CreateItem(ctx, MikrotikItem{"name": name, "contents": contents}, "/file", m.(Client))
+	if err != nil {
+		ColorizedDebug(ctx, fmt.Sprintf(ErrorMsgPut, err))
+		diags = diag.FromErr(err)
+		return
+	}
+
+	id = res.GetID(Id)
+	if id == "" {
+		diags = diag.Diagnostics{
+			diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "The file ID was not found in the response",
+			},
+		}
+		return
+	}
+
+	return
+}
+
+func fileDelete(ctx context.Context, id string, m interface{}) diag.Diagnostics {
+	if id == "" {
+		return diag.FromErr(errEmptyId)
+	}
+
+	url := &URL{Path: "/file"}
+
+	var data MikrotikItem
+
+	if m.(Client).GetTransport() == TransportREST {
+		url.Path += "/remove"
+		data = MikrotikItem{".id": id}
+	} else {
+		url.Query = []string{"=.id=" + id}
+	}
+
+	if err := m.(Client).SendRequest(crudRemove, url, data, nil); err != nil {
+		ColorizedDebug(ctx, fmt.Sprintf(ErrorMsgDelete, err))
+		return diag.FromErr(err)
+	}
+	return nil
 }

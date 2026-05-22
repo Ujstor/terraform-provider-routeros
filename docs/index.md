@@ -43,14 +43,28 @@ resource "routeros_interface_gre" "gre_hq" {
 
 ### Required
 
-- `hosturl` (String) URL of the ROS router. Include including the scheme:
-  - `http` new REST API
-  - `https` new REST API with TLS/SSL
-  - `api` old API without TLS/SSL on port 8728
-  - `apis` old API with TLS/SSL 8729
+- `hosturl` (String) URL of the MikroTik router, default is TLS connection to REST.
+	* API: api[s]://host[:port]
+		* api://router.local
+		* apis://router.local:8729
+	* REST: http[s]://host
+		* http://router.local
+		* https://router.local
+		* router.local
+		* 127.0.0.1
+
+
+	export ROS_HOSTURL=router.local or export MIKROTIK_HOST=router.local
+- `username` (String) Username for the MikroTik WEB/Winbox.
+
+
+	export ROS_USERNAME=admin or export MIKROTIK_USER=admin
 
 ### Optional
 
-- `insecure` (Boolean) Whether to verify the SSL certificate or not
-- `password` (String, Sensitive) Password for the ROS user
-- `username` (String) Username for the ROS user
+- `ca_certificate` (String) Path to MikroTik's certificate authority file (env: ROS_CA_CERTIFICATE | MIKROTIK_CA_CERTIFICATE).
+- `insecure` (Boolean) Whether to verify the SSL certificate or not (env: ROS_INSECURE | MIKROTIK_INSECURE).
+- `password` (String, Sensitive) Password for the MikroTik user (env: ROS_PASSWORD | MIKROTIK_PASSWORD).
+- `rest_timeout` (Number) HTTP Client Timeout
+- `routeros_version` (String) RouterOS version for which resource schemes will be adapted. The version obtained from MikroTik will be used if not specified (env: ROS_VERSION).
+- `suppress_syso_del_warn` (Boolean) Suppress the system object deletion warning (env: ROS_SUPPRESS_SYSO_DEL_WARN).

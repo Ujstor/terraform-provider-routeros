@@ -2,6 +2,7 @@ package routeros
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 /*
@@ -41,6 +42,19 @@ func ResourceUser() *schema.Resource {
 			Required:    true,
 			Description: "Name of the group the user belongs to.",
 		},
+		"inactivity_policy": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Inactivity policy.",
+			ValidateFunc:     validation.StringInSlice([]string{"none", "lockscreen", "logout"}, false),
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"inactivity_timeout": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Inactivity timeout for non-GUI sessions.",
+			DiffSuppressFunc: TimeEqual,
+		},
 		KeyName: PropName("User name. Although it must start with an alphanumeric character, it may contain '*', " +
 			"'_', '.' and '@' symbols."),
 		"password": {
@@ -60,7 +74,7 @@ func ResourceUser() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

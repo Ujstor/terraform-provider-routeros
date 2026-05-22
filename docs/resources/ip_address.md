@@ -23,6 +23,7 @@ resource "routeros_ip_address" "address" {
 - `comment` (String)
 - `disabled` (Boolean)
 - `network` (String) IP address for the network. For point-to-point links it should be the address of the remote end. Starting from v5RC6 this parameter is configurable only for addresses with /32 netmask (point to point links)
+- `vrf` (String) The VRF table this resource operates on.
 
 ### Read-Only
 
@@ -30,6 +31,7 @@ resource "routeros_ip_address" "address" {
 - `dynamic` (Boolean) Configuration item created by software, not by management interface. It is not exported, and cannot be directly modified.
 - `id` (String) The ID of this resource.
 - `invalid` (Boolean)
+- `slave` (Boolean) Whether address belongs to an interface which is a slave port to some other master interface
 
 ## Import
 Import is supported using the following syntax:
@@ -37,4 +39,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/ip/address get [print show-ids]]
 terraform import routeros_ip_address.address "*0"
+#Or you can import a resource using one of its attributes
+terraform import routeros_ip_address.address "name=xxx"
 ```

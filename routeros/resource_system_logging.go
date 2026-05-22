@@ -17,8 +17,8 @@ import (
 */
 
 var validTopics = []string{
-	"account", "async", "backup", "bfd", "bgp", "bridge", "calc", "caps", "certificate", "container", "critical",
-	"ddns", "debug", "dhcp", "dns", "dot1x", "dude", "e-mail", "error", "event", "fetch", "firewall", "gps", "gsm",
+	"account", "async", "backup", "bfd", "bgp", "bridge", "calc", "caps", "certificate", "clock", "container", "critical",
+	"ddns", "debug", "dhcp", "disk", "dns", "dot1x", "dude", "e-mail", "error", "event", "fetch", "firewall", "gps", "gsm",
 	"health", "hotspot", "igmp-proxy", "info", "interface", "ipsec", "iscsi", "isdn", "isis", "kvm", "l2tp", "ldp",
 	"lora", "lte", "manager", "mme", "mpls", "mqtt", "natpmp", "netinstall", "netwatch", "ntp", "ospf", "ovpn",
 	"packet", "pim", "poe-out", "ppp", "pppoe", "pptp", "queue", "radius", "radvd", "raw", "read", "rip", "route",
@@ -33,30 +33,27 @@ func ResourceSystemLogging() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
 		MetaResourcePath: PropResourcePath("/system/logging"),
 		MetaId:           PropId(Id),
+
 		"action": {
 			Type:        schema.TypeString,
 			Required:    true,
 			Description: "specifies one of the system default actions or user specified action listed in actions menu",
 		},
-		"default": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
+		KeyDefault:  PropDefaultRo,
+		KeyDisabled: PropDisabledRw,
+		KeyInvalid:  PropInvalidRo,
 		"prefix": {
 			Type:        schema.TypeString,
 			Optional:    true,
 			Description: "prefix added at the beginning of log messages",
 			Default:     "",
 		},
-		KeyDisabled: {
-			Type:        schema.TypeBool,
-			Optional:    true,
-			Default:     false,
-			Description: "Whether or not this logging should be disabled",
-		},
-		"invalid": {
-			Type:     schema.TypeBool,
-			Computed: true,
+		"regex": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "Regex which will be used in order to match or not match message. If the regex is not matched, " +
+				"then even if topic is configured to be logged, but log message does not match regex, action will not " +
+				"be performed.",
 		},
 		"topics": {
 			Type: schema.TypeSet,
@@ -78,7 +75,7 @@ func ResourceSystemLogging() *schema.Resource {
 		DeleteContext: DefaultDelete(resSchema),
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: ImportStateCustomContext(resSchema),
 		},
 
 		Schema: resSchema,

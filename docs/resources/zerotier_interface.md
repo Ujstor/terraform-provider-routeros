@@ -50,7 +50,7 @@ resource "routeros_zerotier_interface" "zerotier1" {
 - `allow_default` (Boolean) An option to override the default route.
 - `allow_global` (Boolean) An option to allow overlapping public IP space by the ZeroTier routes. .
 - `allow_managed` (Boolean) An option to allow assignment of managed IPs.
-- `arp_timeout` (String) ARP timeout is time how long ARP record is kept in ARP table after no packets are received from IP. Value auto equals to the value of arp-timeout in IP/Settings, default is 30s. Can use postfix ms, s, M, h, d for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.
+- `arp_timeout` (String) ARP timeout is time how long ARP record is kept in ARP table after no packets are received from IP. Value auto equals to the value of arp-timeout in IP/Settings, default is 30s. Can use postfix `ms`, `s`, `m`, `h`, `d` for milliseconds, seconds, minutes, hours or days. If no postfix is set then seconds (s) is used.
 - `comment` (String)
 - `disable_running_check` (Boolean) An option to force the `running` property to true.
 - `disabled` (Boolean)
@@ -73,4 +73,6 @@ Import is supported using the following syntax:
 #The ID can be found via API or the terminal
 #The command for the terminal is -> :put [/zerotier/interface get [print show-ids]]
 terraform import routeros_zerotier_interface.zerotier1 '*1'
+#Or you can import a resource using one of its attributes
+terraform import routeros_zerotier_interface.zerotier1 "name=xxx"
 ```

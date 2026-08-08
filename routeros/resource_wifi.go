@@ -1,6 +1,11 @@
 package routeros
 
 import (
+	"context"
+	"fmt"
+	"strings"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
@@ -160,11 +165,68 @@ func ResourceWifi() *schema.Resource {
 	}
 
 	return &schema.Resource{
-		Description:   `*<span style="color:red">This resource requires a minimum version of RouterOS 7.13.</span>*`,
-		CreateContext: DefaultCreate(resSchema),
+		Description: `*<span style="color:red">This resource requires a minimum version of RouterOS 7.13.</span>*
+
+Master (physical) interfaces already exist on the device and cannot be created or deleted via the API.
+Terraform adopts them on create (update in place) and removes them from state only on destroy.
+Virtual (slave) interfaces with ` + "`master_interface`" + ` are created and deleted normally.`,
+		// Interaction with mixed types of elements within a single resource.
+		// In this case, there are physical and virtual interfaces that need to be created and deleted in different ways.
+		CreateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+			metadata := GetMetadata(resSchema)
+			filter := buildReadFilter(map[string]interface{}{"name": d.Get("name")})
+			items, err := ReadItemsFiltered(filter, metadata.Path, m.(Client))
+			if err != nil {
+				return diag.FromErr(err)
+			}
+
+			var diags diag.Diagnostics
+			if items == nil || len(*items) == 0 {
+				// No interface with the specified name was found. Adding...
+				diags = ResourceCreate(ctx, resSchema, d, m)
+			} else {
+				// An interface with the specified name is found. There are two options:
+				//		it is a master and then we will update it with existing settings,
+				//		or it is virtual and needs to be imported.
+				iface := (*items)[0]
+				if master, ok := iface["master"]; ok {
+					if strings.ToLower(master) == "true" {
+						// It's a master (physical) interface.
+						d.SetId(iface.GetID(Id))
+						diags = ResourceUpdate(ctx, resSchema, d, m)
+					} else {
+						diags = diag.Diagnostics{diag.Diagnostic{
+							Severity: diag.Error,
+							Summary:  fmt.Sprintf("A virtual interface named '%v' already exists", d.Get("name")),
+						}}
+					}
+				} else {
+					diags = diag.Diagnostics{diag.Diagnostic{
+						Severity: diag.Error,
+						Summary: fmt.Sprintf("The Mikrotik resource (%v print where name=%v) does not contain "+
+							"'master' attribute in the response",
+							metadata.Path, d.Get("name")),
+					}}
+				}
+			}
+
+			if diags.HasError() {
+				return diags
+			}
+
+			return ResourceRead(ctx, resSchema, d, m)
+		},
+
 		ReadContext:   DefaultRead(resSchema),
 		UpdateContext: DefaultUpdate(resSchema),
-		DeleteContext: DefaultDelete(resSchema),
+		DeleteContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+			if d.Get("master").(bool) {
+				// It's a master (physical) interface.
+				return SystemResourceDelete(ctx, resSchema, d, m)
+			}
+
+			return ResourceDelete(ctx, resSchema, d, m)
+		},
 
 		Importer: &schema.ResourceImporter{
 			StateContext: ImportStateCustomContext(resSchema),

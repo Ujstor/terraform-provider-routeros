@@ -1,6 +1,10 @@
 # routeros_wifi (Resource)
 *<span style="color:red">This resource requires a minimum version of RouterOS 7.13.</span>*
 
+Master (physical) interfaces already exist on the device and cannot be created or deleted via the API.
+Terraform adopts them on create (update in place) and removes them from state only on destroy.
+Virtual (slave) interfaces with `master_interface` are created and deleted normally.
+
 ## Example Usage
 ```terraform
 # If you need to add a reference to an existing configuration, each inline section contains a `config` parameter 
@@ -8,11 +12,22 @@
 # configuration = {
 #   config = routeros_wifi_configuration.my-config.name
 # }
+
+# Master (physical) interface — adopted and updated in place; destroy only removes from state.
 resource "routeros_wifi" "wifi1" {
   configuration = {
     manager = "capsman"
   }
   name = "wifi1"
+}
+
+# Virtual (slave) interface — created and deleted via the API.
+resource "routeros_wifi" "wifi1_guest" {
+  master_interface = routeros_wifi.wifi1.name
+  name             = "wifi1-guest"
+  configuration = {
+    ssid = "guest"
+  }
 }
 ```
 

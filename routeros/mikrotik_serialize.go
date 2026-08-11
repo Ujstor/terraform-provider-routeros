@@ -323,6 +323,13 @@ func TerraformResourceDataToMikrotik(s map[string]*schema.Schema, d *schema.Reso
 				// Conversion of boolean values.
 				s := BoolToMikrotikJSONStr(v.(string))
 
+				// Empty string clears the Mikrotik property (important for transformed
+				// keys like channel.config → channel when leaving named-profile mode).
+				if s == "" {
+					item["!"+k] = ""
+					continue
+				}
+
 				item[k] = s
 			}
 		default:

@@ -48,7 +48,7 @@ func ResourceWifi() *schema.Resource {
 			Elem:             &schema.Schema{Type: schema.TypeString},
 			Description:      "AAA inline settings.",
 			ValidateDiagFunc: ValidationMapKeyNames,
-			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+			DiffSuppressFunc: WifiInlineMapDiffSuppress,
 		},
 		KeyArp:        PropArpRw,
 		KeyArpTimeout: PropArpTimeoutRw,
@@ -63,7 +63,7 @@ func ResourceWifi() *schema.Resource {
 			Elem:             &schema.Schema{Type: schema.TypeString},
 			Description:      "Channel inline settings.",
 			ValidateDiagFunc: ValidationMapKeyNames,
-			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+			DiffSuppressFunc: WifiInlineMapDiffSuppress,
 		},
 		"configuration": {
 			Type:             schema.TypeMap,
@@ -71,7 +71,7 @@ func ResourceWifi() *schema.Resource {
 			Elem:             &schema.Schema{Type: schema.TypeString},
 			Description:      "Configuration inline settings.",
 			ValidateDiagFunc: ValidationMapKeyNames,
-			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+			DiffSuppressFunc: WifiInlineMapDiffSuppress,
 		},
 		"datapath": {
 			Type:             schema.TypeMap,
@@ -79,7 +79,7 @@ func ResourceWifi() *schema.Resource {
 			Elem:             &schema.Schema{Type: schema.TypeString},
 			Description:      "Datapath inline settings.",
 			ValidateDiagFunc: ValidationMapKeyNames,
-			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+			DiffSuppressFunc: WifiInlineMapDiffSuppress,
 		},
 		KeyComment:     PropCommentRw,
 		KeyDefaultName: PropDefaultNameRo("The interface's default name."),
@@ -109,7 +109,7 @@ func ResourceWifi() *schema.Resource {
 			Elem:             &schema.Schema{Type: schema.TypeString},
 			Description:      "Interworking inline settings.",
 			ValidateDiagFunc: ValidationMapKeyNames,
-			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+			DiffSuppressFunc: WifiInlineMapDiffSuppress,
 		},
 		KeyL2Mtu: PropL2MtuRw,
 		"mac_address": {
@@ -152,7 +152,7 @@ func ResourceWifi() *schema.Resource {
 			Elem:             &schema.Schema{Type: schema.TypeString},
 			Description:      "Security inline settings.",
 			ValidateDiagFunc: ValidationMapKeyNames,
-			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+			DiffSuppressFunc: WifiInlineMapDiffSuppress,
 		},
 		"steering": {
 			Type:             schema.TypeMap,
@@ -160,7 +160,7 @@ func ResourceWifi() *schema.Resource {
 			Elem:             &schema.Schema{Type: schema.TypeString},
 			Description:      "Steering inline settings.",
 			ValidateDiagFunc: ValidationMapKeyNames,
-			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+			DiffSuppressFunc: WifiInlineMapDiffSuppress,
 		},
 	}
 

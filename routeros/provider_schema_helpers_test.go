@@ -223,3 +223,11 @@ func TestImplicitSingleHostCIDR4(t *testing.T) {
 		})
 	}
 }
+
+func TestWifiInlineMapDiffSuppress_emptyConfig(t *testing.T) {
+	// Absent named-profile ref in state (old="") vs HCL config="" (new="") must not plan.
+	// nil ResourceData is fine: this branch does not call AlwaysPresentNotUserProvided.
+	if !WifiInlineMapDiffSuppress("configuration.config", "", "", nil) {
+		t.Fatal("expected suppress for absent vs empty config")
+	}
+}

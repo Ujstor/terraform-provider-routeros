@@ -832,6 +832,17 @@ var (
 		return false
 	}
 
+	// WifiInlineMapDiffSuppress extends AlwaysPresentNotUserProvided for wifi
+	// TypeMaps that use a synthetic "config" key (named-profile ref). HCL often
+	// sets config="" to force clearing sticky profile refs; Read omits the key
+	// when no profile is set. Absent vs empty must not produce a perpetual plan.
+	WifiInlineMapDiffSuppress = func(k, old, new string, d *schema.ResourceData) bool {
+		if strings.HasSuffix(k, ".config") && old == "" && new == "" {
+			return true
+		}
+		return AlwaysPresentNotUserProvided(k, old, new, d)
+	}
+
 	MacAddressEqual = func(k, old, new string, d *schema.ResourceData) bool {
 		return strings.EqualFold(old, new)
 	}

@@ -60,6 +60,9 @@ var (
 )
 
 func Test_mikrotikResourceDataToTerraform(t *testing.T) {
+	originalVersion := RouterOSVersion
+	RouterOSVersion = "7.16"
+	t.Cleanup(func() { RouterOSVersion = originalVersion })
 
 	testItem := MikrotikItem{".id": "*39", "string": "string12345", "float": "0.01", "int": "10", "bool": "true"}
 
@@ -81,6 +84,108 @@ func Test_mikrotikResourceDataToTerraform(t *testing.T) {
 
 }
 
+func Test_mikrotikResourceDataToTerraform_clearsAbsentTypeMaps(t *testing.T) {
+	// Mirrors routeros_wifi inline maps: after a device reset ROS omits
+	// configuration.*/channel.* entirely; Read must clear prior state.
+	originalVersion := RouterOSVersion
+	RouterOSVersion = "7.16"
+	t.Cleanup(func() { RouterOSVersion = originalVersion })
+
+	res := schema.Resource{
+		Schema: map[string]*schema.Schema{
+			MetaResourcePath: PropResourcePath("/interface/wifi"),
+			MetaId:           PropId(Id),
+			MetaTransformSet: PropTransformSet(
+				"channel.config: channel",
+				"configuration.config: configuration",
+			),
+			"name": {
+				Type: schema.TypeString,
+			},
+			"configuration": {
+				Type: schema.TypeMap,
+				Elem: &schema.Schema{Type: schema.TypeString},
+			},
+			"channel": {
+				Type: schema.TypeMap,
+				Elem: &schema.Schema{Type: schema.TypeString},
+			},
+			"security": {
+				Type: schema.TypeMap,
+				Elem: &schema.Schema{Type: schema.TypeString},
+			},
+		},
+	}
+
+	rd := res.TestResourceData()
+	rd.SetId("*2")
+	if err := rd.Set("name", "wifi1"); err != nil {
+		t.Fatal(err)
+	}
+	if err := rd.Set("configuration", map[string]interface{}{
+		"config": "thegeraet-network__radio-5g",
+		"ssid":   "TheGeraet",
+		"mode":   "ap",
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := rd.Set("channel", map[string]interface{}{
+		"config": "radio-5g",
+		"band":   "5ghz-ax",
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := rd.Set("security", map[string]interface{}{
+		"config":               "thegeraet-security",
+		"authentication_types": "wpa2-psk,wpa3-psk",
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	// Reset-like API payload: iface exists, dotted map fields absent.
+	item := MikrotikItem{".id": "*2", "name": "wifi1"}
+	if diags := MikrotikResourceDataToTerraform(item, res.Schema, rd); diags.HasError() {
+		t.Fatalf("unexpected diags: %v", diags)
+	}
+
+	for _, key := range []string{"configuration", "channel", "security"} {
+		actual := rd.Get(key)
+		m, ok := actual.(map[string]interface{})
+		if !ok {
+			t.Fatalf("%s: expected map, got %#v", key, actual)
+		}
+		if len(m) != 0 {
+			t.Fatalf("%s: expected cleared map after absent API fields, got %#v", key, m)
+		}
+	}
+
+	// When API returns map fields again, they must be restored (and transform applied).
+	item = MikrotikItem{
+		".id":                 "*2",
+		"name":                "wifi1",
+		"configuration.ssid":  "TheGeraet",
+		"configuration.mode":  "ap",
+		"channel.band":        "5ghz-ax",
+		"channel":             "radio-5g",
+	}
+	if diags := MikrotikResourceDataToTerraform(item, res.Schema, rd); diags.HasError() {
+		t.Fatalf("unexpected diags: %v", diags)
+	}
+
+	cfg := rd.Get("configuration").(map[string]interface{})
+	if cfg["ssid"] != "TheGeraet" || cfg["mode"] != "ap" {
+		t.Fatalf("configuration not restored: %#v", cfg)
+	}
+	ch := rd.Get("channel").(map[string]interface{})
+	if ch["band"] != "5ghz-ax" || ch["config"] != "radio-5g" {
+		t.Fatalf("channel not restored: %#v", ch)
+	}
+	sec := rd.Get("security").(map[string]interface{})
+	if len(sec) != 0 {
+		t.Fatalf("security should stay cleared when still absent: %#v", sec)
+	}
+}
+
 func Test_terraformResourceDataToMikrotik(t *testing.T) {
 
 	expected := MikrotikItem{"string": "string12345", "float": "0.01", "int": "10", "bool": "yes"}
@@ -100,6 +205,10 @@ func Test_terraformResourceDataToMikrotik(t *testing.T) {
 }
 
 func Test_mikrotikResourceDataToTerraformDatasource(t *testing.T) {
+	originalVersion := RouterOSVersion
+	RouterOSVersion = "7.16"
+	t.Cleanup(func() { RouterOSVersion = originalVersion })
+
 	testItems := []MikrotikItem{
 		{"string": "string12345", "float": "0.01", "int": "10", "bool": "yes"},
 		{"string": "12345string", "float": "0.02", "int": "20", "bool": "no"},

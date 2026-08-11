@@ -624,6 +624,29 @@ func MikrotikResourceDataToTerraform(item MikrotikItem, s map[string]*schema.Sch
 			diags = append(diags, diag.FromErr(err)...)
 		}
 	}
+	// Clear schema TypeMaps that did not appear in the API response.
+	// SDKv2 preserves prior state when Set is not called; after a device reset
+	// RouterOS often omits dotted map fields (e.g. configuration.*, channel.*),
+	// which previously left stale wifi inline settings in state and hid real
+	// drift from terraform plan.
+	for name, sch := range s {
+		if reMetadataFields.MatchString(name) || sch.Type != schema.TypeMap {
+			continue
+		}
+		if skipFields != nil {
+			if _, ok := skipFields[name]; ok {
+				continue
+			}
+		}
+		if _, ok := maps[name]; ok {
+			continue
+		}
+		// Empty map, not nil: SDKv2 Set(nil) is a no-op for TypeMap and leaves
+		// prior state in place (exactly the stale-after-reset bug).
+		if err = d.Set(name, map[string]interface{}{}); err != nil {
+			diags = append(diags, diag.FromErr(err)...)
+		}
+	}
 
 	return diags
 }

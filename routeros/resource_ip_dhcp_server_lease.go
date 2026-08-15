@@ -16,6 +16,16 @@ func ResourceDhcpServerLease() *schema.Resource {
 			Computed:    true,
 			Description: "The IP address of the machine currently holding the DHCP lease.",
 		},
+		"active_agent_circuit_id": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Actual agent circuit-id of the relayed client. Returned by RouterOS >= 7.23.",
+		},
+		"active_agent_remote_id": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Actual agent remote-id of the relayed client. Returned by RouterOS >= 7.23.",
+		},
 		"active_client_id": {
 			Type:        schema.TypeString,
 			Computed:    true,

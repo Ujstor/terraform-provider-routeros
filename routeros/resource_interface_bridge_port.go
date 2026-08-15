@@ -85,8 +85,8 @@ func ResourceInterfaceBridgePort() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
 		MetaResourcePath: PropResourcePath("/interface/bridge/port"),
 		MetaId:           PropId(Id),
-		MetaSkipFields: PropSkipFields("debug_info", "discard_transitions", "forward_transitions", "port_number",
-			"rx_bpdu", "rx_tc", "topology_changes", "tx_bpdu", "tx_tc"),
+		MetaSkipFields: PropSkipFields("actual_path_cost", "debug_info", "discard_transitions", "forward_transitions",
+			"port_number", "rx_bpdu", "rx_tc", "topology_changes", "tx_bpdu", "tx_tc"),
 
 		"nextid": {
 			Type:     schema.TypeString,
@@ -421,6 +421,14 @@ func ResourceInterfaceBridgePort() *schema.Resource {
 			Description: "When enabled, it allows to forward DHCP packets towards DHCP server through this port. " +
 				"Mainly used to limit unauthorized servers to provide malicious information for users. " +
 				"This property only has effect when dhcp-snooping is set to yes.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"trusted_dhcpv6": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "When enabled, it allows to forward DHCPv6 packets towards a DHCPv6 server through this port. " +
+				"This property only has effect when dhcpv6-snooping is set to yes on the bridge. " +
+				"Available since RouterOS 7.23.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"trusted_ra": {

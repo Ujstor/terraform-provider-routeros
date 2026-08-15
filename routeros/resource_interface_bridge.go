@@ -11,6 +11,8 @@ func ResourceInterfaceBridge() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
 		MetaResourcePath: PropResourcePath("/interface/bridge"),
 		MetaId:           PropId(Id),
+		// "managed" is a read-only flag returned by RouterOS >= 7.23.
+		MetaSkipFields: PropSkipFields("managed"),
 
 		KeyActualMtu: PropActualMtuRo,
 		"add_dhcp_option82": {
@@ -47,6 +49,11 @@ func ResourceInterfaceBridge() *schema.Resource {
 		"dhcp_snooping": {
 			Type:     schema.TypeBool,
 			Optional: true,
+		},
+		"dhcpv6_snooping": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Description: "Enables or disables DHCPv6 Snooping on the bridge. Available since RouterOS 7.23.",
 		},
 		KeyDisabled: PropDisabledRw,
 		KeyDynamic:  PropDynamicRo,

@@ -366,6 +366,13 @@ func ResourceSystemCertificate() *schema.Resource {
 			Description:      "SANs (subject alternative names).",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
+		"trust_store": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "Which trust store the certificate belongs to. " +
+				"Available since RouterOS 7.23.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"trusted": {
 			Type:             schema.TypeBool,
 			Optional:         true,

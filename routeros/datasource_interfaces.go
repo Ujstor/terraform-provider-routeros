@@ -14,7 +14,7 @@ func DatasourceInterfaces() *schema.Resource {
 			MetaResourcePath: PropResourcePath("/interface"),
 			MetaId:           PropId(Id),
 			MetaSkipFields: PropSkipFields(
-				"fp_rx_byte", "fp_rx_packet", "fp_tx_byte", "fp_tx_packet", "link_downs",
+				"fp_rps_drop", "fp_rx_byte", "fp_rx_packet", "fp_tx_byte", "fp_tx_packet", "link_downs",
 				"rx_byte", "rx_drop", "rx_error", "rx_packet", "tx_byte",
 				"tx_drop", "tx_error", "tx_packet", "tx_queue_drop",
 			),
@@ -90,6 +90,11 @@ func DatasourceInterfaces() *schema.Resource {
 							Computed: true,
 						},
 						"type": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						// Returned by RouterOS >= 7.23.
+						"vrf": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},

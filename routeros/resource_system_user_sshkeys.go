@@ -61,6 +61,11 @@ func ResourceUserSshKeys() *schema.Resource {
 			Computed:    true,
 			Description: "SSH key fingerprint",
 		},
+		"info": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Key information (comment) extracted from the imported public key. Returned by RouterOS >= 7.23.",
+		},
 	}
 
 	return &schema.Resource{

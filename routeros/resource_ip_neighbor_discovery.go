@@ -27,6 +27,13 @@ func ResourceIpNeighborDiscoverySettings() *schema.Resource {
 				"Available since RouterOS 7.23.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
+		"add_dns_entries_suffix": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "Domain suffix used for DNS entries created for discovered neighbors. " +
+				"Available since RouterOS 7.23.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"discover_interface_list": {
 			Type:             schema.TypeString,
 			Optional:         true,

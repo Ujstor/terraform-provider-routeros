@@ -33,6 +33,8 @@ func ResourceSystemLogging() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
 		MetaResourcePath: PropResourcePath("/system/logging"),
 		MetaId:           PropId(Id),
+		// RouterOS >= 7.23 returns a read-only 'managed' flag on logging entries
+		MetaSkipFields: PropSkipFields("managed"),
 
 		"action": {
 			Type:        schema.TypeString,

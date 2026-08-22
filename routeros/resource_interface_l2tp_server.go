@@ -83,11 +83,15 @@ func ResourceInterfaceL2tpServer() *schema.Resource {
 			ValidateFunc:     validation.IntBetween(512, 18432),
 		},
 		"use_ipsec": {
-			Type:        schema.TypeBool,
-			Optional:    true,
+			// no | yes | required - a bool cannot express `required`, which is the
+			// value that rejects L2TP connections arriving outside an IPSec tunnel.
+			// RouterOS 7.23.3 REST returns the plain enum string ("no").
+			Type:     schema.TypeString,
+			Optional: true,
 			Description: "When this option is enabled, dynamic IPSec peer configuration is added to suite" +
-			  "most of the L2TP road-warrior setups. When require is selected server will accept only" +
+				"most of the L2TP road-warrior setups. When required is selected server will accept only" +
 				"those L2TP connection attempts that were encapsulated in the IPSec tunnel.",
+			ValidateFunc:     validation.StringInSlice([]string{"no", "yes", "required"}, false),
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"ipsec_secret": {

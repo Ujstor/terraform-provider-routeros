@@ -17,6 +17,7 @@ import (
     "lifetime": "1d",
     "name": "default",
     "nat-traversal": "true",
+    "ppk": "no",
     "proposal-check": "obey"
   }
 */
@@ -91,6 +92,18 @@ func ResourceIpIpsecProfile() *schema.Resource {
 				"including the IP header, which is changed by NAT, rendering AH signature invalid). The method encapsulates " +
 				"IPsec ESP traffic into UDP streams in order to overcome some minor issues that made ESP incompatible " +
 				"with NAT.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"ppk": {
+			// RFC 8784 post-quantum preshared key mode, RouterOS >= 7.23.
+			// Documented values: no | psk | psk-ike-initial | qkd. Left without a
+			// StringInSlice check on purpose - MikroTik keeps extending this enum
+			// (the QKD page and the peer-side static ppk-secret disagree on the
+			// full set), and a stale client-side list would reject a config the
+			// router accepts. RouterOS 7.23.3 REST returns the plain enum ("no").
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "Post-quantum preshared key (RFC 8784) mode: `no` disables PPK, `psk` uses a one-time PSK for IKE and ESP rekey, `psk-ike-initial` uses it only for the initial IKE SA, `qkd` retrieves keys from a QKD server.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"prf_algorithm": {

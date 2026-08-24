@@ -13,6 +13,7 @@ import (
     "exchange-mode": "main",
     "name": "peer1",
     "passive": "true",
+    "ppk-secret": "",
     "profile": "default",
     "responder": "true",
     "send-initial-contact": "true"
@@ -65,6 +66,15 @@ func ResourceIpIpsecPeer() *schema.Resource {
 			Optional: true,
 			Description: "Communication port used (when a router is an initiator) to connect to remote peer in cases " +
 				"if remote peer uses the non-default port.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"ppk_secret": {
+			// Static per-peer post-quantum preshared key (RFC 8784), RouterOS >= 7.23.
+			// RouterOS 7.23.3 REST returns it on every peer, empty when unused.
+			Type:             schema.TypeString,
+			Optional:         true,
+			Sensitive:        true,
+			Description:      "Static post-quantum preshared key (RFC 8784) shared with this peer. Applicable when the peer's profile enables `ppk`.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"profile": {

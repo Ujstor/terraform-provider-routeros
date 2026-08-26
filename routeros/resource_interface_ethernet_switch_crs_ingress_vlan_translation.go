@@ -74,6 +74,16 @@ func ResourceInterfaceEthernetSwitchCrsIngressVlanTranslation() *schema.Resource
 			Optional: true,
 			Description: "Enables or disables PCP propagation.If the port type is Edge, the customer PCP is copied from " +
 				"the service PCP.If the port type is Network, the service PCP is copied from the customer PCP.",
+			// RouterOS RETURNS "true"/"false" here but only ACCEPTS "yes"/"no"
+			// on write - the sample response at the top of this file shows the
+			// read form. Without suppression the device value lands in state,
+			// the null config then reads as a change, and the serializer emits
+			// pcp-propagation="" on the next update:
+			//   400 Bad Request: invalid value of pcp-propagation, must be
+			//   either yes or no
+			// Create succeeds and every subsequent update fails, so the break
+			// only appears the second time a resource is touched.
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"ports": {
 			Type:     schema.TypeSet,
@@ -93,6 +103,9 @@ func ResourceInterfaceEthernetSwitchCrsIngressVlanTranslation() *schema.Resource
 			Type:        schema.TypeString,
 			Optional:    true,
 			Description: "Enables or disables source MAC learning after VLAN translation (only for Ingress VLAN Translation).",
+			// Same read/write asymmetry as pcp_propagation above: returned as
+			// "true"/"false", accepted only as "yes"/"no".
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"service_dei": {
 			Type:             schema.TypeString,

@@ -66,6 +66,14 @@ func ResourceInterfaceEthernet() *schema.Resource {
 			"tx_collision", "tx_excessive_collision", "tx_late_collision", "tx_multiple_collision", "tx_single_collision", "tx_total_collision",
 			"tx_deferred", "tx_excessive_deferred", "tx_unicast", "tx_underrun", "rx_tcp_checksum_error", "rx_udp_checksum_error", "rx_ip_header_checksum_error",
 			"tx_carrier_sense_error",
+			// Switch-chip port counters. RouterOS returns these on /interface/ethernet
+			// for boards whose ports sit behind a switch chip (CRS1xx/2xx, hEX, etc.);
+			// they are read-only statistics with no configuration meaning. Without
+			// them here every plan and apply emits four "Field ... not found in the
+			// schema" warnings per port, which on a 24-port switch is 96 lines of
+			// noise that trains operators to skim warnings - the same warnings that
+			// would carry a real "produced an invalid plan" message.
+			"policy_drop_packet", "custom_drop_packet", "current_learned", "not_learned",
 		),
 
 		"advertise": {

@@ -45,6 +45,7 @@ resource "routeros_interface_vlan" "interface_vlan" {
 - `id` (String) The ID of this resource.
 - `l2mtu` (Number) Layer2 Maximum transmission unit. [See](https://wiki.mikrotik.com/wiki/Maximum_Transmission_Unit_on_RouterBoards).
 - `loop_protect_status` (String)
+- `l3_hw_offloading` (Boolean) Layer 3 Hardware Offloading (L3HW, otherwise known as IP switching or HW routing) allows to offload some router features onto the switch chip. Reported by RouterOS on /interface/vlan for CRS3xx-series devices with L3HW support.
 - `mac_address` (String) Current mac address.
 - `running` (Boolean)
 

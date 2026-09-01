@@ -20,6 +20,14 @@ func ResourceInterfaceVlan() *schema.Resource {
 		KeyLoopProtectDisableTime:  PropLoopProtectDisableTimeRw,
 		KeyLoopProtectSendInterval: PropLoopProtectSendIntervalRw,
 		KeyLoopProtectStatus:       PropLoopProtectStatusRo,
+		"l3_hw_offloading": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "Layer 3 Hardware Offloading (L3HW, otherwise known as IP switching or HW routing) allows to " +
+				"offload some router features onto the switch chip. Reported by RouterOS on /interface/vlan for " +
+				"CRS3xx-series devices with L3HW support.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		KeyMacAddress:              PropMacAddressRo,
 		KeyMtu:                     PropMtuRw(),
 		"mvrp": {

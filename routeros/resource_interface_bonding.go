@@ -105,6 +105,13 @@ func ResourceInterfaceBonding() *schema.Resource {
 				"occurred in the network. LACP tries to adapt tothese changes providing failover.",
 			ValidateFunc: validation.StringInSlice([]string{"1sec", "30secs"}, false),
 		},
+		"lacp_system_priority": {
+			Type:     schema.TypeInt,
+			Optional: true,
+			Description: "LACP system priority reported by RouterOS on /interface/bonding (default 65535); without " +
+				"the field every read of an 802.3ad bond logs a schema warning.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"lacp_user_key": {
 			Type:     schema.TypeInt,
 			Optional: true,

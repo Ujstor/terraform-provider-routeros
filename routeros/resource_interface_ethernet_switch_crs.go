@@ -105,7 +105,10 @@ func ResourceInterfaceEthernetSwitchCrs() *schema.Resource {
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"egress_mirror0": {
-			Type:     schema.TypeSet,
+			// RouterOS stores this as an ORDERED pair "<port-or-trunk>,<format>";
+			// a set would be re-joined in hash order and rejected with
+			// "invalid value for argument port-or-trunk".
+			Type:     schema.TypeList,
 			Optional: true,
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
@@ -119,7 +122,10 @@ func ResourceInterfaceEthernetSwitchCrs() *schema.Resource {
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"egress_mirror1": {
-			Type:     schema.TypeSet,
+			// RouterOS stores this as an ORDERED pair "<port-or-trunk>,<format>";
+			// a set would be re-joined in hash order and rejected with
+			// "invalid value for argument port-or-trunk".
+			Type:     schema.TypeList,
 			Optional: true,
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
@@ -152,7 +158,10 @@ func ResourceInterfaceEthernetSwitchCrs() *schema.Resource {
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"ingress_mirror0": {
-			Type:     schema.TypeSet,
+			// RouterOS stores this as an ORDERED pair "<port-or-trunk>,<format>";
+			// a set would be re-joined in hash order and rejected with
+			// "invalid value for argument port-or-trunk".
+			Type:     schema.TypeList,
 			Optional: true,
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
@@ -166,7 +175,10 @@ func ResourceInterfaceEthernetSwitchCrs() *schema.Resource {
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"ingress_mirror1": {
-			Type:     schema.TypeSet,
+			// RouterOS stores this as an ORDERED pair "<port-or-trunk>,<format>";
+			// a set would be re-joined in hash order and rejected with
+			// "invalid value for argument port-or-trunk".
+			Type:     schema.TypeList,
 			Optional: true,
 			Elem: &schema.Schema{
 				Type: schema.TypeString,

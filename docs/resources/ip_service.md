@@ -50,7 +50,7 @@ resource "routeros_ip_service" "enabled" {
 
 ### Required
 
-- `numbers` (String) The name of the service whose settings will be changed ( api, api-ssl, ftp, ssh, telnet, winbox, www, www-ssl ).
+- `numbers` (String) The name of the service whose settings will be changed ( api, api-ssl, ftp, ssh, telnet, winbox, www, www-ssl, reverse-proxy ). reverse-proxy exists on RouterOS >= 7.20.
 - `port` (Number) The port particular service listens on.
 
 ### Optional

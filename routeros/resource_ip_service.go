@@ -75,9 +75,9 @@ func ResourceIpService() *schema.Resource {
 			Type:     schema.TypeString,
 			Required: true,
 			Description: "The name of the service whose settings will be changed ( api, api-ssl, ftp, ssh, telnet, " +
-				"winbox, www, www-ssl ).",
+				"winbox, www, www-ssl, reverse-proxy ). reverse-proxy exists on RouterOS >= 7.20.",
 			ValidateDiagFunc: ValidationMultiValInSlice([]string{"api", "api-ssl", "ftp", "ssh", "telnet", "winbox",
-				"www", "www-ssl"}, false, false),
+				"www", "www-ssl", "reverse-proxy"}, false, false),
 		},
 		"port": {
 			Type:         schema.TypeInt,

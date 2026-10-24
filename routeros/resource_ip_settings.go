@@ -94,6 +94,21 @@ func ResourceIpSettings() *schema.Resource {
 				"to defaults according to RFC1812 for routers.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
+		"ipv4_fragment_time": {
+			Type:             schema.TypeInt,
+			Optional:         true,
+			Description:      "Time in seconds to keep an IPv4 fragment in memory. Available since RouterOS 7.23.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"ipv4_high_fragment_thresh": {
+			Type:     schema.TypeInt,
+			Optional: true,
+			Description: "Upper bound of memory (in bytes) the kernel may consume for all IPv4 fragment reassembly " +
+				"queues combined. When reached, newly arriving fragments are dropped. The default depends on the " +
+				"installed RAM (16 MiB for 1 GiB, 32 MiB for 2 GiB or more) and must be less than total device " +
+				"memory. Available since RouterOS 7.23.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"ipv4_multipath_hash_policy": {
 			Type:     schema.TypeString,
 			Optional: true,

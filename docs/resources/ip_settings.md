@@ -21,6 +21,8 @@ resource "routeros_ip_settings" "settings" {
 - `icmp_rate_limit` (Number) Limit the maximum rates for sending ICMP packets whose type matches icmp-rate-mask to specific targets. `0` disables any limiting, other values indicate the minimum space between responses in milliseconds.
 - `icmp_rate_mask` (String) Mask made of ICMP types for which rates are being limited.
 - `ip_forward` (Boolean) Enable/disable packet forwarding between interfaces. Resets all configuration parameters to defaults according to RFC1812 for routers.
+- `ipv4_fragment_time` (Number) Time in seconds to keep an IPv4 fragment in memory. Available since RouterOS 7.23.
+- `ipv4_high_fragment_thresh` (Number) Upper bound of memory (in bytes) the kernel may consume for all IPv4 fragment reassembly queues combined. When reached, newly arriving fragments are dropped. The default depends on the installed RAM (16 MiB for 1 GiB, 32 MiB for 2 GiB or more) and must be less than total device memory. Available since RouterOS 7.23.
 - `ipv4_multipath_hash_policy` (String) IPv4 Hash policy used for ECMP routing in `/ip/settings` menu
   * l3 -- layer-3 hashing of src IP, dst IP
   * l3-inner -- layer-3 hashing or inner layer-3 hashing if available

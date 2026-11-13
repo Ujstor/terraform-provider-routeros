@@ -1,0 +1,8 @@
+---
+include:
+  - component: $CI_YAMLLINT@1.0.0
+    inputs:
+      stage: test
+      scope: changed
+      allow_failure: true
+  - component: $CI_OPEN_CODE_REVIEW@1.2.0
